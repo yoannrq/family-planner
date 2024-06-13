@@ -9,9 +9,9 @@
     "dev": "nodemon src/index.ts",
     "build": "tsc",
     "start": "node dist/index.js",
-    "mobile:android": "cd svelte-native-app && ns run android",
-    "mobile:ios": "cd svelte-native-app && ns run ios",
-    "mobile:preview": "cd svelte-native-app && ns preview"
+    "mobile:android": "cd svelte-app && ns run android",
+    "mobile:ios": "cd svelte-app && ns run ios",
+    "mobile:preview": "cd svelte-app && ns preview"
   },
   "keywords": [],
   "author": "",
