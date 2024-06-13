@@ -1,0 +1,90 @@
+MVP :
+- Application android
+
+- Onglet Courses
+- Onglet calendrier
+- Onglet Todo
+- Onglet repas
+- Onglet recettes
+- Onglet famille
+- Onglet contacts (babysitter, medecin...)
+
+Futur : 
+
+- Onglet documents
+
+// User-stories
+
+En tant que 		Je veux			Afin de
+Membre de la famille	Pouvoir inviter des membres
+-			Supprimer/Ajouter un onglet
+-			Ajouter/Supprimer un item dans chaque onglet
+
+
+//mobile app android ios svelte et capacitor
+https://www.youtube.com/watch?v=rlNms8xoLXo
+
+********************************************************************************************
+MCD : 
+
+USER (email, name, PP, creaAt, updAt)
+GROUP (name, PP, color, creaAT, updAt)
+CALENDAR_ENTRIES (title, color, begin_date, end_date, begin_time, end_time, entire_day, place, users)
+LIST (name, color, type)
+LIST_TYPE (title, emoticon)
+LIST_ELEMENT (name, quantity, crossed, date, users, category_id, creaAt, updAt)
+LIST_ELEMENT_CATEGORY (title, emoticon, creaAt, updAt)
+CONTACT (firstname, lastname, type, email, mobile, address, content, PP)
+MESSAGE (content, creaAt, updAt)
+COLOR (title, hexa_value)
+
+********************************************************************************************
+
+Listes des routes : 
+
+POST	/auth/signup		: inscription
+POST	/auth/login		: login
+POST	/auth/logout		: logout
+
+GET	/me/home 		: page accueil 
+GET	/me			: page de profil
+GET	/me/profil		: page de modifications du profil
+POST	/me/profil		: changement du mail, PP, name
+
+GET	/me/group		: liste des groupes de l'utilisateur
+POST	/me/group		: Creation d'un groupe
+GET	/me/group/group-id	: Selection d'un group par son id
+PATCH	/me/group/group-id	: Update du groupe
+DELETE 	/me/group/group-id	: Suppression du groupe
+GET 	/me/group/group-id/add-member 		: Formulaire ajout de membre au groupe
+POST 	/me/group/group-id/add-member/user-id 	: Ajout de l'utilisateur par son id au groupe
+
+GET	/me/group-id/calendar		: page calendrier
+GET	/me/group-id/calendar/add-event	: formulaire ajout evenement
+POST	/me/group-id/calendar/add-event	: ajout evenement (users, couleur, titre, date début, date de fin, heure de début, heure de fin, toggle jour entier, lieu)
+PATCH	/me/group-id/calendar/event-id	: update event
+DELETE	/me/group-id/calendar/event-id 	: delete event
+
+GET	/me/group-id/list			: liste des listes de l'utilisateur
+GET	/me/group-id/list/:list-id		: liste par son id
+PATCH 	/me/group-id/list/:list-id		: Update liste
+DELETE	/me/group-id/list/:list-id		: Delete liste
+POST	/me/group-id/list			: Ajout d'une liste
+POST	/me/group-id/list/:list-id/list-element	: Ajout d'un element à la liste
+PATCH	/me/group-id/list/:list-id/list-element/list-element-id : update list element
+DELETE	/me/group-id/list/:list-id/list-element/list-element-id : delete list element
+GET	/me/group-id/list/category		: Liste des categories
+POST	/me/group-id/list/category		: Ajout d'une categorie
+PATCH	/me/group-id/list/category/:category-id	: Update category
+DELETE	/me/group-id/list/category/:category-id	: Delete category
+
+GET	/me/group-id/contact		: liste des contacts
+POST	/me/group-id/contact		: Ajout d'un contact
+GET	/me/group-id/contact/contact-id	: Détail d'un contact
+PATCH	/me/group-id/contact/contact-id	: Update d'un contact
+DELETE	/me/group-id/contact/contact-id	: Delete contact
+
+GET	/me/group-id/message		: liste des messages
+POST	/me/group-id/message		: post d'un message
+PATCH	/me/group-id/message/message-id : patch d'un message
+DELETE	/me/group-id/message/message-id : delete d'un message
