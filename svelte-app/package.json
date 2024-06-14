@@ -10,7 +10,6 @@
     "@nativescript/core": "~8.7.0",
     "@nativescript/tailwind": "^2.1.0",
     "@nativescript/theme": "~3.0.2",
-    "material-icons": "^1.13.12",
     "svelte-native": "~1.0.9",
     "tailwindcss": "^3.4.4"
   },
