@@ -1,0 +1,263 @@
+{
+  "users": [
+    {
+      "name": "Alice Smith",
+      "email": "alice@smith.com",
+      "password": "Password123!"
+    },
+    {
+      "name": "Bob Brown",
+      "email": "bob@brown.com",
+      "password": "Password123!"
+    },
+    {
+      "name": "Charlie Johnson",
+      "email": "charlie@johnson.com",
+      "password": "Password123!"
+    }
+  ],
+  "colors": [
+    {
+      "name": "Perroquet",
+      "hexCode": "#0388fc"
+    },
+    {
+      "name": "Tangerine",
+      "hexCode": "#F28500"
+    },
+    {
+      "name": "Pistache",
+      "hexCode": "#BEF574"
+    },
+    {
+      "name": "Lavande",
+      "hexCode": "#9683EC"
+    },
+    {
+      "name": "Cerise",
+      "hexCode": "#bb0b0b"
+    },
+    {
+      "name": "Sable",
+      "hexCode": "#E6D690"
+    },
+    {
+      "name": "Menthe",
+      "hexCode": "#16b84e"
+    },
+    {
+      "name": "Métal",
+      "hexCode": "#b6bdb9"
+    },
+    {
+      "name": "Nuit",
+      "hexCode": "#0F056B"
+    },
+    {
+      "name": "Pêche",
+      "hexCode": "#FFCBA4"
+    }
+  ],
+  "groups": [
+    {
+      "name": "Family",
+      "color": "Perroquet",
+      "users": ["alice@smith.com", "bob@brown.com", "charlie@johnson.com"]
+    },
+    {
+      "name": "Friends",
+      "color": "Tangerine",
+      "users": ["alice@smith.com", "bob@brown.com"]
+    }
+  ],
+  "contacts": [
+    {
+      "firstname": "Capitaine",
+      "lastname": "Haddock",
+      "email": "capitaine@haddock.fr",
+      "phone": "0123456789",
+      "address": "123 rue du port",
+      "type": "Docteur",
+      "content": "Il est le docteur de famille",
+      "groupId": 0
+    },
+    {
+      "firstname": "Tintin",
+      "lastname": "Reporter",
+      "email": "tintin@reporter.com",
+      "phone": "9876543210",
+      "address": "456 boulevard de Moulinsart",
+      "type": "Ami",
+      "content": "A contacter en cas de problèmes",
+      "groupId": 0
+    },
+    {
+      "firstname": "Milou",
+      "lastname": "Chien",
+      "email": "milou@chien.com",
+      "type": "Chien",
+      "groupId": 1
+    }
+  ],
+  "calendar-entries": [
+    {
+      "title": "Rendez-vous chez le docteur",
+      "date": "2024-07-26",
+      "startTime": "10:00:00",
+      "entireDay": true,
+      "location": "123 rue du port",
+      "groupId": 0,
+      "authorEmail": "alice@smith.com"
+    },
+    {
+      "title": "Anniversaire de Tintin",
+      "date": "2024-07-28",
+      "startTime": "12:00:00",
+      "endTime": "14:00:00",
+      "location": "456 boulevard de Moulinsart",
+      "groupId": 0,
+      "colorName": "Lavande",
+      "authorEmail": "alice@smith.com"
+    },
+    {
+      "title": "Passage au supermarché",
+      "date": "2024-07-25",
+      "startTime": "12:00:00",
+      "endTime": "14:00:00",
+      "groupId": 0,
+      "colorName": "Cerise",
+      "authorEmail": "bob@brown.com"
+    },
+    {
+      "title": "Rendez-vous chez le coiffeur",
+      "date": "2024-07-26",
+      "startTime": "16:00:00",
+      "entireDay": true,
+      "colorName": "Sable",
+      "groupId": 0,
+      "authorEmail": "alice@smith.com"
+    }
+  ],
+  "messages": [
+    {
+      "content": "N'oubliez pas le rendez-vous chez le docteur",
+      "groupId": 0,
+      "senderEmail": "alice@smith.com"
+    },
+    {
+      "content": "N'oubliez pas l'anniversaire de Tintin",
+      "groupId": 0,
+      "senderEmail": "bob@brown.com"
+    },
+    {
+      "content": "Test de message supprimé",
+      "deleted": true,
+      "groupId": 0,
+      "senderEmail": "alice@smith.com"
+    },
+    {
+      "content": "Revoir le planning de la semaine prochaine",
+      "groupId": 0,
+      "senderEmail": "bob@brown.com"
+    },
+    {
+      "content": "N'oubliez pas les courses",
+      "groupId": 0,
+      "senderEmail": "alice@smith.com"
+    },
+    {
+      "content": "N'oubliez pas le chein Milou",
+      "groupId": 1,
+      "senderEmail": "alice@smith.com"
+    }
+  ],
+  "lists": [
+    {
+      "title": "SuperU",
+      "groupId": 0,
+      "typeTitle": "Courses",
+      "colorName": "Menthe"
+    },
+    {
+      "title": "Achats",
+      "groupId": 0,
+      "typeTitle": "Courses",
+      "colorName": "Métal"
+    },
+    {
+      "title": "A ne pas oublier",
+      "groupId": 0,
+      "typeTitle": "Tâches"
+    },
+    {
+      "title": "Livres",
+      "groupId": 0,
+      "typeTitle": "Autre",
+      "colorName": "Nuit"
+    }
+  ],
+  "list-types": [
+    {
+      "title": "Courses"
+    },
+    {
+      "title": "Tâches"
+    },
+    {
+      "title": "Autre"
+    }
+  ],
+  "list-elements": [
+    {
+      "name": "Pommes",
+      "quantity": 5,
+      "categoryTitle": "Fruits",
+      "listId": 0
+    },
+    {
+      "name": "Pain",
+      "listId": 0
+    },
+    {
+      "name": "Poulet",
+      "quantity": 1,
+      "categoryTitle": "Viandes",
+      "listId": 0
+    },
+    {
+      "name": "Poisson",
+      "quantity": 1,
+      "checked": true,
+      "listId": 0
+    }
+  ],
+  "list-element-categories": [
+    {
+      "title": "Non classé"
+    },
+    {
+      "title": "Légumes"
+    },
+    {
+      "title": "Viandes"
+    },
+    {
+      "title": "Poissons"
+    },
+    {
+      "title": "Produits laitiers"
+    },
+    {
+      "title": "Boissons"
+    },
+    {
+      "title": "Produits d'entretien"
+    },
+    {
+      "title": "Hygiène"
+    },
+    {
+      "title": "Autre"
+    }
+  ]
+}
