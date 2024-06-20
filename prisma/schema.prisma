@@ -81,7 +81,7 @@ model CalendarEntry {
   entireDay   Boolean @default(false)
   location    String?
   groupId     Int
-  colorId     Int @default(0)
+  colorId     Int @default(1)
   authorId    Int
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -109,7 +109,7 @@ model List {
   title       String
   emoticon    String?
   groupId     Int
-  colorId     Int @default(0)
+  colorId     Int @default(1)
   typeId      Int
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -137,7 +137,7 @@ model ListElement {
   checked     Boolean @default(false)
   date        DateTime?
   listId      Int
-  categoryId  Int @default(0)
+  categoryId  Int @default(1)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
