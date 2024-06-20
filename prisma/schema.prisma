@@ -1,0 +1,156 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                Int      @id @default(autoincrement())
+  email             String   @unique
+  name              String   @db.VarChar(30)
+  password          String
+  profilePictureUrl String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  groups            Group[]  @relation("UserHasGroup")
+  messages          Message[] @relation("Sender")
+  calendar_entries  CalendarEntry[] @relation("Author")
+}
+
+model Color {
+  id          Int      @id @default(autoincrement())
+  name        String   @unique @db.VarChar(30)
+  hexCode     String   @unique @db.VarChar(7)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  assignedToGroups          Group[]          @relation("ColorGroup")
+  assignedToCalendarEntries CalendarEntry[] @relation("CalendarColor")
+  assignedToLists           List[]           @relation("ListColor")
+}
+
+model Group {
+  id          Int      @id @default(autoincrement())
+  name        String   @db.VarChar(30)
+  colorId     Int      @db.Integer @default(1)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  color               Color @relation("ColorGroup", fields: [colorId], references: [id]) 
+  users               User[] @relation("UserHasGroup")
+  contacts            Contact[] @relation("ContactGroup")
+  calendar_entries    CalendarEntry[] @relation("CalendarGroup")
+  lists               List[] @relation("ListGroup")
+  messages            Message[] @relation("GroupMessages")
+}
+
+model Contact {
+  id                Int      @id @default(autoincrement())
+  firstname         String   @db.VarChar(30)
+  lastname          String   @db.VarChar(30)
+  email             String?
+  phone             String? @db.VarChar(15)
+  address           String?
+  type              String?  @db.VarChar(30)
+  profilePictureUrl String?
+  content           String?
+  groupId           Int
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  group             Group @relation("ContactGroup", fields: [groupId], references: [id])
+}
+
+model CalendarEntry {
+  id          Int      @id @default(autoincrement())
+  title       String
+  description String?
+  date        DateTime @db.Date
+  startTime   DateTime @db.Time
+  endTime     DateTime? @db.Time
+  entireDay   Boolean @default(false)
+  location    String?
+  groupId     Int
+  colorId     Int @default(1)
+  authorId    Int
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  group       Group @relation("CalendarGroup", fields: [groupId], references: [id])
+  color       Color @relation("CalendarColor", fields: [colorId], references: [id])
+  author      User @relation("Author", fields: [authorId], references: [id])
+}
+
+model Message {
+  id          Int      @id @default(autoincrement())
+  content     String
+  deleted     Boolean @default(false)
+  senderId    Int
+  groupId     Int
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  sender      User @relation("Sender", fields: [senderId], references: [id])
+  group       Group @relation("GroupMessages", fields: [groupId], references: [id])
+}
+
+model List {
+  id          Int      @id @default(autoincrement())
+  title       String
+  emoticon    String?
+  groupId     Int
+  colorId     Int @default(1)
+  typeId      Int
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  group       Group @relation("ListGroup",fields: [groupId], references: [id])
+  color       Color @relation("ListColor", fields: [colorId], references: [id])
+  type        ListType @relation("ListType", fields: [typeId], references: [id])
+  listElements ListElement[]
+}
+
+model ListType {
+  id                Int      @id @default(autoincrement())
+  title             String   @unique
+  profilePictureUrl String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  lists       List[] @relation("ListType")
+}
+
+model ListElement {
+  id          Int      @id @default(autoincrement())
+  name        String
+  quantity    Int?
+  checked     Boolean @default(false)
+  date        DateTime?
+  listId      Int
+  categoryId  Int @default(1)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  list        List @relation(fields: [listId], references: [id])
+  category    ListElementCategory @relation(fields: [categoryId], references: [id])
+}
+
+model ListElementCategory {
+  id          Int      @id @default(autoincrement())
+  title       String   @unique
+  emoticon    String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  listElements ListElement[]
+}
