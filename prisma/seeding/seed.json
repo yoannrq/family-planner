@@ -79,7 +79,7 @@
       "address": "123 rue du port",
       "type": "Docteur",
       "content": "Il est le docteur de famille",
-      "groupId": 0
+      "groupId": 1
     },
     {
       "firstname": "Tintin",
@@ -89,114 +89,114 @@
       "address": "456 boulevard de Moulinsart",
       "type": "Ami",
       "content": "A contacter en cas de problèmes",
-      "groupId": 0
+      "groupId": 1
     },
     {
       "firstname": "Milou",
       "lastname": "Chien",
       "email": "milou@chien.com",
       "type": "Chien",
-      "groupId": 1
+      "groupId": 2
     }
   ],
-  "calendar-entries": [
+  "calendarEntries": [
     {
       "title": "Rendez-vous chez le docteur",
       "date": "2024-07-26",
-      "startTime": "10:00:00",
+      "startTime": "2024-07-26T10:00:00",
       "entireDay": true,
       "location": "123 rue du port",
-      "groupId": 0,
+      "groupId": 1,
       "authorEmail": "alice@smith.com"
     },
     {
       "title": "Anniversaire de Tintin",
       "date": "2024-07-28",
-      "startTime": "12:00:00",
-      "endTime": "14:00:00",
+      "startTime": "2024-07-28T12:00:00",
+      "endTime": "2024-07-28T14:00:00",
       "location": "456 boulevard de Moulinsart",
-      "groupId": 0,
+      "groupId": 1,
       "colorName": "Lavande",
       "authorEmail": "alice@smith.com"
     },
     {
       "title": "Passage au supermarché",
       "date": "2024-07-25",
-      "startTime": "12:00:00",
-      "endTime": "14:00:00",
-      "groupId": 0,
+      "startTime": "2024-07-25T12:00:00",
+      "endTime": "2024-07-25T14:00:00",
+      "groupId": 1,
       "colorName": "Cerise",
       "authorEmail": "bob@brown.com"
     },
     {
       "title": "Rendez-vous chez le coiffeur",
       "date": "2024-07-26",
-      "startTime": "16:00:00",
+      "startTime": "2024-07-26T16:00:00",
       "entireDay": true,
       "colorName": "Sable",
-      "groupId": 0,
+      "groupId": 1,
       "authorEmail": "alice@smith.com"
     }
   ],
   "messages": [
     {
       "content": "N'oubliez pas le rendez-vous chez le docteur",
-      "groupId": 0,
+      "groupId": 1,
       "senderEmail": "alice@smith.com"
     },
     {
       "content": "N'oubliez pas l'anniversaire de Tintin",
-      "groupId": 0,
+      "groupId": 1,
       "senderEmail": "bob@brown.com"
     },
     {
       "content": "Test de message supprimé",
       "deleted": true,
-      "groupId": 0,
+      "groupId": 1,
       "senderEmail": "alice@smith.com"
     },
     {
       "content": "Revoir le planning de la semaine prochaine",
-      "groupId": 0,
+      "groupId": 1,
       "senderEmail": "bob@brown.com"
     },
     {
       "content": "N'oubliez pas les courses",
-      "groupId": 0,
+      "groupId": 1,
       "senderEmail": "alice@smith.com"
     },
     {
       "content": "N'oubliez pas le chein Milou",
-      "groupId": 1,
+      "groupId": 2,
       "senderEmail": "alice@smith.com"
     }
   ],
   "lists": [
     {
       "title": "SuperU",
-      "groupId": 0,
+      "groupId": 1,
       "typeTitle": "Courses",
       "colorName": "Menthe"
     },
     {
       "title": "Achats",
-      "groupId": 0,
+      "groupId": 1,
       "typeTitle": "Courses",
       "colorName": "Métal"
     },
     {
       "title": "A ne pas oublier",
-      "groupId": 0,
+      "groupId": 1,
       "typeTitle": "Tâches"
     },
     {
       "title": "Livres",
-      "groupId": 0,
+      "groupId": 1,
       "typeTitle": "Autre",
       "colorName": "Nuit"
     }
   ],
-  "list-types": [
+  "listTypes": [
     {
       "title": "Courses"
     },
@@ -207,31 +207,31 @@
       "title": "Autre"
     }
   ],
-  "list-elements": [
+  "listElements": [
     {
       "name": "Pommes",
       "quantity": 5,
       "categoryTitle": "Fruits",
-      "listId": 0
+      "listId": 1
     },
     {
       "name": "Pain",
-      "listId": 0
+      "listId": 1
     },
     {
       "name": "Poulet",
       "quantity": 1,
       "categoryTitle": "Viandes",
-      "listId": 0
+      "listId": 1
     },
     {
       "name": "Poisson",
       "quantity": 1,
       "checked": true,
-      "listId": 0
+      "listId": 1
     }
   ],
-  "list-element-categories": [
+  "listElementCategories": [
     {
       "title": "Non classé"
     },
