@@ -1,7 +1,10 @@
+// [ Package imports ]
 import express from 'express';
 import dotenv from 'dotenv';
 
-import router from './routers/apiRouter.js';
+// [ Local imports ]
+import router from './routers/indexRouter.js';
+import errorHandler from './middlewares/errorHandler.js';
 
 dotenv.config();
 const app = express();
@@ -10,6 +13,8 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.use('/api', router);
+
+app.use(errorHandler);
 
 const PORT = process.env.PORT || 3000;
 

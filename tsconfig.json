@@ -9,6 +9,6 @@
     "outDir": "./dist",
     "moduleResolution": "nodenext"
   },
-  "include": ["src/**/*"],
+  "include": ["src/**/*", "tests/**/*"],
   "exclude": ["node_modules"]
 }
