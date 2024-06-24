@@ -45,6 +45,38 @@ describe('AuthController Tests', () => {
             email: 'john@doe.com',
             password: '',
         }));
+    }));
+    it('should have a login method', () => {
+        expect(authController.login).toBeDefined();
+    });
+    test('login an existing user', () => __awaiter(void 0, void 0, void 0, function* () {
+        const entryData = {
+            email: 'john@doe.com',
+            password: 'Password123!',
+        };
+        // Mocking the request and response objects
+        const req = {
+            body: entryData,
+            get: vi.fn(),
+            header: vi.fn(),
+            accepts: vi.fn(),
+            acceptsCharsets: vi.fn(),
+        };
+        const res = {
+            status: vi.fn().mockReturnThis(),
+            json: vi.fn(),
+        };
+        const next = (error) => {
+            expect(error).toBeUndefined();
+        };
+        yield authController.login(req, res, next);
+        //expect(res.status).toHaveBeenCalledWith(200);
+        expect(res.json).toHaveBeenCalledWith(expect.objectContaining({
+            name: 'John Doe',
+            email: 'john@doe.com',
+            password: '',
+        }));
+        // Clean up the database
         const isDeleted = yield deleteEntry('User', 'email', 'john@doe.com');
         expect(isDeleted).toBe(true);
     }));

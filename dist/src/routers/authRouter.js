@@ -15,4 +15,15 @@ const router = express.Router();
  * @returns {Error}  409 - Conflict, user already exists
  */
 router.post('/signup', authController.signup);
+/**
+ * @route GET /api/auth
+ * @summary Login an existing user
+ * @group Authentification
+ * @param {string} email.body.required - Email of the user
+ * @param {string} password.body.required - Password of the user
+ * @returns {object} 200 - User object
+ * @returns {Error}  400 - Bad request
+ * @returns {Error}  401 - Invalid email or password
+ */
+router.get('login', authController.login);
 export default router;

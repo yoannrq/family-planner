@@ -45,5 +45,33 @@ const authController = {
             });
         }
     }),
+    login: (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+        try {
+            const { success, data, error } = userSchema.partial().safeParse(req.body);
+            if (!success) {
+                return res.status(400).json({ message: error });
+            }
+            const { email, password } = data;
+            const user = yield prisma.user.findUnique({
+                where: {
+                    email,
+                },
+            });
+            if (!user) {
+                return res.status(401).json({ message: 'Invalid email or password' });
+            }
+            const isPasswordValid = yield bcrypt.compare(password, user.password);
+            if (!isPasswordValid) {
+                return res.status(401).json({ message: 'Invalid email or password' });
+            }
+            user.password = '';
+            res.status(200).json(user);
+        }
+        catch (error) {
+            return next({
+                message: error.message,
+            });
+        }
+    }),
 };
 export default authController;

@@ -46,6 +46,47 @@ const authController = {
       });
     }
   },
+
+  login: async (req: Request, res: Response, next: NextFunction) => {
+    interface LoginData {
+      email: string;
+      password: string;
+    }
+
+    try {
+      const { success, data, error } = userSchema.partial().safeParse(req.body);
+
+      if (!success) {
+        return res.status(400).json({ message: error });
+      }
+
+      const { email, password } = data as LoginData;
+
+      const user = await prisma.user.findUnique({
+        where: {
+          email,
+        },
+      });
+
+      if (!user) {
+        return res.status(401).json({ message: 'Invalid email or password' });
+      }
+
+      const isPasswordValid = await bcrypt.compare(password, user.password);
+
+      if (!isPasswordValid) {
+        return res.status(401).json({ message: 'Invalid email or password' });
+      }
+
+      user.password = '';
+
+      res.status(200).json(user);
+    } catch (error: any) {
+      return next({
+        message: error.message,
+      });
+    }
+  },
 };
 
 export default authController;
