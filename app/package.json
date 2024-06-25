@@ -1,0 +1,50 @@
+{
+	"name": "app",
+	"version": "0.0.1",
+	"private": true,
+	"scripts": {
+		"dev": "vite dev",
+		"build": "vite build",
+		"preview": "vite preview",
+		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
+		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
+		"test": "vitest",
+		"lint": "prettier --check . && eslint .",
+		"format": "prettier --write .",
+		"cap:sync": "npm run build && npx cap sync",
+		"cap:android": "npm run cap:sync && npx cap run android",
+		"cap:ios": "npm run cap:sync && npx cap run ios",
+		"cap:add:android": "npx cap add android",
+		"cap:add:ios": "npx cap add ios",
+		"cap:build:android": "npm run build && npx cap sync android && npx cap build android",
+		"cap:build:ios": "npm run build && npx cap sync ios && npx cap build ios",
+		"pwa:build": "npm run build && npx workbox generateSW workbox-config.js"
+	},
+	"devDependencies": {
+		"@sveltejs/adapter-auto": "^3.0.0",
+		"@sveltejs/adapter-static": "^3.0.2",
+		"@sveltejs/kit": "^2.0.0",
+		"@sveltejs/vite-plugin-svelte": "^3.0.0",
+		"@types/eslint": "^8.56.7",
+		"eslint": "^9.0.0",
+		"eslint-config-prettier": "^9.1.0",
+		"eslint-plugin-svelte": "^2.36.0",
+		"globals": "^15.0.0",
+		"prettier": "^3.1.1",
+		"prettier-plugin-svelte": "^3.1.2",
+		"svelte": "^4.2.7",
+		"svelte-check": "^3.6.0",
+		"tslib": "^2.4.1",
+		"typescript": "^5.0.0",
+		"typescript-eslint": "^8.0.0-alpha.20",
+		"vite": "^5.0.3",
+		"vitest": "^1.2.0"
+	},
+	"type": "module",
+	"dependencies": {
+		"@capacitor/android": "^6.1.0",
+		"@capacitor/cli": "^6.1.0",
+		"@capacitor/core": "^6.1.0",
+		"@capacitor/ios": "^6.1.0"
+	}
+}
