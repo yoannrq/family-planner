@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "test": "npm run build && vitest",
-    "dev": "nodemon --exec ts-node src/index.ts",
+    "dev": "npx nodemon --exec npx tsx src/index.ts",
     "build": "tsc",
     "start": "npm run build && node dist/index.js",
     "prisma:generate": "prisma generate",
@@ -19,7 +19,9 @@
   "license": "ISC",
   "dependencies": {
     "@types/bcrypt": "^5.0.2",
+    "@types/cors": "^2.8.17",
     "bcrypt": "^5.1.1",
+    "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
     "pg": "^8.12.0",

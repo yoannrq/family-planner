@@ -1,5 +1,5 @@
 // [ Package imports ]
-import { describe, it, expect, vi, beforeEach, test } from 'vitest';
+import { describe, it, expect, vi, beforeEach, test, afterEach } from 'vitest';
 import { Request, Response } from 'express';
 
 // [ Local imports ]
@@ -8,37 +8,35 @@ import deleteEntry from '../src/utils/deleteEntry.js';
 
 // [ Tests ]
 describe('AuthController Tests', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
   it('should have a signup method', () => {
     expect(authController.signup).toBeDefined();
   });
 
-  test('insert a new user', async () => {
+  it('insert a new user', async () => {
     const entryData = {
       name: 'John Doe',
       email: 'john@doe.com',
       password: 'Password123!',
     };
 
-    // Mocking the request and response objects
-    const req = {
-      body: entryData,
-      get: vi.fn(),
-      header: vi.fn(),
-      accepts: vi.fn(),
-      acceptsCharsets: vi.fn(),
-    } as unknown as Request;
-
+    const req = { body: entryData } as Request;
     const res = {
       status: vi.fn().mockReturnThis(),
       json: vi.fn(),
     } as unknown as Response;
-
-    const next = (error: any) => {
-      expect(error).toBeUndefined();
-    };
+    const next = vi.fn();
 
     await authController.signup(req, res, next);
 
+    expect(next).not.toHaveBeenCalled();
     expect(res.status).toHaveBeenCalledWith(201);
     expect(res.json).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -53,33 +51,23 @@ describe('AuthController Tests', () => {
     expect(authController.login).toBeDefined();
   });
 
-  test('login an existing user', async () => {
+  it('login an existing user', async () => {
     const entryData = {
       email: 'john@doe.com',
       password: 'Password123!',
     };
 
-    // Mocking the request and response objects
-    const req = {
-      body: entryData,
-      get: vi.fn(),
-      header: vi.fn(),
-      accepts: vi.fn(),
-      acceptsCharsets: vi.fn(),
-    } as unknown as Request;
-
+    const req = { body: entryData } as Request;
     const res = {
       status: vi.fn().mockReturnThis(),
       json: vi.fn(),
     } as unknown as Response;
-
-    const next = (error: any) => {
-      expect(error).toBeUndefined();
-    };
+    const next = vi.fn();
 
     await authController.login(req, res, next);
 
-    //expect(res.status).toHaveBeenCalledWith(200);
+    expect(next).not.toHaveBeenCalled();
+    expect(res.status).toHaveBeenCalledWith(200);
     expect(res.json).toHaveBeenCalledWith(
       expect.objectContaining({
         name: 'John Doe',
