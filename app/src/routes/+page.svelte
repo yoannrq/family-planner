@@ -7,14 +7,15 @@
 	let password = '';
 	let errorMessage = '';
 
-	function handleSubmit(event) {
+	function handleSubmit(event: any) {
 		event.preventDefault();
 
-		fetch(`${PUBLIC_URL_API}/login`, {
+		fetch(`${PUBLIC_URL_API}/auth/login`, {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json'
 			},
+			credentials: 'include',
 			body: JSON.stringify({ email, password })
 		})
 			.then((response) => response.json())

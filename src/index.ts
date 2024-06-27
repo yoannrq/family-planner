@@ -1,6 +1,7 @@
 // [ Package imports ]
 import express from 'express';
 import dotenv from 'dotenv';
+import cors from 'cors';
 
 // [ Local imports ]
 import router from './routers/indexRouter.js';
@@ -12,7 +13,26 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+app.use(
+  cors({
+    origin: 'http://localhost:5173', // L'URL du frontend
+    credentials: true,
+  }),
+);
+
+app.options('*', cors());
+
 app.use('/api', router);
+
+app.get('/', (req, res) => {
+  res.send('Test home');
+});
+
+//404 Handler
+//TODO Améliorer la route 404
+app.use((req, res, next) => {
+  res.status(404).send("Désolé, cette route n'existe pas !");
+});
 
 app.use(errorHandler);
 

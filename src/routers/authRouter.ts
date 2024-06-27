@@ -20,7 +20,7 @@ const router = express.Router();
 router.post('/signup', authController.signup);
 
 /**
- * @route GET /api/auth
+ * @route POST /api/auth
  * @summary Login an existing user
  * @group Authentification
  * @param {string} email.body.required - Email of the user
@@ -29,6 +29,6 @@ router.post('/signup', authController.signup);
  * @returns {Error}  400 - Bad request
  * @returns {Error}  401 - Invalid email or password
  */
-router.get('login', authController.login);
+router.post('/login', authController.login);
 
 export default router;

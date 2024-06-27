@@ -8,37 +8,35 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 // [ Package imports ]
-import { describe, it, expect, vi, test } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 // [ Local imports ]
 import authController from '../src/controllers/authController.js';
 import deleteEntry from '../src/utils/deleteEntry.js';
 // [ Tests ]
 describe('AuthController Tests', () => {
+    beforeEach(() => {
+        vi.clearAllMocks();
+    });
+    afterEach(() => {
+        vi.restoreAllMocks();
+    });
     it('should have a signup method', () => {
         expect(authController.signup).toBeDefined();
     });
-    test('insert a new user', () => __awaiter(void 0, void 0, void 0, function* () {
+    it('insert a new user', () => __awaiter(void 0, void 0, void 0, function* () {
         const entryData = {
             name: 'John Doe',
             email: 'john@doe.com',
             password: 'Password123!',
         };
-        // Mocking the request and response objects
-        const req = {
-            body: entryData,
-            get: vi.fn(),
-            header: vi.fn(),
-            accepts: vi.fn(),
-            acceptsCharsets: vi.fn(),
-        };
+        const req = { body: entryData };
         const res = {
             status: vi.fn().mockReturnThis(),
             json: vi.fn(),
         };
-        const next = (error) => {
-            expect(error).toBeUndefined();
-        };
+        const next = vi.fn();
         yield authController.signup(req, res, next);
+        expect(next).not.toHaveBeenCalled();
         expect(res.status).toHaveBeenCalledWith(201);
         expect(res.json).toHaveBeenCalledWith(expect.objectContaining({
             name: 'John Doe',
@@ -49,28 +47,20 @@ describe('AuthController Tests', () => {
     it('should have a login method', () => {
         expect(authController.login).toBeDefined();
     });
-    test('login an existing user', () => __awaiter(void 0, void 0, void 0, function* () {
+    it('login an existing user', () => __awaiter(void 0, void 0, void 0, function* () {
         const entryData = {
             email: 'john@doe.com',
             password: 'Password123!',
         };
-        // Mocking the request and response objects
-        const req = {
-            body: entryData,
-            get: vi.fn(),
-            header: vi.fn(),
-            accepts: vi.fn(),
-            acceptsCharsets: vi.fn(),
-        };
+        const req = { body: entryData };
         const res = {
             status: vi.fn().mockReturnThis(),
             json: vi.fn(),
         };
-        const next = (error) => {
-            expect(error).toBeUndefined();
-        };
+        const next = vi.fn();
         yield authController.login(req, res, next);
-        //expect(res.status).toHaveBeenCalledWith(200);
+        expect(next).not.toHaveBeenCalled();
+        expect(res.status).toHaveBeenCalledWith(200);
         expect(res.json).toHaveBeenCalledWith(expect.objectContaining({
             name: 'John Doe',
             email: 'john@doe.com',
