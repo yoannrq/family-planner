@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { PUBLIC_URL_API } from '$env/static/public';
-	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
+	import { signIn } from '@auth/sveltekit/client';
 
 	let email = '';
 	let password = '';
@@ -27,9 +27,13 @@
 			});
 	}
 
-	onMount(() => {
-		// Code to run when the component is mounted
-	});
+	async function handleGoogleSignIn() {
+		try {
+			await signIn('google', { callbackUrl: '/dashboard' });
+		} catch (error) {
+			console.error('Erreur lors de la connexion avec Google :', error);
+		}
+	}
 </script>
 
 <main>
@@ -37,6 +41,7 @@
 		<h1>Family Planner</h1>
 		<p>Votre outil de gestion familiale</p>
 		<img src="/family_logo.png" alt="Family Planner" />
+
 		<form on:submit={handleSubmit}>
 			{#if errorMessage}
 				<div class="error-message">
@@ -51,11 +56,22 @@
 				<label for="password">Mot de passe :</label>
 				<input type="password" id="password" bind:value={password} required />
 			</div>
-			<button type="submit">Se connecter</button>
+			<button class="form-button" type="submit">Se connecter</button>
 			<div class="signup-link">
 				<a href="/signup">S'inscrire</a>
 			</div>
 		</form>
+
+		<div class="separator">
+			<span>OU</span>
+		</div>
+		<a href="/auth/google" class="btn btn-danger"
+			><span class="fa fa-google"></span> SignIn with Google</a
+		>
+		<button class="google-button" on:click={handleGoogleSignIn}>
+			<img src="/google-icon.png" alt="Google Icon" />
+			Continuer avec Google
+		</button>
 	</div>
 </main>
 
@@ -117,7 +133,7 @@
 		font-size: 1rem; /* 16px */
 	}
 
-	button {
+	.form-button {
 		background-color: var(--color-primary);
 		color: white;
 		border: none;
@@ -129,7 +145,7 @@
 		width: 70%;
 	}
 
-	button:hover {
+	.form-button:hover {
 		background-color: var(--color-secondary);
 	}
 
@@ -150,5 +166,50 @@
 	.signup-link a {
 		color: var(--color-primary);
 		text-decoration: none;
+	}
+
+	.separator {
+		display: flex;
+		align-items: center;
+		text-align: center;
+		margin: 1.25rem 0;
+	}
+
+	.separator::before,
+	.separator::after {
+		content: '';
+		flex: 1;
+		border-bottom: 0.0625rem solid #ccc;
+	}
+
+	.separator span {
+		padding: 0 0.625rem;
+		color: var(--color-deep-primary);
+		font-size: 0.875rem;
+	}
+
+	.google-button {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 100%;
+		padding: 0.625rem;
+		border: 0.0625rem solid var(--color-deep-primary);
+		border-radius: 0.3125rem;
+		background-color: white;
+		color: var(--color-deep-primary);
+		font-size: 1rem;
+		cursor: pointer;
+		transition: background-color 0.3s;
+	}
+
+	.google-button:hover {
+		background-color: #f5f5f5;
+	}
+
+	.google-button img {
+		width: 2rem;
+		height: 2rem;
+		margin: auto;
 	}
 </style>
