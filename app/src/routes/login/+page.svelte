@@ -1,10 +1,10 @@
 <script lang="ts">
-	import SignUp from 'clerk-sveltekit/client/SignUp.svelte';
+	import SignIn from 'clerk-sveltekit/client/SignIn.svelte';
 </script>
 
 <section>
 	<div>
-		<SignUp redirectUrl="/dashboard" />
+		<SignIn redirectUrl="/dashboard" />
 	</div>
 </section>
 
