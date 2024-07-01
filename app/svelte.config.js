@@ -16,7 +16,14 @@ const config = {
       assets: 'build',
       fallback: 'index.html',
       precompress: false
-    })
+    }),
+		vite: {
+      server: {
+        proxy: {
+          '/api': 'http://localhost:3000'
+        }
+      }
+    }
 	}
 };
 
