@@ -6,6 +6,7 @@ import authController from '../controllers/authController.js';
 
 const router = express.Router();
 
+// NOTE: Routes not used anymore
 /**
  * @route POST /api/auth
  * @summary Sign up a new user
@@ -17,7 +18,7 @@ const router = express.Router();
  * @returns {Error}  400 - Bad request
  * @returns {Error}  409 - Conflict, user already exists
  */
-router.post('/signup', authController.signup);
+//router.post('/signup', authController.signup);
 
 /**
  * @route POST /api/auth
@@ -29,6 +30,6 @@ router.post('/signup', authController.signup);
  * @returns {Error}  400 - Bad request
  * @returns {Error}  401 - Invalid email or password
  */
-router.post('/login', authController.login);
+//router.post('/login', authController.login);
 
 export default router;

@@ -24,7 +24,6 @@ const userSchema = z.object({
 
   password: z
     .string({
-      required_error: "The field 'password' is required.",
       invalid_type_error: "The field 'password' must be a string.",
     })
     .regex(
@@ -36,7 +35,26 @@ const userSchema = z.object({
     )
     .min(8, {
       message: "The field 'password' must be at least 8 characters long.",
-    }),
+    })
+    .optional(),
+
+  clerkId: z
+    .string({
+      invalid_type_error: "The field 'clerkId' must be a string.",
+    })
+    .regex(/^user_[a-zA-Z0-9]{24}$/, {
+      message: "The field 'clerkId' must be a valid clerk ID.",
+    })
+    .optional(),
+
+  profilePictureUrl: z
+    .string({
+      invalid_type_error: "The field 'profilePictureUrl' must be a string.",
+    })
+    .url({
+      message: "The field 'profilePictureUrl' must be a valid URL.",
+    })
+    .optional(),
 });
 
 export default userSchema;

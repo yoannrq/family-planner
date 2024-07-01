@@ -2,12 +2,16 @@
 import express from 'express';
 
 // [ Local imports ]
-import authRouter from './authRouter.js';
+import clerkRouter from './clerkRouter.js';
 
 const router = express.Router();
 
 // [ Authentification ]
-router.use('/auth', authRouter);
+// NOTE: Not used anymore
+//router.use('/auth', authRouter);
+
+// [ Clerk ]
+router.use('/clerk', clerkRouter);
 
 router.get('/', (req, res) => {
   console.log('Welcome to the API');
