@@ -2,6 +2,7 @@
 import express from 'express';
 import dotenv from 'dotenv';
 import cors from 'cors';
+import cookieParser from 'cookie-parser';
 
 // [ Local imports ]
 import router from './routers/indexRouter.js';
@@ -9,6 +10,8 @@ import errorHandler from './middlewares/errorHandler.js';
 
 dotenv.config();
 const app = express();
+
+app.use(cookieParser());
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -20,6 +23,7 @@ app.use(
   }),
 );
 
+//TODO set cors options
 app.options('*', cors());
 
 app.use('/api', router);

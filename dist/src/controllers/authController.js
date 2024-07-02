@@ -12,6 +12,7 @@ import bcrypt from 'bcrypt';
 // [ Local imports ]
 import prisma from '../models/client.js';
 import userSchema from '../utils/validations/userSchema.js';
+import jwtService from '../utils/jwtService.js';
 const authController = {
     signup: (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
         try {
@@ -65,7 +66,24 @@ const authController = {
                 return res.status(401).json({ message: 'Invalid email or password' });
             }
             user.password = '';
-            res.status(200).json(user);
+            const accessToken = jwtService.generateAccessToken(user);
+            const refreshToken = jwtService.generateRefreshToken(user);
+            const refreshTokenOnUser = yield prisma.user.update({
+                where: {
+                    id: user.id,
+                },
+                data: {
+                    refreshToken,
+                },
+            });
+            if (!refreshTokenOnUser) {
+                return res.status(500).json({ message: 'Internal server error' });
+            }
+            res.status(200).json({
+                user,
+                accessToken,
+                refreshToken,
+            });
         }
         catch (error) {
             return next({

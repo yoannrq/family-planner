@@ -21,9 +21,9 @@ router.post('/signup', authController.signup);
  * @group Authentification
  * @param {string} email.body.required - Email of the user
  * @param {string} password.body.required - Password of the user
- * @returns {object} 200 - User object
+ * @returns {object} 200 - User object with access and refresh tokens
  * @returns {Error}  400 - Bad request
  * @returns {Error}  401 - Invalid email or password
  */
-router.post('login', authController.login);
+router.post('/login', authController.login);
 export default router;
