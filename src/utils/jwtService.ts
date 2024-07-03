@@ -4,15 +4,15 @@ import jwt from 'jsonwebtoken';
 // [ Local imports ]
 
 const jwtService = {
-  generateAccessToken: (payload: string) => {
+  generateAccessToken: (payload: object) => {
     const privateKey = process.env.JWT_ACCESS_PRIVATE_KEY as string;
     return jwt.sign(payload, privateKey, {
-      expiresIn: '300s',
+      expiresIn: '300',
       algorithm: 'ES256',
     });
   },
 
-  generateRefreshToken: (payload: string) => {
+  generateRefreshToken: (payload: object) => {
     const privateKey = process.env.JWT_REFRESH_PRIVATE_KEY as string;
     return jwt.sign(payload, privateKey, {
       expiresIn: '30d',

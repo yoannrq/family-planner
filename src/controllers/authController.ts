@@ -1,11 +1,17 @@
 // [ Package imports ]
 import bcrypt from 'bcrypt';
 import { Request, Response, NextFunction } from 'express';
+import { JwtPayload } from 'jsonwebtoken';
 
 // [ Local imports ]
 import prisma from '../models/client.js';
 import userSchema from '../utils/validations/userSchema.js';
 import jwtService from '../utils/jwtService.js';
+
+// [ Type guard function - return boolean ]
+function isJwtPayload(token: string | JwtPayload): token is JwtPayload {
+  return typeof token !== 'string' && 'email' in token;
+}
 
 const authController = {
   signup: async (req: Request, res: Response, next: NextFunction) => {
@@ -99,8 +105,10 @@ const authController = {
 
       user.password = '';
 
-      const accessToken = jwtService.generateAccessToken(user.email);
-      const refreshToken = jwtService.generateRefreshToken(user.email);
+      const accessToken = jwtService.generateAccessToken({ email: user.email });
+      const refreshToken = jwtService.generateRefreshToken({
+        email: user.email,
+      });
 
       const refreshTokenOnUser = await prisma.user.update({
         where: {
@@ -141,29 +149,41 @@ const authController = {
     }
 
     try {
-      const decodedRefreshToken = jwtService.verifyRefreshToken(refreshToken);
+      const decodedToken = jwtService.verifyRefreshToken(refreshToken);
 
-      const verifyUser = await prisma.user.findUnique({
-        where: {
-          email_refreshToken: {
-            email: decodedRefreshToken as string,
-            refreshToken: req.body.refreshToken,
+      // Check if the token is a valid JWT payload
+      if (isJwtPayload(decodedToken) && decodedToken.email) {
+        const { email } = decodedToken;
+
+        const verifyUser = await prisma.user.findUnique({
+          where: {
+            email_refreshToken: {
+              email: email,
+              refreshToken: req.body.refreshToken,
+            },
           },
-        },
-      });
+        });
 
-      if (!verifyUser) {
+        if (!verifyUser) {
+          return next({
+            status: 401,
+            message: 'Invalid refresh token',
+          });
+        }
+
+        const accessToken = jwtService.generateAccessToken({
+          email: verifyUser.email,
+        });
+
+        res.status(200).json({
+          accessToken,
+        });
+      } else {
         return next({
           status: 401,
           message: 'Invalid refresh token',
         });
       }
-
-      const accessToken = jwtService.generateAccessToken(verifyUser.email);
-
-      res.status(200).json({
-        accessToken,
-      });
     } catch (error: any) {
       return next({
         message: error.message,

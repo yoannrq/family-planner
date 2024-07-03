@@ -30,3 +30,7 @@
 ## PWA
 
 - `pwa:build`: Construit la PWA avec Workbox pour le service worker
+
+## Redirection du trafic duport 3000
+
+- `adb reverse tcp:3000 tcp:3000`
