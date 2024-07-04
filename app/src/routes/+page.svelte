@@ -35,8 +35,6 @@
 				// Store tokens in secure and memory storage
 				setTokens(response.data.accessToken, response.data.refreshToken);
 
-				console.log('Tokens stored', response.data.accessToken, response.data.refreshToken);
-				console.log('User email stored', email);
 				// Store user email in preferences
 				await Preferences.set({
 					key: 'email',
@@ -44,7 +42,7 @@
 				});
 				goto('/dashboard');
 			} else {
-				errorMessage = response.data.message;
+				errorMessage = response.data.err.message.issues[0].message;
 			}
 		} catch (error: any) {
 			errorMessage = error.message;
@@ -61,7 +59,6 @@
 			{#if errorMessage}
 				<div class="error-message">
 					<!-- TODO : add a link to the forgot password page -->
-					<!-- TODO : Gérer l'affiche des erreurs zod, etc -->
 					{errorMessage}
 				</div>
 			{/if}
