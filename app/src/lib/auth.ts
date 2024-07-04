@@ -2,9 +2,12 @@
 import { writable } from 'svelte/store';
 import { CapacitorHttp } from '@capacitor/core';
 import type { HttpResponse } from '@capacitor/core';
-import { SecureStoragePlugin } from 'capacitor-secure-storage-plugin';
+import { jwtDecode } from 'jwt-decode';
+import type { JwtPayload } from 'jwt-decode';
+import { SecureStorage } from '@aparajita/capacitor-secure-storage';
 
 // [ Local imports ]
+import { PUBLIC_URL_API } from '$env/static/public';
 
 // Store access token in memory svelte/store
 export const accessToken = writable<string | null>(null);
@@ -13,17 +16,20 @@ export const accessToken = writable<string | null>(null);
 // Store refresh token in secure storage and access token in memory
 export async function setTokens(access: string, refresh: string) {
 	accessToken.set(access);
-	await SecureStoragePlugin.set({
-		key: 'refreshToken',
-		value: refresh
-	});
+	await SecureStorage.setItem('refreshToken', refresh);
 }
 
 // Get refresh token from secure storage
 export async function getRefreshToken(): Promise<string | null> {
 	try {
-		const { value } = await SecureStoragePlugin.get({ key: 'refreshToken' });
-		return value;
+		const result = await SecureStorage.getItem('refreshToken');
+
+		if (result && result && typeof result === 'string') {
+			return result;
+		} else {
+			console.error('Refresh token non trouvé ou invalide');
+			return null;
+		}
 	} catch (error) {
 		console.error('Erreur lors de la récupération du refresh token:', error);
 		return null;
@@ -34,7 +40,7 @@ export async function getRefreshToken(): Promise<string | null> {
 export async function clearTokens() {
 	accessToken.set(null);
 	try {
-		await SecureStoragePlugin.remove({ key: 'refreshToken' });
+		await SecureStorage.removeItem('refreshToken');
 	} catch (error) {
 		console.error('Erreur lors de la suppression du refresh token:', error);
 	}
@@ -47,7 +53,7 @@ export async function refreshAccessToken() {
 		try {
 			// [ Call API ]
 			const response: HttpResponse = await CapacitorHttp.post({
-				url: '/api/auth/new-access-token',
+				url: `${PUBLIC_URL_API}/api/auth/new-access-token`,
 				headers: { 'Content-Type': 'application/json' },
 				data: { refreshToken }
 			});
@@ -70,4 +76,21 @@ export async function refreshAccessToken() {
 		}
 	}
 	return false;
+}
+
+// Check if a token is expired
+export function isTokenExpired(token: string | null): boolean {
+	if (!token) return true;
+	try {
+		const decodedToken = jwtDecode<JwtPayload>(token);
+
+		if (typeof decodedToken.exp === 'undefined') {
+			console.warn('Token has no expiration date');
+			return true;
+		}
+		return decodedToken.exp < Date.now() / 1000;
+	} catch (error) {
+		console.error('Error during decoding process :', error);
+		return true;
+	}
 }

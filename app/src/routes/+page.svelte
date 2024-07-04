@@ -35,6 +35,8 @@
 				// Store tokens in secure and memory storage
 				setTokens(response.data.accessToken, response.data.refreshToken);
 
+				console.log('Tokens stored', response.data.accessToken, response.data.refreshToken);
+				console.log('User email stored', email);
 				// Store user email in preferences
 				await Preferences.set({
 					key: 'email',

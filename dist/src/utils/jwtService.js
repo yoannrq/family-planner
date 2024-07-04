@@ -4,15 +4,15 @@ import jwt from 'jsonwebtoken';
 const jwtService = {
     generateAccessToken: (payload) => {
         const privateKey = process.env.JWT_ACCESS_PRIVATE_KEY;
-        return jwt.sign(payload, privateKey, {
-            expiresIn: '300s',
+        const expiresIn = 300;
+        return jwt.sign(Object.assign(Object.assign({}, payload), { exp: Math.floor(Date.now() / 1000) + expiresIn }), privateKey, {
             algorithm: 'ES256',
         });
     },
     generateRefreshToken: (payload) => {
         const privateKey = process.env.JWT_REFRESH_PRIVATE_KEY;
-        return jwt.sign(payload, privateKey, {
-            expiresIn: '30d',
+        const expiresIn = 30 * 24 * 60 * 60;
+        return jwt.sign(Object.assign(Object.assign({}, payload), { exp: Math.floor(Date.now() / 1000) + expiresIn }), privateKey, {
             algorithm: 'ES256',
         });
     },

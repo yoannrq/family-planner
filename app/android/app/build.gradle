@@ -2,11 +2,12 @@ apply plugin: 'com.android.application'
 
 android {
     namespace "com.example.app"
-    compileSdk rootProject.ext.compileSdkVersion
+    compileSdk 34
+    
     defaultConfig {
         applicationId "com.example.app"
-        minSdkVersion rootProject.ext.minSdkVersion
-        targetSdkVersion rootProject.ext.targetSdkVersion
+        minSdk 23 // Android 6.0 (Marshmallow)
+        targetSdk 34
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -16,6 +17,7 @@ android {
             ignoreAssetsPattern '!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~'
         }
     }
+    
     buildTypes {
         release {
             minifyEnabled false

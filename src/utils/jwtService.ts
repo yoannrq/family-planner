@@ -6,18 +6,34 @@ import jwt from 'jsonwebtoken';
 const jwtService = {
   generateAccessToken: (payload: object) => {
     const privateKey = process.env.JWT_ACCESS_PRIVATE_KEY as string;
-    return jwt.sign(payload, privateKey, {
-      expiresIn: '300',
-      algorithm: 'ES256',
-    });
+    const expiresIn = 300;
+
+    return jwt.sign(
+      {
+        ...payload,
+        exp: Math.floor(Date.now() / 1000) + expiresIn,
+      },
+      privateKey,
+      {
+        algorithm: 'ES256',
+      },
+    );
   },
 
   generateRefreshToken: (payload: object) => {
     const privateKey = process.env.JWT_REFRESH_PRIVATE_KEY as string;
-    return jwt.sign(payload, privateKey, {
-      expiresIn: '30d',
-      algorithm: 'ES256',
-    });
+    const expiresIn = 30 * 24 * 60 * 60;
+
+    return jwt.sign(
+      {
+        ...payload,
+        exp: Math.floor(Date.now() / 1000) + expiresIn,
+      },
+      privateKey,
+      {
+        algorithm: 'ES256',
+      },
+    );
   },
 
   verifyAccessToken: (token: string) => {

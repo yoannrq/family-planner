@@ -9,6 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 // [ Local imports ]
 import jwtService from '../utils/jwtService.js';
+import prisma from '../models/client.js';
 function loginRequired(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         const authHeader = req.headers['authorization'];
@@ -18,6 +19,17 @@ function loginRequired(req, res, next) {
         const token = authHeader.split(' ')[1];
         try {
             const decoded = jwtService.verifyAccessToken(token);
+            if (!decoded) {
+                return res.status(401).json({ message: 'Unauthorized' });
+            }
+            const isExist = yield prisma.user.findUnique({
+                where: {
+                    email: decoded.email,
+                },
+            });
+            if (!isExist) {
+                return res.status(401).json({ message: 'Unauthorized' });
+            }
             req.user = decoded;
             next();
         }
