@@ -27,7 +27,6 @@ export async function getRefreshToken(): Promise<string | null> {
 		if (result && result && typeof result === 'string') {
 			return result;
 		} else {
-			console.error('Refresh token non trouvé ou invalide');
 			return null;
 		}
 	} catch (error) {
@@ -85,7 +84,7 @@ export function isTokenExpired(token: string | null): boolean {
 		const decodedToken = jwtDecode<JwtPayload>(token);
 
 		if (typeof decodedToken.exp === 'undefined') {
-			console.warn('Token has no expiration date');
+			console.error('Token has no expiration date');
 			return true;
 		}
 		return decodedToken.exp < Date.now() / 1000;

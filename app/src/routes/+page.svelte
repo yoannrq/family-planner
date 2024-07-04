@@ -1,10 +1,14 @@
 <script lang="ts">
-	import { setTokens } from '$lib/auth.js';
-	import { PUBLIC_URL_API } from '$env/static/public';
-	import { goto } from '$app/navigation';
+	// [ Package imports ]
 	import { Preferences } from '@capacitor/preferences';
 	import { CapacitorHttp } from '@capacitor/core';
 	import type { HttpResponse } from '@capacitor/core';
+
+	// [ Local imports ]
+	import { setTokens } from '$lib/auth.js';
+	import { PUBLIC_URL_API } from '$env/static/public';
+	import { goto } from '$app/navigation';
+	import ErrorDisplay from '$lib/components/ErrorDisplay.svelte';
 
 	let email = '';
 	let password = '';
@@ -57,10 +61,8 @@
 		<img src="/family_logo.png" alt="Family Planner" />
 		<form on:submit={handleSubmit}>
 			{#if errorMessage}
-				<div class="error-message">
-					<!-- TODO : add a link to the forgot password page -->
-					{errorMessage}
-				</div>
+				<!-- TODO : add a link to the forgot password page -->
+				<ErrorDisplay message={errorMessage} severity="warning" />
 			{/if}
 			<div class="input-group">
 				<label for="email">Email :</label>
@@ -150,15 +152,6 @@
 
 	button:hover {
 		background-color: var(--color-secondary);
-	}
-
-	.error-message {
-		background-color: var(--color-tertiary);
-		color: white;
-		padding: 0.625rem; /* 10px */
-		border-radius: 0.3125rem; /* 5px */
-		margin-bottom: 0.9375rem; /* 15px */
-		text-align: center;
 	}
 
 	.signup-link {

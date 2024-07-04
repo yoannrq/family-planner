@@ -1,5 +1,9 @@
 <script lang="ts">
+	// [ Package imports ]
 	import { onMount } from 'svelte';
+	import { get } from 'svelte/store';
+
+	// [ Local imports ]
 	import { goto } from '$app/navigation';
 	import {
 		refreshAccessToken,
@@ -9,7 +13,6 @@
 		accessToken
 	} from '$lib/auth.js';
 	import { page } from '$app/stores';
-	import { get } from 'svelte/store';
 
 	let isLogged: boolean = false;
 
@@ -66,6 +69,8 @@
 		--color-deep-primary: #2f3c7e;
 		--color-secondary: #a7beae;
 		--color-tertiary: #f98866;
+		--color-info: #4a90e2;
+		--color-error: #e74c3c;
 		--color-text: #333333;
 		--color-background: #fcf6f5;
 
