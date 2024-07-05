@@ -18,7 +18,8 @@
 		"cap:add:ios": "npx cap add ios",
 		"cap:build:android": "npm run build && npx cap sync android && npx cap build android",
 		"cap:build:ios": "npm run build && npx cap sync ios && npx cap build ios",
-		"pwa:build": "npm run build && npx workbox generateSW workbox-config.js"
+		"pwa:build": "npm run build && npx workbox generateSW workbox-config.js",
+		"prepare": "svelte-kit sync"
 	},
 	"devDependencies": {
 		"@sveltejs/adapter-auto": "^3.0.0",
@@ -42,9 +43,12 @@
 	},
 	"type": "module",
 	"dependencies": {
+		"@aparajita/capacitor-secure-storage": "^6.0.0",
 		"@capacitor/android": "^6.1.0",
 		"@capacitor/cli": "^6.1.0",
 		"@capacitor/core": "^6.1.0",
-		"@capacitor/ios": "^6.1.0"
+		"@capacitor/ios": "^6.1.0",
+		"@capacitor/preferences": "^6.0.1",
+		"jwt-decode": "^4.0.0"
 	}
 }

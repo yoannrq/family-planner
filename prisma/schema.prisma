@@ -19,12 +19,14 @@ model User {
   name              String   @db.VarChar(30)
   password          String
   profilePictureUrl String?
+  refreshToken      String?  @unique
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
 
   groups            Group[]  @relation("UserHasGroup")
   messages          Message[] @relation("Sender")
   calendar_entries  CalendarEntry[] @relation("Author")
+  @@unique([email, refreshToken])
 }
 
 model Color {

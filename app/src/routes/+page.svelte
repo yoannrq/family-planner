@@ -1,35 +1,57 @@
 <script lang="ts">
+	// [ Package imports ]
+	import { Preferences } from '@capacitor/preferences';
+	import { CapacitorHttp } from '@capacitor/core';
+	import type { HttpResponse } from '@capacitor/core';
+
+	// [ Local imports ]
+	import { setTokens } from '$lib/auth.js';
 	import { PUBLIC_URL_API } from '$env/static/public';
-	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
+	import ErrorDisplay from '$lib/components/ErrorDisplay.svelte';
 
 	let email = '';
 	let password = '';
 	let errorMessage = '';
 
-	function handleSubmit(event: any) {
+	async function handleSubmit(event: any) {
 		event.preventDefault();
 
-		fetch(`${PUBLIC_URL_API}/auth/login`, {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json'
-			},
-			credentials: 'include',
-			body: JSON.stringify({ email, password })
-		})
-			.then((response) => response.json())
-			.then((data) => {
-				goto('/dashboard');
-			})
-			.catch((error) => {
-				errorMessage = error.message || 'An error occurred';
-			});
-	}
+		if (email === '' || password === '') {
+			errorMessage = 'Please fill in all fields';
+			return;
+		}
 
-	onMount(() => {
-		// Code to run when the component is mounted
-	});
+		try {
+			const response: HttpResponse = await CapacitorHttp.request({
+				url: `${PUBLIC_URL_API}/api/auth/login`,
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				data: {
+					email,
+					password
+				}
+			});
+
+			if (response.status === 200) {
+				// Store tokens in secure and memory storage
+				setTokens(response.data.accessToken, response.data.refreshToken);
+
+				// Store user email in preferences
+				await Preferences.set({
+					key: 'email',
+					value: email
+				});
+				goto('/dashboard');
+			} else {
+				errorMessage = response.data.err.message.issues[0].message;
+			}
+		} catch (error: any) {
+			errorMessage = error.message;
+		}
+	}
 </script>
 
 <main>
@@ -39,9 +61,8 @@
 		<img src="/family_logo.png" alt="Family Planner" />
 		<form on:submit={handleSubmit}>
 			{#if errorMessage}
-				<div class="error-message">
-					{errorMessage}
-				</div>
+				<!-- TODO : add a link to the forgot password page -->
+				<ErrorDisplay message={errorMessage} severity="warning" />
 			{/if}
 			<div class="input-group">
 				<label for="email">Email :</label>
@@ -131,15 +152,6 @@
 
 	button:hover {
 		background-color: var(--color-secondary);
-	}
-
-	.error-message {
-		background-color: var(--color-tertiary);
-		color: white;
-		padding: 0.625rem; /* 10px */
-		border-radius: 0.3125rem; /* 5px */
-		margin-bottom: 0.9375rem; /* 15px */
-		text-align: center;
 	}
 
 	.signup-link {

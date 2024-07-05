@@ -1,10 +1,17 @@
 // [ Package imports ]
 import bcrypt from 'bcrypt';
 import { Request, Response, NextFunction } from 'express';
+import { JwtPayload } from 'jsonwebtoken';
 
 // [ Local imports ]
 import prisma from '../models/client.js';
 import userSchema from '../utils/validations/userSchema.js';
+import jwtService from '../utils/jwtService.js';
+
+// [ Type guard function - return boolean ]
+function isJwtPayload(token: string | JwtPayload): token is JwtPayload {
+  return typeof token !== 'string' && 'email' in token;
+}
 
 const authController = {
   signup: async (req: Request, res: Response, next: NextFunction) => {
@@ -12,7 +19,10 @@ const authController = {
       const { success, data, error } = userSchema.safeParse(req.body);
 
       if (!success) {
-        return res.status(400).json({ message: error });
+        return next({
+          status: 400,
+          message: error.message,
+        });
       }
 
       const { name, email, password } = data;
@@ -24,7 +34,10 @@ const authController = {
       });
 
       if (user) {
-        return res.status(409).json({ message: 'User already exists' });
+        return next({
+          status: 409,
+          message: 'User already exists',
+        });
       }
 
       const hashedPassword = await bcrypt.hash(password, 10);
@@ -48,7 +61,7 @@ const authController = {
   },
 
   login: async (req: Request, res: Response, next: NextFunction) => {
-    interface LoginData {
+    interface UserData {
       email: string;
       password: string;
     }
@@ -57,10 +70,13 @@ const authController = {
       const { success, data, error } = userSchema.partial().safeParse(req.body);
 
       if (!success) {
-        return res.status(400).json({ message: error });
+        return next({
+          status: 400,
+          message: error,
+        });
       }
 
-      const { email, password } = data as LoginData;
+      const { email, password } = data as UserData;
 
       const user = await prisma.user.findUnique({
         where: {
@@ -69,18 +85,105 @@ const authController = {
       });
 
       if (!user) {
-        return res.status(401).json({ message: 'Invalid email or password' });
+        return next({
+          status: 401,
+          message: 'Invalid email or password',
+        });
       }
 
-      const isPasswordValid = await bcrypt.compare(password, user.password);
+      const isPasswordValid = await bcrypt.compare(
+        password,
+        user.password as UserData['password'],
+      );
 
       if (!isPasswordValid) {
-        return res.status(401).json({ message: 'Invalid email or password' });
+        return next({
+          status: 401,
+          message: 'Invalid email or password',
+        });
       }
 
       user.password = '';
 
-      res.status(200).json(user);
+      const accessToken = jwtService.generateAccessToken({ email: user.email });
+      const refreshToken = jwtService.generateRefreshToken({
+        email: user.email,
+      });
+
+      const refreshTokenOnUser = await prisma.user.update({
+        where: {
+          id: user.id,
+        },
+        data: {
+          refreshToken,
+        },
+      });
+
+      if (!refreshTokenOnUser) {
+        return next({
+          status: 500,
+          message: 'Failed to save refresh token',
+        });
+      }
+
+      res.status(200).json({
+        user,
+        accessToken,
+        refreshToken,
+      });
+    } catch (error: any) {
+      return next({
+        message: error.message,
+      });
+    }
+  },
+
+  newAccessToken: async (req: Request, res: Response, next: NextFunction) => {
+    const { refreshToken } = req.body;
+
+    if (!refreshToken) {
+      return next({
+        status: 400,
+        message: 'Refresh token is required',
+      });
+    }
+
+    try {
+      const decodedToken = jwtService.verifyRefreshToken(refreshToken);
+
+      // Check if the token is a valid JWT payload
+      if (isJwtPayload(decodedToken) && decodedToken.email) {
+        const { email } = decodedToken;
+
+        const verifyUser = await prisma.user.findUnique({
+          where: {
+            email_refreshToken: {
+              email: email,
+              refreshToken: req.body.refreshToken,
+            },
+          },
+        });
+
+        if (!verifyUser) {
+          return next({
+            status: 401,
+            message: 'Invalid refresh token',
+          });
+        }
+
+        const accessToken = jwtService.generateAccessToken({
+          email: verifyUser.email,
+        });
+
+        res.status(200).json({
+          accessToken,
+        });
+      } else {
+        return next({
+          status: 401,
+          message: 'Invalid refresh token',
+        });
+      }
     } catch (error: any) {
       return next({
         message: error.message,
