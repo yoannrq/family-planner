@@ -21,7 +21,7 @@ const authController = {
       if (!success) {
         return next({
           status: 400,
-          message: error.message,
+          message: error.errors.map((err) => err.message).join(', '),
         });
       }
 
@@ -72,7 +72,7 @@ const authController = {
       if (!success) {
         return next({
           status: 400,
-          message: error,
+          message: error.errors.map((err) => err.message).join(', '),
         });
       }
 
@@ -127,9 +127,8 @@ const authController = {
       }
 
       res.status(200).json({
-        user,
+        ...user,
         accessToken,
-        refreshToken,
       });
     } catch (error: any) {
       return next({
@@ -150,6 +149,13 @@ const authController = {
 
     try {
       const decodedToken = jwtService.verifyRefreshToken(refreshToken);
+
+      if (!decodedToken) {
+        return next({
+          status: 401,
+          message: 'Refresh token expired',
+        });
+      }
 
       // Check if the token is a valid JWT payload
       if (isJwtPayload(decodedToken) && decodedToken.email) {
@@ -181,7 +187,7 @@ const authController = {
       } else {
         return next({
           status: 401,
-          message: 'Invalid refresh token',
+          message: decodedToken || 'Invalid refresh token',
         });
       }
     } catch (error: any) {
