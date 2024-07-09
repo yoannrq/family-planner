@@ -8,7 +8,7 @@ import { JwtPayload } from '../../types/express/index.js';
 const jwtService = {
   generateAccessToken: (payload: object) => {
     const privateKey = process.env.JWT_ACCESS_PRIVATE_KEY as string;
-    const expiresIn = 30; //TODO remettre a 300
+    const expiresIn = process.env.NODE_ENV === 'production' ? 300 : 30;
 
     return jwt.sign(
       {
@@ -24,7 +24,8 @@ const jwtService = {
 
   generateRefreshToken: (payload: object) => {
     const privateKey = process.env.JWT_REFRESH_PRIVATE_KEY as string;
-    const expiresIn = 60; //TODO remettre à 30 * 24 * 60 * 60
+    const expiresIn =
+      process.env.NODE_ENV === 'production' ? 30 * 24 * 60 * 60 : 60;
 
     return jwt.sign(
       {
