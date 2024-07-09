@@ -22,7 +22,7 @@ declare global {
 
 		interface LayoutData {
 			user: User;
-			userGroups: Group[];
+			groups: Group[];
 		}
 
 		// interface Error {}

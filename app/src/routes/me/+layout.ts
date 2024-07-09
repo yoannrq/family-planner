@@ -12,7 +12,7 @@ export const load: LayoutLoad = async ({ parent }): Promise<App.LayoutData> => {
 		throw redirect(307, '/');
 	}
 
-	const userGroups = await getUserGroups(user.email);
+	const groups = await getUserGroups();
 
 	return {
 		user: {
@@ -20,6 +20,6 @@ export const load: LayoutLoad = async ({ parent }): Promise<App.LayoutData> => {
 			name: user.name,
 			profilePictureUrl: user.profilePictureUrl
 		},
-		userGroups
+		groups
 	};
 };

@@ -5,7 +5,7 @@ import { CapacitorHttp } from '@capacitor/core';
 import { PUBLIC_URL_API } from '$env/static/public';
 import { getValidAccessTokenOrGoToLogin } from '$lib/auth';
 
-export async function getUserGroups(email: string): Promise<App.Group[]> {
+export async function getUserGroups(): Promise<App.Group[]> {
 	const accessToken = await getValidAccessTokenOrGoToLogin();
 	const { data, status } = await CapacitorHttp.get({
 		url: `${PUBLIC_URL_API}/api/me/groups`,
@@ -13,6 +13,12 @@ export async function getUserGroups(email: string): Promise<App.Group[]> {
 			'Content-Type': 'application/json',
 			Authorization: `Bearer ${accessToken}`
 		}
-		//TODO : Récupérer la liste des groupes de l'utilisateur
 	});
+
+	if (status === 200 && data?.groups) {
+		return data.groups;
+	} else {
+		console.error('Erreur lors de la récupération des groupes utilisateurs');
+		return [];
+	}
 }

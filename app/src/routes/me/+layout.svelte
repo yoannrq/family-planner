@@ -8,6 +8,6 @@
 </script>
 
 <!-- TODO essayer le Header ici -->
-<Header user={data.user} userGroups={data.userGroups} />
+<Header user={data.user} groups={data.groups} />
 
 <slot />
