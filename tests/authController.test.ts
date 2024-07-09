@@ -80,4 +80,26 @@ describe('AuthController Tests', () => {
     const isDeleted = await deleteEntry('User', 'email', 'john@doe.com');
     expect(isDeleted).toBe(true);
   });
+
+  it('should have a newAccessToken method', () => {
+    expect(authController.newAccessToken).toBeDefined();
+  });
+
+  it('should return 400 if refresh token is missing', async () => {
+    const req = { body: {} } as Request;
+    const res = {
+      status: vi.fn().mockReturnThis(),
+      json: vi.fn(),
+    } as unknown as Response;
+    const next = vi.fn();
+
+    await authController.newAccessToken(req, res, next);
+
+    expect(next).toHaveBeenCalledWith(
+      expect.objectContaining({
+        status: 400,
+        message: 'Refresh token is required',
+      }),
+    );
+  });
 });
