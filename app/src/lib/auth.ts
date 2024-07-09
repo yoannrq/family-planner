@@ -7,6 +7,7 @@ import { Preferences } from '@capacitor/preferences';
 
 // [ Local imports ]
 import { PUBLIC_URL_API } from '$env/static/public';
+import { goto } from '$app/navigation';
 
 /**
  * @function setPreferencesObject
@@ -159,4 +160,41 @@ export function isTokenExpired(token: string | null): boolean {
 		console.error('Error during decoding process :', error);
 		return true;
 	}
+}
+
+/**
+ * @function getValidAccessTokenOrGoToLogin
+ * @summary Get valid access token or go to login page
+ * @returns {Promise<string | null>} - Access token or null if not found
+ */
+export async function getValidAccessTokenOrGoToLogin(): Promise<string | null> {
+	let accessToken = await getToken('access');
+	const isAccessTokenExpired = isTokenExpired(accessToken);
+
+	// If token is expired or non-existent, get a new one
+	if (!accessToken || isAccessTokenExpired) {
+		const refreshToken = await getToken('refresh');
+		const isRefreshTokenExpired = isTokenExpired(refreshToken);
+
+		// If refresh token is expired or non-existent, go to login page
+		if (!refreshToken || isRefreshTokenExpired) {
+			await clearPreferencesObject();
+			goto('/');
+			return null;
+		} else {
+			const tokenRefreshed = await refreshAccessToken();
+
+			// If refresh token has not been refreshed, go to login page
+			if (!tokenRefreshed) {
+				await clearPreferencesObject();
+				goto('/');
+				return null;
+			}
+
+			// If refresh token has been refreshed, get a new access token
+			accessToken = await getToken('access');
+		}
+	}
+
+	return accessToken;
 }

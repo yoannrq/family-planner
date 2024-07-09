@@ -1,8 +1,6 @@
 <script lang="ts">
-	const user = {
-		name: 'John Doe'
-	};
-	const firstTwoLetters = user.name.slice(0, 2);
+	export let user: App.User;
+	const firstTwoLetters = user.name.slice(0, 2).toUpperCase;
 </script>
 
 <header>

@@ -1,18 +1,13 @@
 <script lang="ts">
+
+	// [ Local imports ]
 	import type { LayoutData } from './$types';
+	import Header from '$lib/components/Header.svelte';
 
 	export let data: LayoutData;
-
-	console.log(data);
 </script>
 
 <!-- TODO essayer le Header ici -->
-<nav>
-	<a href="/me">Tableau de bord</a>
-	<a href="/me/profile">Profil</a>
-	<a href="/me/settings">Paramètres</a>
-</nav>
-
-<h1>Bienvenue, {data.name} !</h1>
+<Header user={data.user} userGroups={data.userGroups} />
 
 <slot />
