@@ -4,7 +4,6 @@ import { Request, Response, NextFunction } from 'express';
 // [ Local imports ]
 import jwtService from '../utils/jwtService.js';
 import prisma from '../models/client.js';
-import { JwtPayload } from '../../types/express/index.js';
 
 async function loginRequired(req: Request, res: Response, next: NextFunction) {
   const authHeader = req.headers['authorization'];
@@ -16,7 +15,7 @@ async function loginRequired(req: Request, res: Response, next: NextFunction) {
   const token = authHeader.split(' ')[1];
 
   try {
-    const decoded = jwtService.verifyAccessToken(token) as JwtPayload;
+    const decoded = jwtService.verifyAccessToken(token);
 
     if (!decoded) {
       return res.status(401).json({ message: 'Unauthorized' });

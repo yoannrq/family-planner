@@ -1,44 +1,45 @@
 <script lang="ts">
 	// [ Package imports ]
 	import { CapacitorHttp } from '@capacitor/core';
+	import type { HttpResponse } from '@capacitor/core';
 
 	// [ Local imports ]
-	import { setToken, setPreferencesObject } from '$lib/auth.js';
 	import { PUBLIC_URL_API } from '$env/static/public';
 	import { goto } from '$app/navigation';
 	import ErrorDisplay from '$lib/components/ErrorDisplay.svelte';
 
+	let errorMessage = '';
 	let email = '';
 	let password = '';
-	let errorMessage = '';
+	let confirmedPassword = '';
+	let name = '';
 
 	async function handleSubmit(event: any) {
 		event.preventDefault();
 
+		if (password !== confirmedPassword) {
+			errorMessage = 'Passwords do not match.';
+			return;
+		}
+
 		try {
-			const { status, data } = await CapacitorHttp.request({
-				url: `${PUBLIC_URL_API}/api/auth/login`,
+			const response: HttpResponse = await CapacitorHttp.request({
+				url: `${PUBLIC_URL_API}/api/auth/signup`,
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json'
 				},
 				data: {
+					name,
 					email,
 					password
 				}
 			});
 
-			if (status === 200) {
-				// Store tokens in secure storage
-				setToken('access', data.accessToken);
-				setToken('refresh', data.refreshToken);
-
-				// Store user email, name and profil picture URL in Preferences storage
-				setPreferencesObject(data.email, data.name, data.profilpictureUrl);
-
-				goto('/me/dashboard');
+			if (response.status === 201) {
+				goto('/');
 			} else {
-				errorMessage = data.err.message;
+				errorMessage = response.data.err.message;
 			}
 		} catch (error: any) {
 			errorMessage = error.message;
@@ -47,15 +48,17 @@
 </script>
 
 <main>
-	<div class="login-container">
-		<h1>Family Planner</h1>
-		<p>Votre outil de gestion familiale</p>
-		<img src="/family_logo.png" alt="Family Planner" />
+	<div class="signup-container">
+		<h1>Inscription</h1>
 		<form on:submit={handleSubmit}>
 			{#if errorMessage}
 				<!-- TODO : add a link to the forgot password page -->
 				<ErrorDisplay message={errorMessage} severity="warning" />
 			{/if}
+			<div class="input-group">
+				<label for="name">Nom d'utilisateur :</label>
+				<input type="text" id="name" bind:value={name} required />
+			</div>
 			<div class="input-group">
 				<label for="email">Email :</label>
 				<input type="email" id="email" bind:value={email} required />
@@ -64,9 +67,13 @@
 				<label for="password">Mot de passe :</label>
 				<input type="password" id="password" bind:value={password} required />
 			</div>
-			<button type="submit">Se connecter</button>
-			<div class="signup-link">
-				<a href="/signup">S'inscrire</a>
+			<div class="input-group">
+				<label for="confirmed-password">Confirmation du mot de passe :</label>
+				<input type="password" id="confirmed-password" bind:value={confirmedPassword} required />
+			</div>
+			<button type="submit">S'inscrire</button>
+			<div class="login-link">
+				<a href="/">Je suis déjà inscrit</a>
 			</div>
 		</form>
 	</div>
@@ -80,7 +87,7 @@
 		height: 100vh;
 	}
 
-	.login-container {
+	.signup-container {
 		max-width: 100%;
 		padding: 1.25rem; /* 20px */
 		box-sizing: border-box;
@@ -90,20 +97,6 @@
 		text-align: center;
 		color: var(--color-primary);
 		margin-bottom: 1.25rem; /* 20px */
-	}
-
-	p {
-		text-align: center;
-		color: var(--color-deep-primary);
-		margin-bottom: 1.25rem; /* 20px */
-	}
-
-	img {
-		display: block;
-		margin: 0 auto;
-		margin-bottom: 1.25rem; /* 20px */
-		max-width: 100%;
-		height: 5rem; /* 80px */
 	}
 
 	form {
@@ -146,12 +139,12 @@
 		background-color: var(--color-secondary);
 	}
 
-	.signup-link {
+	.login-link {
 		text-align: center;
 		margin-top: 0.9375rem; /* 15px */
 	}
 
-	.signup-link a {
+	.login-link a {
 		color: var(--color-primary);
 		text-decoration: none;
 	}
