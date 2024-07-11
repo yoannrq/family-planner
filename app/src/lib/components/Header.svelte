@@ -6,6 +6,7 @@
 
 <header>
 	<div class="personal-avatar">{firstTwoLetters}</div>
+	<div>{groups}</div>
 </header>
 
 <style></style>
