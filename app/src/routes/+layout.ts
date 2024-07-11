@@ -17,6 +17,7 @@ export const load: LayoutLoad = async ({ url }): Promise<App.LayoutData | null> 
 	const user = await getPreferencesObject<App.User>('user');
 	const groups = await getPreferencesObject<App.Group[]>('groups');
 
+	// Clear preferences and redirect to login page if the current url is not login or signup page
 	const redirectToHome = async () => {
 		await clearPreferencesObject();
 		if (!['/', '/signup'].includes(currentPath)) {
@@ -25,6 +26,7 @@ export const load: LayoutLoad = async ({ url }): Promise<App.LayoutData | null> 
 		return null;
 	};
 
+	// If access token is expired or falsy, get another one with refresh token
 	if (!accessToken || isTokenExpired(accessToken)) {
 		const isRefreshOk = await refreshAccessToken();
 
@@ -33,6 +35,7 @@ export const load: LayoutLoad = async ({ url }): Promise<App.LayoutData | null> 
 		}
 	}
 
+	// If user and group informations are missing, redirect to login page
 	if (!user || groups === null || groups.length === 0) {
 		return redirectToHome();
 	}

@@ -8,7 +8,6 @@
 	import { goto } from '$app/navigation';
 	import ErrorDisplay from '$lib/components/ErrorDisplay.svelte';
 	import { getUserGroups } from '$lib/api/group';
-	import { groupCollapsed } from 'console';
 
 	let email = '';
 	let password = '';
