@@ -8,6 +8,7 @@
 	import { goto } from '$app/navigation';
 	import ErrorDisplay from '$lib/components/ErrorDisplay.svelte';
 	import { getUserGroups } from '$lib/api/group';
+	import { groupCollapsed } from 'console';
 
 	let email = '';
 	let password = '';
@@ -35,7 +36,7 @@
 				setToken('refresh', data.refreshToken);
 
 				// Store user email, name and profil picture URL in Preferences storage
-				setPreferencesObject(data.email, data.name, data.profilpictureUrl);
+				setPreferencesObject("user", { email: data.email, name: data.name, profilePictureUrl: data.profilpictureUrl });
 
 				const groups = await getUserGroups();
 
@@ -43,6 +44,10 @@
 					errorMessage = "You don't have any group.";
 					return;
 				}
+
+				// Store user groups in Preferences storage
+				setPreferencesObject("groups", groups);
+
 
 				const groupId = groups[0].id;
 

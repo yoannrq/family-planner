@@ -12,7 +12,7 @@ const groupController = {
     const userEmail = req.user.email;
 
     try {
-      const groups = await prisma.user.findUnique({
+      const userGroups = await prisma.user.findUnique({
         where: {
           email: userEmail,
         },
@@ -21,11 +21,11 @@ const groupController = {
         },
       });
 
-      if (!groups) {
+      if (!userGroups) {
         return res.status(404).json({ message: 'User not found' });
       }
 
-      return res.status(200).json(groups);
+      return res.status(200).json(userGroups.groups);
     } catch (error: any) {
       return next({
         message: error.message,

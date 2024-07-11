@@ -12,42 +12,33 @@ import { goto } from '$app/navigation';
 /**
  * @function setPreferencesObject
  * @summary Store user email and authenticated status in preferences storage
- * @param {string} email - User email
- * @param {string} name - User name
- * @param {string} profilePictureUrl - User profile picture url
+ * @param {string} key - Key to store the object under
+ * @param {object} value - Object to store
  * @returns {Promise<void>} - Promise that resolves when the operation is done
  */
-export async function setPreferencesObject(
-	email: string,
-	name: string,
-	profilePictureUrl: string
-): Promise<void> {
+export async function setPreferencesObject(key: string, value: object): Promise<void> {
 	await Preferences.set({
-		key: 'user',
-		value: JSON.stringify({
-			email: email,
-			name: name,
-			profilePictureUrl: profilePictureUrl
-		})
+		key: key,
+		value: JSON.stringify(value)
 	});
-	console.info('Preferences set:', email);
+	console.info('Preferences set:', value);
 }
 
 /**
  * @function getPreferencesObject
  * @summary Get user email from preferences storage
- * @returns {Promise<App.User | null>} - User object or null if not found
+ * @param {string} key - Key to retrieve the object under
+ * @returns {Promise<T | null>} - User object or null if not found
  */
-export async function getPreferencesObject(): Promise<App.User | null> {
-	const ret = await Preferences.get({ key: 'user' });
+export async function getPreferencesObject<T>(key: string): Promise<T | null> {
+	const ret = await Preferences.get({ key: key });
 
 	if (ret && ret.value && typeof ret.value === 'string') {
-		const user = JSON.parse(ret.value) as App.User;
+		const preferencesData = JSON.parse(ret.value) as T;
 
-		if (user && user.email && user.name) {
-			console.info('Preferences get:', user.email);
-			console.info('Preferences get:', user.name);
-			return user;
+		if (preferencesData) {
+			console.info('Preferences get:', preferencesData);
+			return preferencesData;
 		}
 	}
 
