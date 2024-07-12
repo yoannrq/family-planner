@@ -2,7 +2,7 @@
 import express from 'express';
 
 // [ Local imports ]
-import groupController from '../controllers/groupController.js';
+import groupController from '../../controllers/groupController.js';
 
 const router = express.Router();
 
