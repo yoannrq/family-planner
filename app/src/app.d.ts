@@ -23,6 +23,7 @@ declare global {
 		interface LayoutData {
 			user: User;
 			groups: Group[];
+			groupId?: string;
 		}
 
 		// interface Error {}

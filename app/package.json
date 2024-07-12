@@ -13,7 +13,7 @@
 		"format": "prettier --write .",
 		"cap:sync": "npm run build && npx cap sync",
 		"cap:android": "npm run cap:sync && npx cap run android",
-		"cap:myandroid": "npx cap run android --target=RZCT103QK5D",
+		"cap:myandroid": "npx cap run android --target=965a96a80706",
 		"cap:ios": "npm run cap:sync && npx cap run ios",
 		"cap:add:android": "npx cap add android",
 		"cap:add:ios": "npx cap add ios",
