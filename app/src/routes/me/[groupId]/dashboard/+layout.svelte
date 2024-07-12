@@ -1,4 +1,5 @@
 <script lang="ts">
+
 	// [ Local imports ]
 	import type { LayoutData } from './$types';
 

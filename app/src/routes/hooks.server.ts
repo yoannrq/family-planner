@@ -2,7 +2,7 @@
 import type { Handle } from '@sveltejs/kit';
 
 // [ Local imports ]
-import { getToken, isTokenExpired, refreshAccessToken } from '$lib/auth';
+import { clearPreferencesObject, getToken, isTokenExpired, refreshAccessToken } from '$lib/auth';
 import { goto } from '$app/navigation';
 
 export const handle: Handle = async ({ event, resolve }) => {
@@ -13,11 +13,13 @@ export const handle: Handle = async ({ event, resolve }) => {
 		const isRefreshOk = await refreshAccessToken();
 
 		if (!isRefreshOk && !['/', '/signup'].includes(currentPath)) {
+			clearPreferencesObject();
 			goto('/');
 		}
 
 		const refreshedAccessToken = await getToken('access');
 		if (!refreshedAccessToken || isTokenExpired(refreshedAccessToken)) {
+			clearPreferencesObject();
 			goto('/');
 		}
 	}

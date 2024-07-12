@@ -4,7 +4,7 @@
 import type { LayoutLoad } from './$types';
 import { goto } from '$app/navigation';
 
-export const load: LayoutLoad = async ({ parent }): Promise<App.LayoutData> => {
+export const load: LayoutLoad = async ({ parent, params }): Promise<App.LayoutData> => {
 	const parentData = (await parent()) as App.LayoutData;
 
 	if (!parentData) {
@@ -13,6 +13,7 @@ export const load: LayoutLoad = async ({ parent }): Promise<App.LayoutData> => {
 
 	return {
 		user: parentData.user,
-		groups: parentData.groups
+		groups: parentData.groups,
+		groupId: params.groupId
 	};
 };

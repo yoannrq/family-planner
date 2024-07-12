@@ -2,48 +2,49 @@
 
 // [ Local imports ]
 import type { LayoutLoad } from './$types';
-import { getToken, isTokenExpired, refreshAccessToken, getPreferencesObject } from '$lib/auth';
+import {
+	getToken,
+	isTokenExpired,
+	refreshAccessToken,
+	getPreferencesObject,
+	clearPreferencesObject
+} from '$lib/auth';
 import { goto } from '$app/navigation';
 
-export const load: LayoutLoad = async ({ url }): Promise<App.User | null> => {
+export const load: LayoutLoad = async ({ url }): Promise<App.LayoutData | null> => {
 	const currentPath = url.pathname;
 	const accessToken = await getToken('access');
-	const user = await getPreferencesObject();
+	const user = await getPreferencesObject<App.User>('user');
+	const groups = await getPreferencesObject<App.Group[]>('groups');
 
+	// Clear preferences and redirect to login page if the current url is not login or signup page
+	const redirectToHome = async () => {
+		await clearPreferencesObject();
+		if (!['/', '/signup'].includes(currentPath)) {
+			goto('/');
+		}
+		return null;
+	};
+
+	// If access token is expired or falsy, get another one with refresh token
 	if (!accessToken || isTokenExpired(accessToken)) {
 		const isRefreshOk = await refreshAccessToken();
-		console.log('currentPath :' + currentPath);
-		console.log('isRefreshOk :' + isRefreshOk);
-		console.log('user :', user);
+
 		if (!isRefreshOk) {
-			if (!['/', '/signup'].includes(currentPath)) {
-				console.log('layout.ts : Redirecting to / because isRefreshOk is false');
-				goto('/');
-				return null;
-			}
+			return redirectToHome();
 		}
 	}
 
-	if (!user && !['/', '/signup'].includes(currentPath)) {
-		console.log('layout.ts : Redirecting to / because user is not set');
-		goto('/');
-		return null;
+	// If user and group informations are missing, redirect to login page
+	if (!user || groups === null || groups.length === 0) {
+		return redirectToHome();
 	}
 
-	if (user && 'email' in user && 'name' in user) {
-		if (['/', '/signup'].includes(currentPath)) {
-			console.log('layout.ts : Redirecting to /me/dashboard');
-			goto('/me/dashboard');
-		}
-
-		return {
-			email: user.email,
-			name: user.name,
-			profilePictureUrl: user.profilePictureUrl
-		};
+	if (['/', '/signup'].includes(currentPath)) {
+		goto(`/me/${groups[0].id}/dashboard`);
 	}
 
-	return null;
+	return { user, groups };
 };
 
 export const prerender = false;

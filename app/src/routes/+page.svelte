@@ -7,6 +7,7 @@
 	import { PUBLIC_URL_API } from '$env/static/public';
 	import { goto } from '$app/navigation';
 	import ErrorDisplay from '$lib/components/ErrorDisplay.svelte';
+	import { getUserGroups } from '$lib/api/group';
 
 	let email = '';
 	let password = '';
@@ -34,9 +35,22 @@
 				setToken('refresh', data.refreshToken);
 
 				// Store user email, name and profil picture URL in Preferences storage
-				setPreferencesObject(data.email, data.name, data.profilpictureUrl);
+				setPreferencesObject("user", { email: data.email, name: data.name, profilePictureUrl: data.profilpictureUrl });
 
-				goto('/me/dashboard');
+				const groups = await getUserGroups();
+
+				if (groups.length === 0) {
+					errorMessage = "You don't have any group.";
+					return;
+				}
+
+				// Store user groups in Preferences storage
+				setPreferencesObject("groups", groups);
+
+
+				const groupId = groups[0].id;
+
+				goto(`/me/${groupId}/dashboard`);
 			} else {
 				errorMessage = data.err.message;
 			}

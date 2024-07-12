@@ -7,46 +7,38 @@ import { Preferences } from '@capacitor/preferences';
 
 // [ Local imports ]
 import { PUBLIC_URL_API } from '$env/static/public';
+import { goto } from '$app/navigation';
 
 /**
  * @function setPreferencesObject
  * @summary Store user email and authenticated status in preferences storage
- * @param {string} email - User email
- * @param {string} name - User name
- * @param {string} profilePictureUrl - User profile picture url
+ * @param {string} key - Key to store the object under
+ * @param {object} value - Object to store
  * @returns {Promise<void>} - Promise that resolves when the operation is done
  */
-export async function setPreferencesObject(
-	email: string,
-	name: string,
-	profilePictureUrl: string
-): Promise<void> {
+export async function setPreferencesObject(key: string, value: object): Promise<void> {
 	await Preferences.set({
-		key: 'user',
-		value: JSON.stringify({
-			email: email,
-			name: name,
-			profilePictureUrl: profilePictureUrl
-		})
+		key: key,
+		value: JSON.stringify(value)
 	});
-	console.info('Preferences set:', email);
+	console.info('Preferences set:', value);
 }
 
 /**
  * @function getPreferencesObject
  * @summary Get user email from preferences storage
- * @returns {Promise<App.User | null>} - User object or null if not found
+ * @param {string} key - Key to retrieve the object under
+ * @returns {Promise<T | null>} - User object or null if not found
  */
-export async function getPreferencesObject(): Promise<App.User | null> {
-	const ret = await Preferences.get({ key: 'user' });
+export async function getPreferencesObject<T>(key: string): Promise<T | null> {
+	const ret = await Preferences.get({ key: key });
 
 	if (ret && ret.value && typeof ret.value === 'string') {
-		const user = JSON.parse(ret.value) as App.User;
+		const preferencesData = JSON.parse(ret.value) as T;
 
-		if (user && user.email && user.name) {
-			console.info('Preferences get:', user.email);
-			console.info('Preferences get:', user.name);
-			return user;
+		if (preferencesData) {
+			console.info('Preferences get:', preferencesData);
+			return preferencesData;
 		}
 	}
 
@@ -159,4 +151,41 @@ export function isTokenExpired(token: string | null): boolean {
 		console.error('Error during decoding process :', error);
 		return true;
 	}
+}
+
+/**
+ * @function getValidAccessTokenOrGoToLogin
+ * @summary Get valid access token or go to login page
+ * @returns {Promise<string | null>} - Access token or null if not found
+ */
+export async function getValidAccessTokenOrGoToLogin(): Promise<string | null> {
+	let accessToken = await getToken('access');
+	const isAccessTokenExpired = isTokenExpired(accessToken);
+
+	// If token is expired or non-existent, get a new one
+	if (!accessToken || isAccessTokenExpired) {
+		const refreshToken = await getToken('refresh');
+		const isRefreshTokenExpired = isTokenExpired(refreshToken);
+
+		// If refresh token is expired or non-existent, go to login page
+		if (!refreshToken || isRefreshTokenExpired) {
+			await clearPreferencesObject();
+			goto('/');
+			return null;
+		} else {
+			const tokenRefreshed = await refreshAccessToken();
+
+			// If refresh token has not been refreshed, go to login page
+			if (!tokenRefreshed) {
+				await clearPreferencesObject();
+				goto('/');
+				return null;
+			}
+
+			// If refresh token has been refreshed, get a new access token
+			accessToken = await getToken('access');
+		}
+	}
+
+	return accessToken;
 }
