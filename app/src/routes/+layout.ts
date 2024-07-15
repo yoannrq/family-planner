@@ -10,21 +10,29 @@ import {
 	clearPreferencesObject
 } from '$lib/auth';
 import { goto } from '$app/navigation';
+import { getColors } from '$lib/api/color';
+import { setPreferencesObject } from '$lib/auth';
 
 export const load: LayoutLoad = async ({ url }): Promise<App.LayoutData | null> => {
 	const currentPath = url.pathname;
 	const accessToken = await getToken('access');
 	const user = await getPreferencesObject<App.User>('user');
 	const groups = await getPreferencesObject<App.Group[]>('groups');
+	const colors = await getPreferencesObject<App.Color[]>('colors');
 
 	// Clear preferences and redirect to login page if the current url is not login or signup page
-	const redirectToHome = async () => {
+	async function redirectToHome() {
 		await clearPreferencesObject();
 		if (!['/', '/signup'].includes(currentPath)) {
 			goto('/');
 		}
 		return null;
-	};
+	}
+
+	if (colors === null || colors.length === 0) {
+		const colors = await getColors();
+		await setPreferencesObject('colors', colors);
+	}
 
 	// If access token is expired or falsy, get another one with refresh token
 	if (!accessToken || isTokenExpired(accessToken)) {
