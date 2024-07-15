@@ -13,10 +13,10 @@ import { goto } from '$app/navigation';
  * @function setPreferencesObject
  * @summary Store user email and authenticated status in preferences storage
  * @param {string} key - Key to store the object under
- * @param {object} value - Object to store
+ * @param {object | object[]} value - Object or array of objects to store
  * @returns {Promise<void>} - Promise that resolves when the operation is done
  */
-export async function setPreferencesObject(key: string, value: object): Promise<void> {
+export async function setPreferencesObject(key: string, value: object | object[]): Promise<void> {
 	await Preferences.set({
 		key: key,
 		value: JSON.stringify(value)
@@ -28,7 +28,7 @@ export async function setPreferencesObject(key: string, value: object): Promise<
  * @function getPreferencesObject
  * @summary Get user email from preferences storage
  * @param {string} key - Key to retrieve the object under
- * @returns {Promise<T | null>} - User object or null if not found
+ * @returns {Promise<T | null>} - Data or null if not found
  */
 export async function getPreferencesObject<T>(key: string): Promise<T | null> {
 	const ret = await Preferences.get({ key: key });

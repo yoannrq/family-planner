@@ -9,9 +9,17 @@ declare global {
 		}
 
 		interface Group {
-			id: string;
+			id: number;
 			name: string;
-			colorId: string;
+			colorId: number;
+			createdAt: string;
+			updatedAt?: string;
+		}
+
+		interface Color {
+			id: number;
+			name: string;
+			hexCode: string;
 			createdAt: string;
 			updatedAt?: string;
 		}

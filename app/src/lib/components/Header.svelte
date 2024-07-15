@@ -1,22 +1,29 @@
 <script lang="ts">
+	// [ Package imports ]
+	import { onMount } from 'svelte';
+
+	// [ Local imports ]
+	import { initializeColorStore, getHexCodeColor } from '$lib/utils/color';
+
 	export let user: App.User;
 	export let groups: App.Group[];
 	export let groupId: string | undefined;
 
 	const firstTwoLetters = user.name.slice(0, 2);
 
-	// Get the current group name, using == instead of === to compare strings and numbers, using $ to make it reactive to groupId changes
-	$: currentGroup = groups.find((group) => group.id == groupId);
+	// Get the current group name, using $ to make it reactive to groupId changes
+	$: currentGroup = groups.find((group) => group.id.toString() === groupId);
 	$: currentGroupName = currentGroup ? currentGroup.name : '';
-
-	// TODO - Change this temporary color to a dynamic color
-	const temporaryColor = '#0388fc';
 
 	function modalGroups() {
 		const section = document.querySelector('.modal-groups');
 		if (!section) return;
 		section.classList.toggle('hidden');
 	}
+
+	onMount(async () => {
+		await initializeColorStore();
+	});
 </script>
 
 <header>
@@ -31,9 +38,9 @@
 <section class="hidden modal-groups">
 	<ul class="group-list">
 		{#each groups as group}
-			<li style="background-color: {temporaryColor}20">
+			<li style="background-color: {getHexCodeColor(group.colorId)}20">
 				<a href={`/me/${group.id}/dashboard`} on:click={modalGroups}>
-					<div class="group-color" style="background-color: {temporaryColor}"></div>
+					<div class="group-color" style="background-color: {getHexCodeColor(group.colorId)}"></div>
 					{group.name}
 				</a>
 			</li>
