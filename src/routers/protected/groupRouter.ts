@@ -10,6 +10,7 @@ const router = express.Router();
  * @route GET /api/me/group
  * @summary Get list of user groups
  * @group Group
+ * @protected header {string} Authorization - Bearer token
  * @param {Object} req.user - User object added by loginRequired middleware
  * @param {string} req.user.email - Email of authenticated user
  * @returns {object} 200 - List of groups

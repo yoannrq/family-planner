@@ -6,6 +6,13 @@ import colorController from '../../controllers/colorController.js';
 
 const router = express.Router();
 
+/**
+ * @route GET /api/public/color
+ * @summary Get an array with all colors
+ * @group Color
+ * @public
+ * @returns {object} 200 - Array with all colors
+ */
 router.get('/', colorController.getColors);
 
 export default router;
