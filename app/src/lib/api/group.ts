@@ -4,6 +4,7 @@ import { CapacitorHttp } from '@capacitor/core';
 // [ Local imports ]
 import { PUBLIC_URL_API } from '$env/static/public';
 import { getValidAccessTokenOrGoToLogin } from '$lib/auth';
+import { addError } from '$lib/stores/errorStore';
 
 /**
  * @function getUserGroups
@@ -25,7 +26,38 @@ export async function getUserGroups(): Promise<App.Group[]> {
 	if (status === 200 && data) {
 		return data;
 	} else {
-		console.error('Erreur lors de la récupération des groupes utilisateurs');
+		addError(status, data.err.message);
 		return [];
+	}
+}
+
+/**
+ * @function createGroup
+ * @route POST /api/me/group
+ * @summary Create a group
+ * @protected header {string} Authorization - Bearer token
+ * @param {string} name - The name of the group
+ * @param {number} colorId - The color of the group
+ * @returns {Promise<App.Group>} - The created group
+ */
+export async function createGroup(name: string, colorId: number): Promise<App.Group | null> {
+	const accessToken = await getValidAccessTokenOrGoToLogin();
+	const { data, status } = await CapacitorHttp.post({
+		url: `${PUBLIC_URL_API}/api/me/group`,
+		headers: {
+			'Content-Type': 'application/json',
+			Authorization: `Bearer ${accessToken}`
+		},
+		data: {
+			name,
+			colorId
+		}
+	});
+
+	if (status === 201 && data) {
+		return data;
+	} else {
+		addError(status, data.err.message);
+		return null;
 	}
 }

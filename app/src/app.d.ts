@@ -34,6 +34,11 @@ declare global {
 			groupId?: string;
 		}
 
+		interface ErrorInfo {
+			status: number;
+			message: string;
+		}
+
 		// interface Error {}
 		// interface Platform {}
 	}

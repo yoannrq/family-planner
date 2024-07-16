@@ -3,7 +3,7 @@
 	import { onMount } from 'svelte';
 
 	// [ Local imports ]
-	import { initializeColorStore, getHexCodeColor } from '$lib/utils/color';
+	import { initializeColorStore, getHexCodeColor } from '$lib/stores/colorStore';
 
 	export let user: App.User;
 	export let groups: App.Group[];

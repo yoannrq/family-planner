@@ -15,15 +15,21 @@ const colorStore = writable<ColorStore>({});
  */
 export async function initializeColorStore() {
 	let currentColors: ColorStore = {};
+
+	// Subscribe to the store to get the current colors
 	colorStore.subscribe((value) => {
 		currentColors = value;
 	})();
-	console.log('currentColors 16 color utils', currentColors);
+
+	// If the store is already initialized, return
 	if (Object.keys(currentColors).length > 0) {
 		return;
 	}
+
+	// Get the colors from the preferences
 	let colorsList = await getPreferencesObject<App.Color[] | null>('colors');
-	console.log('colorsList 11 color utils', colorsList);
+
+	// If the colors are not in the preferences, get the colors from the API
 	if (colorsList === null || colorsList.length === 0) {
 		const colors = await getColors();
 		await setPreferencesObject('colors', colors);
@@ -31,6 +37,8 @@ export async function initializeColorStore() {
 	}
 
 	const newColorStore: ColorStore = {};
+
+	// Set the colors in the store
 	colorsList.forEach((color) => {
 		newColorStore[color.id.toString()] = color.hexCode;
 	});

@@ -8,6 +8,7 @@
 	import { goto } from '$app/navigation';
 	import ErrorDisplay from '$lib/components/ErrorDisplay.svelte';
 	import { getUserGroups } from '$lib/api/group';
+	import { initializeColorStore } from '$lib/stores/colorStore';
 
 	let email = '';
 	let password = '';
@@ -47,6 +48,8 @@
 				// Store user groups in Preferences storage
 				setPreferencesObject("groups", groups);
 
+				// Initialize the color store
+				initializeColorStore();
 
 				const groupId = groups[0].id;
 
