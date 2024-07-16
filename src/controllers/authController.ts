@@ -52,6 +52,27 @@ const authController = {
 
       newUser.password = '';
 
+      const randomColorId = Math.floor(Math.random() * 9) + 1;
+
+      const firstGroup = await prisma.group.create({
+        data: {
+          name: `${name}'s family`,
+          colorId: randomColorId,
+          users: {
+            connect: {
+              email,
+            },
+          },
+        },
+      });
+
+      if (!firstGroup) {
+        return next({
+          status: 500,
+          message: 'Failed to create first group',
+        });
+      }
+
       res.status(201).json(newUser);
     } catch (error: any) {
       return next({

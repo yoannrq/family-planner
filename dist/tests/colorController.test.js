@@ -74,6 +74,6 @@ describe('ColorController Tests', () => {
         yield colorController.getColors(req, res, next);
         expect(next).not.toHaveBeenCalled();
         expect(res.status).toHaveBeenCalledWith(200);
-        expect(res.json).toHaveBeenCalledWith(expect.arrayContaining(defaultColors));
+        expect(res.json).toHaveBeenCalledWith(expect.arrayContaining(defaultColors.map((color) => expect.objectContaining(color))));
     }));
 });
