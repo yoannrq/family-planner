@@ -1,11 +1,8 @@
 // [ Package imports ]
 import express from 'express';
-
 // [ Local imports ]
 import groupController from '../../controllers/groupController.js';
-
 const router = express.Router();
-
 /**
  * @route GET /api/me/group
  * @summary Get list of user groups
@@ -18,5 +15,4 @@ const router = express.Router();
  * @returns {Error}  404 - User not found
  */
 router.get('/', groupController.getGroups);
-
 export default router;

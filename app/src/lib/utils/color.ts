@@ -8,6 +8,11 @@ import { getColors } from '$lib/api/color';
 type ColorStore = Record<string, string>;
 const colorStore = writable<ColorStore>({});
 
+/**
+ * @function initializeColorStore
+ * @summary Initialize the color store with the colors from the preferences or the default colors
+ * @returns
+ */
 export async function initializeColorStore() {
 	let currentColors: ColorStore = {};
 	colorStore.subscribe((value) => {
@@ -32,6 +37,12 @@ export async function initializeColorStore() {
 	colorStore.set(newColorStore);
 }
 
+/**
+ * @function getHexCodeColor
+ * @summary Get the hexadecimal code for a color
+ * @param {number} colorId - The color id
+ * @returns {string} - The hex code
+ */
 export function getHexCodeColor(colorId: number): string {
 	let hexCode: string | undefined;
 	colorStore.subscribe((store) => {

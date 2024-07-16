@@ -4,6 +4,13 @@ import { CapacitorHttp } from '@capacitor/core';
 // [ Local imports ]
 import { PUBLIC_URL_API } from '$env/static/public';
 
+/**
+ * @function getColors
+ * @route GET /api/public/color
+ * @summary Get an array with all colors
+ * @public
+ * @returns {Promise<App.Color[]>} - The colors
+ */
 export async function getColors(): Promise<App.Color[]> {
 	const { data, status } = await CapacitorHttp.get({
 		url: `${PUBLIC_URL_API}/api/public/color`,
