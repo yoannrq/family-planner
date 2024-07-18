@@ -6,13 +6,15 @@
 	import { goto } from '$app/navigation';
 	import { errorStore, clearError } from '$lib/stores/errorStore';
 	import ErrorDisplay from '$lib/components/ErrorDisplay.svelte';
+	import { updateMe } from '$lib/api/me';
+	import { setPreferencesObject } from '$lib/auth';
 
 	export let data: PageData;
 
 	let name = data.user.name;
-	let email = data.user.email;
 	let password = '';
 	let confirmedPassword = '';
+	let updatedUser: App.User | null = null;
 
 	const firstTwoLetters = data.user.name.slice(0, 2);
 
@@ -20,7 +22,7 @@
 		goto('/me/profile');
 	}
 
-	function handleSubmit(event: Event) {
+	async function handleSubmit(event: Event) {
 		event.preventDefault();
 		clearError();
 
@@ -29,10 +31,26 @@
 			return;
 		}
 
-		// TODO : call the API to update the user's profile
+		try {
+			updatedUser = await updateMe(name, password);
 
-		clearError();
-		return;
+			if (updatedUser === null) {
+				return;
+			}
+
+			// Store user email, name and profil picture URL in Preferences storage
+			setPreferencesObject('user', {
+				email: updatedUser.email,
+				name: updatedUser.name,
+				profilePictureUrl: updatedUser.profilePictureUrl
+			});
+
+			clearError();
+			goto('/me/profile');
+			return;
+		} catch (error: any) {
+			errorStore.set({ status: error.status, message: error.message });
+		}
 	}
 </script>
 
@@ -61,13 +79,6 @@
 			<div class="input-group">
 				<label for="name">Nom :</label>
 				<input type="text" id="name" bind:value={name} required />
-			</div>
-		</div>
-		<div class="input-and-icon-block">
-			<img src="/mail-edit.png" alt="Email" />
-			<div class="input-group">
-				<label for="email">Email :</label>
-				<input type="email" id="email" bind:value={email} required />
 			</div>
 		</div>
 		<div class="input-and-icon-block">
