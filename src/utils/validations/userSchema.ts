@@ -1,5 +1,7 @@
 import { z } from 'zod';
 
+// TODO Ajouter la vérification de l'url de profil
+
 const userSchema = z.object({
   name: z
     .string({
