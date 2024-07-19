@@ -1,5 +1,6 @@
 <script lang="ts">
 	// [ Package imports ]
+	import { onMount } from 'svelte';
 
 	// [ Local imports ]
 	import type { PageData } from './$types';
@@ -7,18 +8,22 @@
 	import { errorStore, clearError } from '$lib/stores/errorStore';
 	import ErrorDisplay from '$lib/components/ErrorDisplay.svelte';
 	import { updateMe } from '$lib/api/me';
-	import { setPreferencesObject } from '$lib/auth';
+	import { getPreferencesObject, setPreferencesObject } from '$lib/auth';
 	import SvgDisplay from '$lib/components/SvgDisplay.svelte';
+	import { getHexCodeColor } from '$lib/stores/colorStore';
+	import { getColors } from '$lib/api/color';
 
 	export let data: PageData;
 
-	let userColor = '#a7beae';
 	let name = data.user.name;
+	let settingColorId = data.user.settingColorId;
 	let password = '';
 	let confirmedPassword = '';
 	let updatedUser: App.User | null = null;
+	let colors: App.Color[] | null = [];
 
 	const firstTwoLetters = data.user.name.slice(0, 2);
+	const userColor = getHexCodeColor(data.user.settingColorId);
 
 	function goToProfile() {
 		goto('/me/profile');
@@ -34,7 +39,11 @@
 		}
 
 		try {
-			updatedUser = await updateMe(name, password);
+			if (password === '' && confirmedPassword === '') {
+				updatedUser = await updateMe(name, undefined, settingColorId);
+			} else {
+				updatedUser = await updateMe(name, password, settingColorId);
+			}
 
 			if (updatedUser === null) {
 				return;
@@ -44,7 +53,8 @@
 			setPreferencesObject('user', {
 				email: updatedUser.email,
 				name: updatedUser.name,
-				profilePictureUrl: updatedUser.profilePictureUrl
+				profilePictureUrl: updatedUser.profilePictureUrl,
+				settingColorId: updatedUser.settingColorId
 			});
 
 			clearError();
@@ -54,9 +64,21 @@
 			errorStore.set({ status: error.status, message: error.message });
 		}
 	}
+
+	onMount(async () => {
+		let response: App.Color[] | null = await getPreferencesObject('colors');
+
+		if (!response) {
+			const colorsFromApi = await getColors();
+			setPreferencesObject('colors', colorsFromApi);
+			response = colorsFromApi;
+		}
+
+		colors = response;
+	});
 </script>
 
-<header>
+<header style="background-color: {userColor}">
 	<button on:click={goToProfile}>
 		<SvgDisplay
 			pathToBeDrawn="M205.66 194.34a8 8 0 0 1-11.32 11.32L128 139.31l-66.34 66.35a8 8 0 0 1-11.32-11.32L116.69 128L50.34 61.66a8 8 0 0 1 11.32-11.32L128 116.69l66.34-66.35a8 8 0 0 1 11.32 11.32L139.31 128Z"
@@ -80,12 +102,49 @@
 		<!-- TODO gérer la gestion de l'image de profil -->
 		<img src={data.user.profilePictureUrl} alt="Profile" />
 	{:else}
-		<div class="personal-avatar">{firstTwoLetters}</div>
+		<div class="personal-avatar" style="background-color: {userColor}">{firstTwoLetters}</div>
 	{/if}
 	<form on:submit={handleSubmit} id="edit-profile">
 		{#if $errorStore.status > 0}
 			<ErrorDisplay message={$errorStore.message} severity="warning" />
 		{/if}
+		<div class="input-and-icon-block">
+			<SvgDisplay
+				pathToBeDrawn="M200.77 53.89A103.27 103.27 0 0 0 128 24h-1.07A104 104 0 0 0 24 128c0 43 26.58 79.06 69.36 94.17A32 32 0 0 0 136 192a16 16 0 0 1 16-16h46.21a31.81 31.81 0 0 0 31.2-24.88a104.4 104.4 0 0 0 2.59-24a103.28 103.28 0 0 0-31.23-73.23M84 168a12 12 0 1 1 12-12a12 12 0 0 1-12 12m0-56a12 12 0 1 1 12-12a12 12 0 0 1-12 12m44-24a12 12 0 1 1 12-12a12 12 0 0 1-12 12m44 24a12 12 0 1 1 12-12a12 12 0 0 1-12 12"
+				size="1.8rem"
+				color={userColor}
+				thisClass=""
+			/>
+			<div class="input-group">
+				<label for="color">Couleur de l'interface :</label>
+				<div class="color-picker">
+					{#if colors}
+						{#each colors as color}
+							{#if color.id === settingColorId}
+								<button
+									class="color-to-pick"
+									style="background-color: {color.hexCode};border: 0.25rem solid {color.hexCode}"
+									on:click={() => (settingColorId = color.id)}
+								></button>
+							{:else}
+								<button
+									class="color-to-pick"
+									style="background-color: var(--color-background);border: 0.25rem solid {color.hexCode}"
+									on:click={() => (settingColorId = color.id)}
+								></button>
+							{/if}
+						{/each}
+					{/if}
+				</div>
+				<input
+					class="input-color-picker"
+					type="text"
+					id="color"
+					bind:value={settingColorId}
+					required
+				/>
+			</div>
+		</div>
 		<div class="input-and-icon-block">
 			<SvgDisplay
 				pathToBeDrawn="M172 120a44 44 0 1 1-44-44a44 44 0 0 1 44 44m60 8A104 104 0 1 1 128 24a104.11 104.11 0 0 1 104 104m-16 0a88.09 88.09 0 0 0-91.47-87.93C77.43 41.89 39.87 81.12 40 128.25a87.65 87.65 0 0 0 22.24 58.16A79.7 79.7 0 0 1 84 165.1a4 4 0 0 1 4.83.32a59.83 59.83 0 0 0 78.28 0a4 4 0 0 1 4.83-.32a79.7 79.7 0 0 1 21.79 21.31A87.62 87.62 0 0 0 216 128"
@@ -133,7 +192,6 @@
 		height: 3rem;
 		width: 100%;
 		padding: 1rem 0;
-		background-color: var(--color-secondary);
 	}
 
 	header button {
@@ -152,7 +210,6 @@
 		width: 7rem; /* 112px */
 		height: 7rem;
 		border-radius: 50%;
-		background-color: var(--color-secondary);
 		display: flex;
 		justify-content: center;
 		align-items: center;
@@ -204,5 +261,21 @@
 		border: 0.0625rem solid var(--color-secondary); /* 1px */
 		border-radius: 0.3125rem; /* 5px */
 		font-size: 1rem; /* 16px */
+	}
+
+	.color-picker {
+		display: grid;
+		grid-template-columns: repeat(5, 1fr);
+		gap: 0.5rem;
+	}
+
+	.color-to-pick {
+		width: 2rem; /* 32px */
+		height: 2rem;
+		border-radius: 50%;
+	}
+
+	.input-color-picker {
+		display: none;
 	}
 </style>

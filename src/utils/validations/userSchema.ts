@@ -39,6 +39,15 @@ const userSchema = z.object({
     .min(8, {
       message: "The field 'password' must be at least 8 characters long.",
     }),
+
+  settingColorId: z
+    .number({
+      required_error: "The field 'settingColorId' is required.",
+      invalid_type_error: "The field 'settingColorId' must be a number.",
+    })
+    .min(1, {
+      message: "The field 'settingColorId' must be at least 1 character long.",
+    }),
 });
 
 export default userSchema;

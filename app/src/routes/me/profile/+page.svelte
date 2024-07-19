@@ -6,11 +6,11 @@
 	import { goto } from '$app/navigation';
 	import { clearPreferencesObject, setToken } from '$lib/auth.js';
 	import SvgDisplay from '$lib/components/SvgDisplay.svelte';
+	import { getHexCodeColor } from '$lib/stores/colorStore';
 
 	export let data: PageData;
 
-	let userColor = '#a7beae';
-
+	const userColor = getHexCodeColor(data.user.settingColorId);
 	const firstTwoLetters = data.user.name.slice(0, 2);
 
 	function goToDashboard() {
@@ -29,7 +29,7 @@
 	}
 </script>
 
-<header>
+<header style="background-color: {userColor}">
 	<button on:click={goToDashboard}>
 		<SvgDisplay
 			pathToBeDrawn="M224 120v96a8 8 0 0 1-8 8h-56a8 8 0 0 1-8-8v-52a4 4 0 0 0-4-4h-40a4 4 0 0 0-4 4v52a8 8 0 0 1-8 8H40a8 8 0 0 1-8-8v-96a16 16 0 0 1 4.69-11.31l80-80a16 16 0 0 1 22.62 0l80 80A16 16 0 0 1 224 120"
@@ -53,7 +53,7 @@
 		<!-- TODO gérer la gestion de l'image de profil -->
 		<img src={data.user.profilePictureUrl} alt="Profile" />
 	{:else}
-		<div class="personal-avatar">{firstTwoLetters}</div>
+		<div class="personal-avatar" style="background-color: {userColor}">{firstTwoLetters}</div>
 	{/if}
 	<h2>Informations personnelles</h2>
 	<ul>
@@ -90,7 +90,6 @@
 		height: 3rem;
 		width: 100%;
 		padding: 1rem 0;
-		background-color: var(--color-primary);
 	}
 
 	header button {
@@ -109,7 +108,6 @@
 		width: 7rem; /* 112px */
 		height: 7rem;
 		border-radius: 50%;
-		background-color: var(--color-primary);
 		display: flex;
 		justify-content: center;
 		align-items: center;

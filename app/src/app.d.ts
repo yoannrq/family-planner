@@ -5,6 +5,7 @@ declare global {
 		interface User {
 			email: string;
 			name: string;
+			settingColorId: number;
 			profilePictureUrl?: string;
 		}
 
