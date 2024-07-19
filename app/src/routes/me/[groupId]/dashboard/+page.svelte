@@ -4,10 +4,11 @@
 	// [ Local imports ]
 	import DashboardBlock from '$lib/components/DashboardBlock.svelte';
 	import type { PageData } from './$types';
+	import { getHexCodeColor } from '$lib/stores/colorStore';
 
 	export let data: PageData;
-	// TODO set up color inside user profile
-	const userColor = '#8aaae5';
+
+	const userColor = getHexCodeColor(data.user.settingColorId);
 
 	const dashboardItems = [
 		{

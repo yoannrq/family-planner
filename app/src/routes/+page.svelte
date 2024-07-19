@@ -36,7 +36,12 @@
 				setToken('refresh', data.refreshToken);
 
 				// Store user email, name and profil picture URL in Preferences storage
-				setPreferencesObject("user", { email: data.email, name: data.name, profilePictureUrl: data.profilpictureUrl });
+				setPreferencesObject('user', {
+					email: data.email,
+					name: data.name,
+					profilePictureUrl: data.profilpictureUrl,
+					settingColorId: data.settingColorId
+				});
 
 				const groups = await getUserGroups();
 
@@ -46,7 +51,7 @@
 				}
 
 				// Store user groups in Preferences storage
-				setPreferencesObject("groups", groups);
+				setPreferencesObject('groups', groups);
 
 				// Initialize the color store
 				initializeColorStore();

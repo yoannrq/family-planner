@@ -18,11 +18,13 @@ model User {
   email             String   @unique
   name              String   @db.VarChar(30)
   password          String
+  settingColorId    Int      @db.Integer @default(1)
   profilePictureUrl String?
   refreshToken      String?  @unique
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
 
+  color             Color @relation("ColorUser", fields: [settingColorId], references: [id]) 
   groups            Group[]  @relation("UserHasGroup")
   messages          Message[] @relation("Sender")
   calendar_entries  CalendarEntry[] @relation("Author")
@@ -36,6 +38,7 @@ model Color {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
+  assignedToUsers           User[]           @relation("ColorUser")
   assignedToGroups          Group[]          @relation("ColorGroup")
   assignedToCalendarEntries CalendarEntry[] @relation("CalendarColor")
   assignedToLists           List[]           @relation("ListColor")

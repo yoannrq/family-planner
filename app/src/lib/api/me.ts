@@ -15,7 +15,11 @@ import { addError } from '$lib/stores/errorStore';
  * @param {string} password - The password of the user
  * @returns {Promise<App.User | null>} - Updated user
  */
-export async function updateMe(name?: string, password?: string): Promise<App.User | null> {
+export async function updateMe(
+	name?: string,
+	password?: string,
+	settingColorId?: number
+): Promise<App.User | null> {
 	const accessToken = await getValidAccessTokenOrGoToLogin();
 	const { data, status } = await CapacitorHttp.patch({
 		url: `${PUBLIC_URL_API}/api/me`,
@@ -25,7 +29,8 @@ export async function updateMe(name?: string, password?: string): Promise<App.Us
 		},
 		data: {
 			name,
-			password
+			password,
+			settingColorId
 		}
 	});
 
