@@ -32,7 +32,17 @@
 		<h1 class="current-group">{currentGroupName}</h1>
 	{/key}
 	<button on:click={modalGroups}
-		><img src="/group.png" alt="Show groups list" class="icon" /></button
+		><svg
+			class="icon"
+			xmlns="http://www.w3.org/2000/svg"
+			width="1em"
+			height="1em"
+			viewBox="0 0 256 256"
+			><path
+				fill="#8aaae5"
+				d="M64.12 147.8a4 4 0 0 1-4 4.2H16a8 8 0 0 1-7.8-6.17a8.35 8.35 0 0 1 1.62-6.93A67.8 67.8 0 0 1 37 117.51a40 40 0 1 1 66.46-35.8a3.94 3.94 0 0 1-2.27 4.18A64.08 64.08 0 0 0 64 144c0 1.28 0 2.54.12 3.8m182-8.91A67.76 67.76 0 0 0 219 117.51a40 40 0 1 0-66.46-35.8a3.94 3.94 0 0 0 2.27 4.18A64.08 64.08 0 0 1 192 144c0 1.28 0 2.54-.12 3.8a4 4 0 0 0 4 4.2H240a8 8 0 0 0 7.8-6.17a8.33 8.33 0 0 0-1.63-6.94Zm-89 43.18a48 48 0 1 0-58.37 0A72.13 72.13 0 0 0 65.07 212A8 8 0 0 0 72 224h112a8 8 0 0 0 6.93-12a72.15 72.15 0 0 0-33.74-29.93Z"
+			/></svg
+		></button
 	>
 </header>
 <section class="hidden modal-groups">
@@ -47,7 +57,17 @@
 		{/each}
 		<li class="border-bottom-curved">
 			<a href="/me/add-group">
-				<img src="/add-group.png" alt="Create new group" class="icon" />Créer un groupe
+				<svg
+					class="icon"
+					xmlns="http://www.w3.org/2000/svg"
+					width="1em"
+					height="1em"
+					viewBox="0 0 256 256"
+					><path
+						fill="#8aaae5"
+						d="M120 80a40 40 0 1 1-40-40a40 40 0 0 1 40 40m56 40a40 40 0 1 0-40-40a40 40 0 0 0 40 40m-96 16a40 40 0 1 0 40 40a40 40 0 0 0-40-40m128 32h-24v-24a8 8 0 0 0-16 0v24h-24a8 8 0 0 0 0 16h24v24a8 8 0 0 0 16 0v-24h24a8 8 0 0 0 0-16"
+					/></svg
+				> Créer un groupe
 			</a>
 		</li>
 	</ul>
