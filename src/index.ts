@@ -28,16 +28,6 @@ app.options('*', cors());
 
 app.use('/api', router);
 
-app.get('/', (req, res) => {
-  res.send('Test home');
-});
-
-//404 Handler
-//TODO Améliorer la route 404
-app.use((req, res, next) => {
-  res.status(404).send("Désolé, cette route n'existe pas !");
-});
-
 app.use(errorHandler);
 
 const PORT = process.env.PORT || 3000;

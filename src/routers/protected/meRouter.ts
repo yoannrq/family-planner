@@ -7,7 +7,10 @@ import meController from '../../controllers/meController.js';
 
 const router = express.Router();
 
+// [ Sub-routers ]
 router.use('/group', groupRouter);
+
+// [ Routes ]
 
 /**
  * @route   PATCH /api/me
