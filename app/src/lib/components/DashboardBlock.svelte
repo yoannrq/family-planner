@@ -12,7 +12,7 @@
 
 	export let groupId: string | undefined;
 
-	const blockRedirectUrl = `/me/${groupId}/dashboard/${blockAttribute}`;
+	const blockRedirectUrl = `/me/${groupId}/${blockAttribute}`;
 </script>
 
 <a href={blockRedirectUrl}>
