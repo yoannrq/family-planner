@@ -11,8 +11,6 @@ const contactController = {
       return res.status(401).json({ message: 'Unauthorized' });
     }
     const userEmail = req.user.email;
-    console.log(req.params.groupId);
-    console.log(req.params);
     const groupId = parseInt(req.params.groupId);
 
     try {

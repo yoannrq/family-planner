@@ -148,7 +148,7 @@ const authController = {
       }
 
       res.status(200).json({
-        ...user,
+        ...refreshTokenOnUser,
         accessToken,
       });
     } catch (error: any) {

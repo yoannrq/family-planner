@@ -36,6 +36,9 @@
 		justify-content: left;
 		align-items: center;
 		padding: 0 1rem;
+		box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+		position: relative;
+		z-index: 100;
 	}
 
 	h1 {

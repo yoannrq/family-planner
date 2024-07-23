@@ -7,7 +7,7 @@ import {
 	isTokenExpired,
 	refreshAccessToken,
 	getPreferencesObject,
-	clearPreferencesObject
+	clearPreferencesObjectAndSecureStorage
 } from '$lib/auth';
 import { goto } from '$app/navigation';
 import { getColors } from '$lib/api/color';
@@ -22,7 +22,7 @@ export const load: LayoutLoad = async ({ url }): Promise<App.LayoutData | null> 
 
 	// Clear preferences and redirect to login page if the current url is not login or signup page
 	async function redirectToHome() {
-		await clearPreferencesObject();
+		await clearPreferencesObjectAndSecureStorage();
 		if (!['/', '/signup'].includes(currentPath)) {
 			goto('/');
 		}

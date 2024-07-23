@@ -4,7 +4,7 @@
 	// [ Local imports ]
 	import type { PageData } from './$types';
 	import { goto } from '$app/navigation';
-	import { clearPreferencesObject, setToken } from '$lib/auth.js';
+	import { clearPreferencesObjectAndSecureStorage, setToken } from '$lib/auth.js';
 	import SvgDisplay from '$lib/components/SvgDisplay.svelte';
 	import { getHexCodeColor } from '$lib/stores/colorStore';
 
@@ -22,9 +22,7 @@
 	}
 
 	async function logout() {
-		await clearPreferencesObject();
-		await setToken('access', '');
-		await setToken('refresh', '');
+		await clearPreferencesObjectAndSecureStorage();
 		goto('/');
 	}
 </script>

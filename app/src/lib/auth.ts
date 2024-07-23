@@ -51,8 +51,10 @@ export async function getPreferencesObject<T>(key: string): Promise<T | null> {
  * @summary Clear everything from preferences storage
  * @returns {Promise<void>} - Promise
  */
-export async function clearPreferencesObject(): Promise<void> {
+export async function clearPreferencesObjectAndSecureStorage(): Promise<void> {
 	await Preferences.clear();
+	await SecureStorage.removeItem('access');
+	await SecureStorage.removeItem('refresh');
 	console.info('Preferences clear');
 }
 
@@ -81,6 +83,7 @@ export async function getToken(key: 'refresh' | 'access'): Promise<string | null
 
 		if (token && typeof token === 'string') {
 			console.info('Token get:', key);
+			console.info('Token get:', token);
 			return token;
 		} else {
 			console.info('Token get: null');
@@ -100,7 +103,7 @@ export async function getToken(key: 'refresh' | 'access'): Promise<string | null
 export async function refreshAccessToken(): Promise<boolean> {
 	const refreshToken = await getToken('refresh');
 	const isRefreshTokenExpired = isTokenExpired(refreshToken);
-	console.log('refreshToken', refreshToken);
+	console.log('refreshToken in refreshAccessToken method :', refreshToken);
 	if (refreshToken && !isRefreshTokenExpired) {
 		try {
 			const { data, status } = await CapacitorHttp.post({
@@ -117,16 +120,16 @@ export async function refreshAccessToken(): Promise<boolean> {
 			}
 
 			console.error('Erreur lors du rafraîchissement du token:', status, data);
-			await clearPreferencesObject();
+			await clearPreferencesObjectAndSecureStorage();
 			return false;
 		} catch (error) {
 			console.error('Erreur lors du rafraîchissement du token, error :', error);
-			await clearPreferencesObject();
+			await clearPreferencesObjectAndSecureStorage();
 			return false;
 		}
 	}
 	console.error('Erreur lors du rafraîchissement du token: refresh token not found or expired');
-	await clearPreferencesObject();
+	await clearPreferencesObjectAndSecureStorage();
 	return false;
 }
 
@@ -169,7 +172,7 @@ export async function getValidAccessTokenOrGoToLogin(): Promise<string | null> {
 
 		// If refresh token is expired or non-existent, go to login page
 		if (!refreshToken || isRefreshTokenExpired) {
-			await clearPreferencesObject();
+			await clearPreferencesObjectAndSecureStorage();
 			goto('/');
 			return null;
 		} else {
@@ -177,7 +180,7 @@ export async function getValidAccessTokenOrGoToLogin(): Promise<string | null> {
 
 			// If refresh token has not been refreshed, go to login page
 			if (!tokenRefreshed) {
-				await clearPreferencesObject();
+				await clearPreferencesObjectAndSecureStorage();
 				goto('/');
 				return null;
 			}

@@ -25,6 +25,22 @@ declare global {
 			updatedAt?: string;
 		}
 
+		interface Contact {
+			id: number;
+			firstname: string;
+			lastname: string;
+			colorId: number;
+			phone: string;
+			email: string;
+			address: string;
+			type: string;
+			profilePictureUrl?: string;
+			content?: string;
+			groupId: number;
+			createdAt: string;
+			updatedAt?: string;
+		}
+
 		interface Locals {
 			user: User | null;
 		}
