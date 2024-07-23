@@ -1,13 +1,15 @@
 <script lang="ts">
 	// [ Package imports ]
+	import { page } from '$app/stores';
 
 	// [ Local imports ]
 	import DashboardBlock from '$lib/components/DashboardBlock.svelte';
 	import type { PageData } from './$types';
-	import { getHexCodeColor } from '$lib/stores/colorStore';
+	import { getHexCodeColor, initializeColorStore } from '$lib/stores/colorStore';
 
 	export let data: PageData;
 
+	$: groupId = $page.params.groupId;
 	const userColor = getHexCodeColor(data.user.settingColorId);
 
 	const dashboardItems = [
@@ -61,6 +63,7 @@
 		<h1>Bienvenue sur votre tableau de bord</h1>
 	</section>
 	<section class="block-list-container">
+		{#key groupId}
 		{#each dashboardItems as block}
 			<DashboardBlock
 				pathToBeDrawn={block.svgPathToBeDraw}
@@ -69,9 +72,10 @@
 				thisClass=""
 				blockTitle={block.title}
 				blockAttribute={block.attribute}
-				groupId={data.groupId}
+				{groupId}
 			/>
 		{/each}
+		{/key}
 	</section>
 </main>
 
