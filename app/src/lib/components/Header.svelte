@@ -82,6 +82,7 @@
 		align-items: center;
 		padding: 0 1rem;
 		background-color: var(--color-background);
+		box-shadow: 0 0 1rem rgba(0, 0, 0, 0.1);
 	}
 
 	.personal-avatar {
