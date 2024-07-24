@@ -12,7 +12,7 @@
 
 	export let groupId: string | undefined;
 
-	const blockRedirectUrl = `/me/${groupId}/dashboard/${blockAttribute}`;
+	const blockRedirectUrl = `/me/${groupId}/${blockAttribute}`;
 </script>
 
 <a href={blockRedirectUrl}>
@@ -40,7 +40,7 @@
 
 	h3 {
 		font-size: 1.1rem;
-		margin: 0.6 0rem;
+		margin: 0.4 0rem;
 		color: var(--color-text);
 	}
 </style>

@@ -12,7 +12,9 @@
 		--color-info: #4a90e2;
 		--color-error: #e74c3c;
 		--color-text: #333333;
+		--color-light-text: #666666;
 		--color-background: #fcf6f5;
+		--color-deep-background: #f5f5f5;
 
 		font-family: Arial, sans-serif;
 		margin: 0;

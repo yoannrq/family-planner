@@ -3,7 +3,7 @@
 	import { CapacitorHttp } from '@capacitor/core';
 
 	// [ Local imports ]
-	import { setToken, setPreferencesObject } from '$lib/auth.js';
+	import { setToken, setPreferencesObject, getToken } from '$lib/auth.js';
 	import { PUBLIC_URL_API } from '$env/static/public';
 	import { goto } from '$app/navigation';
 	import ErrorDisplay from '$lib/components/ErrorDisplay.svelte';

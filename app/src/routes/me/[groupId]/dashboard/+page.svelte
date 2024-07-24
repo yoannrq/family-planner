@@ -1,5 +1,6 @@
 <script lang="ts">
 	// [ Package imports ]
+	import { page } from '$app/stores';
 
 	// [ Local imports ]
 	import DashboardBlock from '$lib/components/DashboardBlock.svelte';
@@ -8,7 +9,9 @@
 
 	export let data: PageData;
 
-	const userColor = getHexCodeColor(data.user.settingColorId);
+	$: groupId = $page.params.groupId;
+	$: currentGroup = data.groups.find((group) => group.id.toString() === groupId);
+	$: groupColor = currentGroup ? getHexCodeColor(currentGroup.colorId) : '#8aaae5';
 
 	const dashboardItems = [
 		{
@@ -61,17 +64,19 @@
 		<h1>Bienvenue sur votre tableau de bord</h1>
 	</section>
 	<section class="block-list-container">
-		{#each dashboardItems as block}
-			<DashboardBlock
-				pathToBeDrawn={block.svgPathToBeDraw}
-				color={userColor}
-				size="3rem"
-				thisClass=""
-				blockTitle={block.title}
-				blockAttribute={block.attribute}
-				groupId={data.groupId}
-			/>
-		{/each}
+		{#key groupId}
+			{#each dashboardItems as block}
+				<DashboardBlock
+					pathToBeDrawn={block.svgPathToBeDraw}
+					color={groupColor}
+					size="3rem"
+					thisClass=""
+					blockTitle={block.title}
+					blockAttribute={block.attribute}
+					{groupId}
+				/>
+			{/each}
+		{/key}
 	</section>
 </main>
 
@@ -94,6 +99,6 @@
 		grid-template-columns: 1fr 1fr;
 		grid-template-rows: auto;
 		grid-gap: 0.6rem;
-		padding: 0.6rem;
+		padding: 0 0.6rem;
 	}
 </style>

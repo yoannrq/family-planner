@@ -3,8 +3,14 @@ import express from 'express';
 
 // [ Local imports ]
 import groupController from '../../controllers/groupController.js';
+import contactRouter from './contactRouter.js';
 
 const router = express.Router();
+
+// [ Sub-routers ]
+router.use('/:groupId/contact', contactRouter);
+
+// [ Routes ]
 
 /**
  * @route GET /api/me/group

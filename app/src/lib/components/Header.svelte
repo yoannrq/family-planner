@@ -17,6 +17,13 @@
 	$: currentGroup = groups.find((group) => group.id.toString() === groupId);
 	$: currentGroupName = currentGroup ? currentGroup.name : '';
 
+	function switchCurrentGroup() {
+		if (currentGroup) {
+			groupId = currentGroup.id.toString();
+		}
+		modalGroups();
+	}
+
 	function modalGroups() {
 		const section = document.querySelector('.modal-groups');
 		if (!section) return;
@@ -48,7 +55,7 @@
 	<ul class="group-list">
 		{#each groups as group}
 			<li style="background-color: {getHexCodeColor(group.colorId)}20">
-				<a href={`/me/${group.id}/dashboard`} on:click={modalGroups}>
+				<a href={`/me/${group.id}/dashboard`} on:click={switchCurrentGroup}>
 					<div class="group-color" style="background-color: {getHexCodeColor(group.colorId)}"></div>
 					{group.name}
 				</a>
@@ -75,6 +82,7 @@
 		align-items: center;
 		padding: 0 1rem;
 		background-color: var(--color-background);
+		box-shadow: 0 0 1rem rgba(0, 0, 0, 0.1);
 	}
 
 	.personal-avatar {
