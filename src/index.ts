@@ -3,6 +3,7 @@ import express from 'express';
 import dotenv from 'dotenv';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
+import morgan from 'morgan';
 
 // [ Local imports ]
 import router from './routers/indexRouter.js';
@@ -10,6 +11,8 @@ import errorHandler from './middlewares/errorHandler.js';
 
 dotenv.config();
 const app = express();
+
+app.use(morgan('dev'));
 
 app.use(cookieParser());
 
