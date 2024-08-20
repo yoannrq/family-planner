@@ -30,7 +30,6 @@
 	}
 
 	async function handleSubmit(event: Event) {
-		event.preventDefault();
 		clearError();
 
 		if (password !== confirmedPassword) {
@@ -104,7 +103,7 @@
 	{:else}
 		<div class="personal-avatar" style="background-color: {userColor}">{firstTwoLetters}</div>
 	{/if}
-	<form on:submit={handleSubmit} id="edit-profile">
+	<form on:submit|preventDefault={handleSubmit} id="edit-profile">
 		{#if $errorStore.status > 0}
 			<ErrorDisplay message={$errorStore.message} severity="warning" />
 		{/if}

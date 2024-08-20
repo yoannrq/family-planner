@@ -1,17 +1,26 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
 	// [ Package imports ]
+	import { onMount } from 'svelte';
 
 	// [ Local imports ]
 	import type { PageData } from './$types';
 	import { getContacts } from '$lib/api/contact';
 	import { addError, clearError, errorStore } from '$lib/stores/errorStore';
+	import { addContact } from '$lib/stores/contactStore';
 	import ErrorDisplay from '$lib/components/ErrorDisplay.svelte';
 	import { loading } from '$lib/stores/loadingStatus';
 	import ContactDisplay from '$lib/components/ContactDisplay.svelte';
+	import CategoryHeader from '$lib/components/CategoryHeader.svelte';
+	import { goto } from '$app/navigation';
 
 	export let data: PageData;
 	export let contacts: App.Contact[] = [];
+
+	function handleClick(contact: App.Contact) {
+		addContact(contact);
+		clearError();
+		goto(`/me/${data.groupId}/contact/${contact.id}`);
+	}
 
 	onMount(async () => {
 		clearError();
@@ -25,9 +34,15 @@
 
 		contacts = await getContacts(data.groupId);
 		loading.set(false);
-		console.log(contacts);
 	});
 </script>
+
+<CategoryHeader
+	user={data.user}
+	groups={data.groups}
+	groupId={data.groupId}
+	categoryName="Contact"
+/>
 
 <main>
 	{#if $errorStore.status > 0}
@@ -41,7 +56,10 @@
 		<ul>
 			{#each contacts as contact}
 				<li>
-					<a href="/me/{data.groupId}/contact/{contact.id}">
+					<a
+						href="/me/{data.groupId}/contact/{contact.id}"
+						on:click|preventDefault={() => handleClick(contact)}
+					>
 						<ContactDisplay {contact} />
 					</a>
 				</li>
