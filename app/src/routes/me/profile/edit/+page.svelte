@@ -15,6 +15,7 @@
 
 	export let data: PageData;
 
+	let error: App.ErrorInfo;
 	let name = data.user.name;
 	let settingColorId = data.user.settingColorId;
 	let password = '';
@@ -25,12 +26,15 @@
 	const firstTwoLetters = data.user.name.slice(0, 2);
 	const userColor = getHexCodeColor(data.user.settingColorId);
 
+	errorStore.subscribe(value => {
+  	error = value;
+	});
+
 	function goToProfile() {
 		goto('/me/profile');
 	}
 
-	async function handleSubmit(event: Event) {
-		event.preventDefault();
+	async function handleSubmit() {
 		clearError();
 
 		if (password !== confirmedPassword) {
@@ -104,7 +108,7 @@
 	{:else}
 		<div class="personal-avatar" style="background-color: {userColor}">{firstTwoLetters}</div>
 	{/if}
-	<form on:submit={handleSubmit} id="edit-profile">
+	<form on:submit|preventDefault={handleSubmit} id="edit-profile">
 		{#if $errorStore.status > 0}
 			<ErrorDisplay message={$errorStore.message} severity="warning" />
 		{/if}

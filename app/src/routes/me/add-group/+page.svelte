@@ -39,8 +39,7 @@
 	});
 
 	// Handle form submission
-	const handleSubmit = async (event: Event) => {
-		event.preventDefault();
+	async function handleSubmit() {
 		// Clear the error store
 		clearError();
 
@@ -78,7 +77,7 @@
 	{#if $errorStore.status > 0}
 		<ErrorDisplay message={$errorStore.message} severity="warning" />
 	{/if}
-	<form on:submit={handleSubmit}>
+	<form on:submit|preventDefault={handleSubmit}>
 		<label for="group-name">Nom du groupe</label>
 		<input type="text" id="group-name" name="name" bind:value={groupName} required />
 		<label for="group-color">Couleur du groupe</label>

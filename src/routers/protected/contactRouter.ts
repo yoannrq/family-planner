@@ -23,4 +23,21 @@ const router = express.Router({ mergeParams: true });
  */
 router.get('/', contactController.getContacts);
 
+/**
+ * @route PATCH /api/me/group/:groupId/contact/:contactId
+ * @summary Update a contact
+ * @group Contact
+ * @protected header {string} Authorization - Bearer token
+ * @param {Object} req.user - User object added by loginRequired middleware
+ * @param {string} req.user.email - Email of authenticated user
+ * @param {number} req.params.groupId - Group ID
+ * @param {number} req.params.contactId - Contact ID
+ * @param {Object} req.body - Contact object
+ * @returns {object} 200 - Updated contact
+ * @returns {Error}  401 - Unauthorized
+ * @returns {Error}  403 - Forbidden
+ * @returns {Error}  404 - Not found
+ */
+router.patch('/:contactId', contactController.updateContact);
+
 export default router;
