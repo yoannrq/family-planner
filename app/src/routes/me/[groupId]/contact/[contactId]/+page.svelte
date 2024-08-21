@@ -6,15 +6,16 @@
 	import type { PageData } from './$types';
 	import { goto } from '$app/navigation';
 	import SvgDisplay from '$lib/components/SvgDisplay.svelte';
-	import { getHexCodeColor } from '$lib/stores/colorStore';
 	import { contactStore } from '$lib/stores/contactStore';
 	import { errorStore, clearError } from '$lib/stores/errorStore';
 	import ErrorDisplay from '$lib/components/ErrorDisplay.svelte';
 	import { getPreferencesObject, setPreferencesObject } from '$lib/auth';
 	import { getColors } from '$lib/api/color';
+	import { updateContact } from '$lib/api/contact';
 
 	export let data: PageData;
 
+	let error: App.ErrorInfo;
 	let editColor: App.Color['hexCode'] = '';
 	let colors: App.Color[] | null = [];
 	let colorId: App.Contact['colorId'] = $contactStore.colorId;
@@ -28,6 +29,10 @@
 
 	const firstTwoLetters = $contactStore.firstname.slice(0, 2);
 
+	errorStore.subscribe(value => {
+  	error = value;
+	});
+
 	function getColorValueFromCSS(variableName: string) {
 		const style = getComputedStyle(document.documentElement);
 		const color = style.getPropertyValue(variableName);
@@ -35,11 +40,37 @@
 	}
 
 	function goToContactList() {
+		clearError();
 		goto(`/me/${data.groupId}/contact`);
 	}
 
-	function handleSubmit() {
-		console.log('submit');
+	async function handleSubmit() {
+		clearError();
+
+		try {
+			const updatedContact: App.Contact|null = await updateContact({
+				id: $contactStore.id,
+				firstname,
+				lastname,
+				phone,
+				email,
+				address,
+				type,
+				content,
+				colorId,
+				groupId: $contactStore.groupId,
+				createdAt: $contactStore.createdAt
+			});
+
+			if (updatedContact === null) {
+				return;
+			}
+
+			goToContactList();
+			return;
+		} catch (error: any) {
+			errorStore.set({ status: error.status, message: error.message });
+		}
 	}
 
 	onMount(async () => {
@@ -83,7 +114,7 @@
 	{:else}
 		<div class="personal-avatar">{firstTwoLetters}</div>
 	{/if}
-	<form on:submit|preventDefault={() => handleSubmit} id="edit-contact">
+	<form on:submit|preventDefault={handleSubmit} id="edit-contact">
 		{#if $errorStore.status > 0}
 			<ErrorDisplay message={$errorStore.message} severity="warning" />
 		{/if}

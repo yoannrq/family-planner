@@ -4,7 +4,7 @@ import { CapacitorHttp } from '@capacitor/core';
 // [ Local imports ]
 import { PUBLIC_URL_API } from '$env/static/public';
 import { getValidAccessTokenOrGoToLogin } from '$lib/auth';
-import { addError } from '$lib/stores/errorStore';
+import { addError, clearError } from '$lib/stores/errorStore';
 
 /**
  * @function getUserGroups
@@ -41,23 +41,30 @@ export async function getUserGroups(): Promise<App.Group[]> {
  * @returns {Promise<App.Group>} - The created group
  */
 export async function createGroup(name: string, colorId: number): Promise<App.Group | null> {
-	const accessToken = await getValidAccessTokenOrGoToLogin();
-	const { data, status } = await CapacitorHttp.post({
-		url: `${PUBLIC_URL_API}/api/me/group`,
-		headers: {
-			'Content-Type': 'application/json',
-			Authorization: `Bearer ${accessToken}`
-		},
-		data: {
-			name,
-			colorId
-		}
-	});
+	try {
+		const accessToken = await getValidAccessTokenOrGoToLogin();
+		const { data, status } = await CapacitorHttp.post({
+			url: `${PUBLIC_URL_API}/api/me/group`,
+			headers: {
+				'Content-Type': 'application/json',
+				Authorization: `Bearer ${accessToken}`
+			},
+			data: {
+				name,
+				colorId
+			}
+		});
 
-	if (status === 201 && data) {
-		return data;
-	} else {
-		addError(status, data.err.message);
+		if (status === 201 && data) {
+			clearError();
+			return data;
+		} else {
+			addError(status, data.message || 'Something went wrong');
+			return null;
+		}
+	} catch (error: unknown) {
+		console.error(error);
+		addError(500, 'Something went wrong');
 		return null;
 	}
 }

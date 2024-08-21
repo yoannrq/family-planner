@@ -15,6 +15,7 @@
 
 	export let data: PageData;
 
+	let error: App.ErrorInfo;
 	let name = data.user.name;
 	let settingColorId = data.user.settingColorId;
 	let password = '';
@@ -25,11 +26,15 @@
 	const firstTwoLetters = data.user.name.slice(0, 2);
 	const userColor = getHexCodeColor(data.user.settingColorId);
 
+	errorStore.subscribe(value => {
+  	error = value;
+	});
+
 	function goToProfile() {
 		goto('/me/profile');
 	}
 
-	async function handleSubmit(event: Event) {
+	async function handleSubmit() {
 		clearError();
 
 		if (password !== confirmedPassword) {

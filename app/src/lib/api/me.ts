@@ -4,7 +4,7 @@ import { CapacitorHttp } from '@capacitor/core';
 // [ Local imports ]
 import { PUBLIC_URL_API } from '$env/static/public';
 import { getValidAccessTokenOrGoToLogin } from '$lib/auth';
-import { addError } from '$lib/stores/errorStore';
+import { addError, clearError } from '$lib/stores/errorStore';
 
 /**
  * @function updateMe
@@ -20,24 +20,31 @@ export async function updateMe(
 	password?: string,
 	settingColorId?: number
 ): Promise<App.User | null> {
-	const accessToken = await getValidAccessTokenOrGoToLogin();
-	const { data, status } = await CapacitorHttp.patch({
-		url: `${PUBLIC_URL_API}/api/me`,
-		headers: {
-			'Content-Type': 'application/json',
-			Authorization: `Bearer ${accessToken}`
-		},
-		data: {
-			name,
-			password,
-			settingColorId
-		}
-	});
+	try {
+		const accessToken = await getValidAccessTokenOrGoToLogin();
+		const { data, status } = await CapacitorHttp.patch({
+			url: `${PUBLIC_URL_API}/api/me`,
+			headers: {
+				'Content-Type': 'application/json',
+				Authorization: `Bearer ${accessToken}`
+			},
+			data: {
+				name,
+				password,
+				settingColorId
+			}
+		});
 
-	if (status === 200 && data) {
-		return data;
-	} else {
-		addError(status, data.err.message);
+		if (status === 200 && data) {
+			clearError(); // Effacer les erreurs précédentes en cas de succès
+			return data;
+		} else {
+			addError(status, data.message || 'Something went wrong');
+			return null;
+		}
+	} catch (error: unknown) {
+		console.error(error);
+		addError(500, 'Something went wrong');
 		return null;
 	}
 }

@@ -11,8 +11,8 @@ const contactSchema = z.object({
     .min(3, {
       message: "The field 'firstname' must be at least 3 characters long.",
     })
-    .max(50, {
-      message: "The field 'firstname' must be at most 50 characters long.",
+    .max(30, {
+      message: "The field 'firstname' must be at most 30 characters long.",
     }),
 
   lastname: z
@@ -23,8 +23,8 @@ const contactSchema = z.object({
     .min(3, {
       message: "The field 'lastname' must be at least 3 characters long.",
     })
-    .max(50, {
-      message: "The field 'lastname' must be at most 50 characters long.",
+    .max(30, {
+      message: "The field 'lastname' must be at most 30 characters long.",
     }),
 
   colorId: z
