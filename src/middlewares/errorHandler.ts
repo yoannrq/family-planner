@@ -13,11 +13,17 @@ const errorHandler = (
 ) => {
   console.error(err);
 
-  if (err.status) {
-    return res.status(err.status).json({ err });
+  if (process.env.NODE_ENV === 'production') {
+    return res
+      .status(500)
+      .json({ status: 500, message: 'Something went wrong' });
   }
 
-  return res.status(500).json({ err });
+  if (err.status) {
+    return res.status(err.status).json(err);
+  }
+
+  return res.status(500).json(err);
 };
 
 export default errorHandler;
