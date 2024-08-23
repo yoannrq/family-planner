@@ -124,8 +124,6 @@ const authController = {
         });
       }
 
-      user.password = '';
-
       const accessToken = jwtService.generateAccessToken({ email: user.email });
       const refreshToken = jwtService.generateRefreshToken({
         email: user.email,
@@ -146,6 +144,8 @@ const authController = {
           message: 'Failed to save refresh token',
         });
       }
+
+      refreshTokenOnUser.password = '';
 
       res.status(200).json({
         ...refreshTokenOnUser,

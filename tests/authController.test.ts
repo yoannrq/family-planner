@@ -20,11 +20,37 @@ describe('AuthController Tests', () => {
     expect(authController.signup).toBeDefined();
   });
 
-  it('insert a new user', async () => {
+  it('should send a 400 status code if the password is invalid', async () => {
+    const entryData = {
+      name: 'John Doe',
+      email: 'john@doe.com',
+      password: 'Password123',
+      settingColorId: 1,
+    };
+
+    const req = { body: entryData } as Request;
+    const res = {
+      status: vi.fn().mockReturnThis(),
+      json: vi.fn(),
+    } as unknown as Response;
+    const next = vi.fn();
+
+    await authController.signup(req, res, next);
+
+    expect(next).toHaveBeenCalledWith({
+      status: 400,
+      message: expect.stringContaining(
+        "The field 'password' must contain at least 1 uppercase letter, 1 lowercase letter, 1 number, 1 special character.",
+      ),
+    });
+  });
+
+  it('should insert a new user', async () => {
     const entryData = {
       name: 'John Doe',
       email: 'john@doe.com',
       password: 'Password123!',
+      settingColorId: 1,
     };
 
     const req = { body: entryData } as Request;
@@ -51,7 +77,7 @@ describe('AuthController Tests', () => {
     expect(authController.login).toBeDefined();
   });
 
-  it('login an existing user', async () => {
+  it('should login an existing user', async () => {
     const entryData = {
       email: 'john@doe.com',
       password: 'Password123!',

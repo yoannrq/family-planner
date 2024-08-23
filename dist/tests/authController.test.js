@@ -23,11 +23,31 @@ describe('AuthController Tests', () => {
     it('should have a signup method', () => {
         expect(authController.signup).toBeDefined();
     });
-    it('insert a new user', () => __awaiter(void 0, void 0, void 0, function* () {
+    it('should send a 400 status code if the password is invalid', () => __awaiter(void 0, void 0, void 0, function* () {
+        const entryData = {
+            name: 'John Doe',
+            email: 'john@doe.com',
+            password: 'Password123',
+            settingColorId: 1,
+        };
+        const req = { body: entryData };
+        const res = {
+            status: vi.fn().mockReturnThis(),
+            json: vi.fn(),
+        };
+        const next = vi.fn();
+        yield authController.signup(req, res, next);
+        expect(next).toHaveBeenCalledWith({
+            status: 400,
+            message: expect.stringContaining("The field 'password' must contain at least 1 uppercase letter, 1 lowercase letter, 1 number, 1 special character."),
+        });
+    }));
+    it('should insert a new user', () => __awaiter(void 0, void 0, void 0, function* () {
         const entryData = {
             name: 'John Doe',
             email: 'john@doe.com',
             password: 'Password123!',
+            settingColorId: 1,
         };
         const req = { body: entryData };
         const res = {
@@ -47,7 +67,7 @@ describe('AuthController Tests', () => {
     it('should have a login method', () => {
         expect(authController.login).toBeDefined();
     });
-    it('login an existing user', () => __awaiter(void 0, void 0, void 0, function* () {
+    it('should login an existing user', () => __awaiter(void 0, void 0, void 0, function* () {
         const entryData = {
             email: 'john@doe.com',
             password: 'Password123!',

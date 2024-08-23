@@ -46,7 +46,8 @@ describe('GroupController Tests', () => {
         expect(groupController.createGroup).toBeDefined();
     });
     it('should create a new group', () => __awaiter(void 0, void 0, void 0, function* () {
-        const randomColorId = (Math.floor(Math.random() * 9) + 1).toString();
+        const randomColorId = Math.floor(Math.random() * 9) + 1;
+        const randomColorIdToString = randomColorId.toString();
         const randomGroupName = (Math.random() + 1).toString(36).substring(7);
         const req = {
             user: {
@@ -54,7 +55,7 @@ describe('GroupController Tests', () => {
             },
             body: {
                 name: randomGroupName,
-                colorId: randomColorId,
+                colorId: randomColorIdToString,
             },
         };
         const res = {

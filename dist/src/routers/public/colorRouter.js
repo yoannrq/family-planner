@@ -3,6 +3,7 @@ import express from 'express';
 // [ Local imports ]
 import colorController from '../../controllers/colorController.js';
 const router = express.Router();
+// [ Routes ]
 /**
  * @route GET /api/public/color
  * @summary Get an array with all colors

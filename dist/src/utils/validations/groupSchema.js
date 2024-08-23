@@ -12,16 +12,12 @@ const groupSchema = z.object({
         message: "The field 'name' must be at most 30 characters long.",
     }),
     colorId: z
-        .string({
+        .number({
         required_error: "The field 'colorId' is required.",
-        invalid_type_error: "The field 'colorId' must be a string.",
-    })
-        .regex(/^[1-9]\d{0,9}$/, {
-        message: "The field 'colorId' must be a number.",
+        invalid_type_error: "The field 'colorId' must be a number.",
     })
         .min(1, {
         message: "The field 'colorId' must be at least 1 character long.",
-    })
-        .transform((value) => parseInt(value)),
+    }),
 });
 export default groupSchema;
