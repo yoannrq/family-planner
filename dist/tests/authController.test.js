@@ -8,10 +8,10 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 // [ Package imports ]
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach, afterAll, } from 'vitest';
 // [ Local imports ]
 import authController from '../src/controllers/authController.js';
-import deleteEntry from '../src/utils/deleteEntry.js';
+import prisma from '../src/models/client.js';
 // [ Tests ]
 describe('AuthController Tests', () => {
     beforeEach(() => {
@@ -20,6 +20,22 @@ describe('AuthController Tests', () => {
     afterEach(() => {
         vi.restoreAllMocks();
     });
+    afterAll(() => __awaiter(void 0, void 0, void 0, function* () {
+        yield prisma.group.deleteMany({
+            where: {
+                users: {
+                    some: {
+                        email: 'john@doe.com',
+                    },
+                },
+            },
+        });
+        yield prisma.user.delete({
+            where: {
+                email: 'john@doe.com',
+            },
+        });
+    }));
     it('should have a signup method', () => {
         expect(authController.signup).toBeDefined();
     });
@@ -37,10 +53,10 @@ describe('AuthController Tests', () => {
         };
         const next = vi.fn();
         yield authController.signup(req, res, next);
-        expect(next).toHaveBeenCalledWith({
+        expect(next).toHaveBeenCalledWith(expect.objectContaining({
             status: 400,
             message: expect.stringContaining("The field 'password' must contain at least 1 uppercase letter, 1 lowercase letter, 1 number, 1 special character."),
-        });
+        }));
     }));
     it('should insert a new user', () => __awaiter(void 0, void 0, void 0, function* () {
         const entryData = {
@@ -61,12 +77,84 @@ describe('AuthController Tests', () => {
         expect(res.json).toHaveBeenCalledWith(expect.objectContaining({
             name: 'John Doe',
             email: 'john@doe.com',
-            password: '',
         }));
+        const user = yield prisma.user.findUnique({
+            where: { email: 'john@doe.com' },
+        });
+        expect(user).toBeDefined();
+        expect(user === null || user === void 0 ? void 0 : user.password).not.toBe('Password123!');
+    }));
+    it('should send a 409 status code if the user already exists', () => __awaiter(void 0, void 0, void 0, function* () {
+        const entryData = {
+            name: 'John Doe',
+            email: 'john@doe.com',
+            password: 'Password123!',
+            settingColorId: 1,
+        };
+        const req = { body: entryData };
+        const res = {
+            status: vi.fn().mockReturnThis(),
+            json: vi.fn(),
+        };
+        const next = vi.fn();
+        yield authController.signup(req, res, next);
+        expect(next).toHaveBeenCalledWith(expect.objectContaining({
+            status: 409,
+            message: expect.stringContaining('User already exists'),
+        }));
+    }));
+    it('should have created a group for the new user', () => __awaiter(void 0, void 0, void 0, function* () {
+        const userGroup = yield prisma.group.findFirst({
+            where: {
+                users: {
+                    some: {
+                        email: 'john@doe.com',
+                    },
+                },
+            },
+        });
+        expect(userGroup).toMatchObject({
+            name: `John Doe's family`,
+            colorId: expect.any(Number),
+        });
     }));
     it('should have a login method', () => {
         expect(authController.login).toBeDefined();
     });
+    it('should send a 401 status code if the email does not exist', () => __awaiter(void 0, void 0, void 0, function* () {
+        const entryData = {
+            email: 'doe@john.com',
+            password: 'Password123!',
+        };
+        const req = { body: entryData };
+        const res = {
+            status: vi.fn().mockReturnThis(),
+            json: vi.fn(),
+        };
+        const next = vi.fn();
+        yield authController.login(req, res, next);
+        expect(next).toHaveBeenCalledWith(expect.objectContaining({
+            status: 401,
+            message: expect.stringContaining('Invalid email or password'),
+        }));
+    }));
+    it('should send a 401 status code if the password is invalid', () => __awaiter(void 0, void 0, void 0, function* () {
+        const entryData = {
+            email: 'john@doe.com',
+            password: 'Password1234!',
+        };
+        const req = { body: entryData };
+        const res = {
+            status: vi.fn().mockReturnThis(),
+            json: vi.fn(),
+        };
+        const next = vi.fn();
+        yield authController.login(req, res, next);
+        expect(next).toHaveBeenCalledWith(expect.objectContaining({
+            status: 401,
+            message: expect.stringContaining('Invalid email or password'),
+        }));
+    }));
     it('should login an existing user', () => __awaiter(void 0, void 0, void 0, function* () {
         const entryData = {
             email: 'john@doe.com',
@@ -84,10 +172,55 @@ describe('AuthController Tests', () => {
         expect(res.json).toHaveBeenCalledWith(expect.objectContaining({
             name: 'John Doe',
             email: 'john@doe.com',
-            password: '',
+            accessToken: expect.any(String),
+            refreshToken: expect.any(String),
         }));
-        // Clean up the database
-        const isDeleted = yield deleteEntry('User', 'email', 'john@doe.com');
-        expect(isDeleted).toBe(true);
+    }));
+    it('should have a newAccessToken method', () => {
+        expect(authController.newAccessToken).toBeDefined();
+    });
+    it('should send a 400 status code if the refresh token is not provided', () => __awaiter(void 0, void 0, void 0, function* () {
+        const req = { body: {} };
+        const res = {
+            status: vi.fn().mockReturnThis(),
+            json: vi.fn(),
+        };
+        const next = vi.fn();
+        yield authController.newAccessToken(req, res, next);
+        expect(next).toHaveBeenCalledWith(expect.objectContaining({
+            status: 400,
+            message: expect.stringContaining('Refresh token is required'),
+        }));
+    }));
+    it('should send a 401 status code if the refresh token is invalid', () => __awaiter(void 0, void 0, void 0, function* () {
+        const entryData = { refreshToken: 'invalid' };
+        const req = { body: entryData };
+        const res = {
+            status: vi.fn().mockReturnThis(),
+            json: vi.fn(),
+        };
+        const next = vi.fn();
+        yield authController.newAccessToken(req, res, next);
+        expect(next).toHaveBeenCalledWith(expect.objectContaining({
+            status: 401,
+            message: expect.stringContaining('Refresh token expired'),
+        }));
+    }));
+    it('should send an access token if the refresh token is valid', () => __awaiter(void 0, void 0, void 0, function* () {
+        const user = yield prisma.user.findUnique({
+            where: { email: 'john@doe.com' },
+        });
+        const validRefreshToken = user === null || user === void 0 ? void 0 : user.refreshToken;
+        const req = { body: { refreshToken: validRefreshToken } };
+        const res = {
+            status: vi.fn().mockReturnThis(),
+            json: vi.fn(),
+        };
+        const next = vi.fn();
+        yield authController.newAccessToken(req, res, next);
+        expect(res.status).toHaveBeenCalledWith(200);
+        expect(res.json).toHaveBeenCalledWith(expect.objectContaining({
+            accessToken: expect.any(String),
+        }));
     }));
 });
