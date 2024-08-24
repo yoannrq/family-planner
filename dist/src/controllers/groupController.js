@@ -13,7 +13,10 @@ import groupSchema from '../utils/validations/groupSchema.js';
 const groupController = {
     getGroups: (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
         if (!req.user) {
-            return res.status(401).json({ message: 'Unauthorized' });
+            return next({
+                status: 401,
+                message: 'Unauthorized',
+            });
         }
         const userEmail = req.user.email;
         try {
@@ -26,7 +29,10 @@ const groupController = {
                 },
             });
             if (!userGroups) {
-                return res.status(404).json({ message: 'User not found' });
+                return next({
+                    status: 404,
+                    message: 'User not found',
+                });
             }
             return res.status(200).json(userGroups.groups);
         }
@@ -38,7 +44,10 @@ const groupController = {
     }),
     createGroup: (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
         if (!req.user) {
-            return res.status(401).json({ message: 'Unauthorized' });
+            return next({
+                status: 401,
+                message: 'Unauthorized',
+            });
         }
         const userEmail = req.user.email;
         const { success, data, error } = groupSchema.safeParse(req.body);

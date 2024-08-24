@@ -12,11 +12,12 @@ import { describe, it, expect, vi, beforeEach, afterEach, afterAll, } from 'vite
 // [ Local imports ]
 import authController from '../src/controllers/authController.js';
 import prisma from '../src/models/client.js';
+// TODO : Modifier la façon dont est utilisé l'utilisateur de test. cela créé des conflits lors de l'exécution des tests. Idée : Utiliser un utilisateur de test pour chaque test.
 // [ Tests ]
 describe('AuthController Tests', () => {
-    beforeEach(() => {
+    beforeEach(() => __awaiter(void 0, void 0, void 0, function* () {
         vi.clearAllMocks();
-    });
+    }));
     afterEach(() => {
         vi.restoreAllMocks();
     });
@@ -25,14 +26,14 @@ describe('AuthController Tests', () => {
             where: {
                 users: {
                     some: {
-                        email: 'john@doe.com',
+                        email: 'auth@test.com',
                     },
                 },
             },
         });
-        yield prisma.user.delete({
+        yield prisma.user.deleteMany({
             where: {
-                email: 'john@doe.com',
+                email: 'auth@test.com',
             },
         });
     }));
@@ -41,8 +42,8 @@ describe('AuthController Tests', () => {
     });
     it('should send a 400 status code if the password is invalid', () => __awaiter(void 0, void 0, void 0, function* () {
         const entryData = {
-            name: 'John Doe',
-            email: 'john@doe.com',
+            name: 'Auth Test User',
+            email: 'auth@test.com',
             password: 'Password123',
             settingColorId: 1,
         };
@@ -60,8 +61,8 @@ describe('AuthController Tests', () => {
     }));
     it('should insert a new user', () => __awaiter(void 0, void 0, void 0, function* () {
         const entryData = {
-            name: 'John Doe',
-            email: 'john@doe.com',
+            name: 'Auth Test User',
+            email: 'auth@test.com',
             password: 'Password123!',
             settingColorId: 1,
         };
@@ -75,19 +76,19 @@ describe('AuthController Tests', () => {
         expect(next).not.toHaveBeenCalled();
         expect(res.status).toHaveBeenCalledWith(201);
         expect(res.json).toHaveBeenCalledWith(expect.objectContaining({
-            name: 'John Doe',
-            email: 'john@doe.com',
+            name: 'Auth Test User',
+            email: 'auth@test.com',
         }));
         const user = yield prisma.user.findUnique({
-            where: { email: 'john@doe.com' },
+            where: { email: 'auth@test.com' },
         });
         expect(user).toBeDefined();
         expect(user === null || user === void 0 ? void 0 : user.password).not.toBe('Password123!');
     }));
     it('should send a 409 status code if the user already exists', () => __awaiter(void 0, void 0, void 0, function* () {
         const entryData = {
-            name: 'John Doe',
-            email: 'john@doe.com',
+            name: 'Auth Test User',
+            email: 'auth@test.com',
             password: 'Password123!',
             settingColorId: 1,
         };
@@ -108,13 +109,13 @@ describe('AuthController Tests', () => {
             where: {
                 users: {
                     some: {
-                        email: 'john@doe.com',
+                        email: 'auth@test.com',
                     },
                 },
             },
         });
         expect(userGroup).toMatchObject({
-            name: `John Doe's family`,
+            name: `Auth Test User's family`,
             colorId: expect.any(Number),
         });
     }));
@@ -123,7 +124,7 @@ describe('AuthController Tests', () => {
     });
     it('should send a 401 status code if the email does not exist', () => __awaiter(void 0, void 0, void 0, function* () {
         const entryData = {
-            email: 'doe@john.com',
+            email: 'authauth@test.com',
             password: 'Password123!',
         };
         const req = { body: entryData };
@@ -140,7 +141,7 @@ describe('AuthController Tests', () => {
     }));
     it('should send a 401 status code if the password is invalid', () => __awaiter(void 0, void 0, void 0, function* () {
         const entryData = {
-            email: 'john@doe.com',
+            email: 'auth@test.com',
             password: 'Password1234!',
         };
         const req = { body: entryData };
@@ -157,7 +158,7 @@ describe('AuthController Tests', () => {
     }));
     it('should login an existing user', () => __awaiter(void 0, void 0, void 0, function* () {
         const entryData = {
-            email: 'john@doe.com',
+            email: 'auth@test.com',
             password: 'Password123!',
         };
         const req = { body: entryData };
@@ -170,8 +171,8 @@ describe('AuthController Tests', () => {
         expect(next).not.toHaveBeenCalled();
         expect(res.status).toHaveBeenCalledWith(200);
         expect(res.json).toHaveBeenCalledWith(expect.objectContaining({
-            name: 'John Doe',
-            email: 'john@doe.com',
+            name: 'Auth Test User',
+            email: 'auth@test.com',
             accessToken: expect.any(String),
             refreshToken: expect.any(String),
         }));
@@ -208,7 +209,7 @@ describe('AuthController Tests', () => {
     }));
     it('should send an access token if the refresh token is valid', () => __awaiter(void 0, void 0, void 0, function* () {
         const user = yield prisma.user.findUnique({
-            where: { email: 'john@doe.com' },
+            where: { email: 'auth@test.com' },
         });
         const validRefreshToken = user === null || user === void 0 ? void 0 : user.refreshToken;
         const req = { body: { refreshToken: validRefreshToken } };

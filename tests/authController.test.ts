@@ -14,9 +14,10 @@ import { Request, Response } from 'express';
 import authController from '../src/controllers/authController.js';
 import prisma from '../src/models/client.js';
 
+// TODO : Modifier la façon dont est utilisé l'utilisateur de test. cela créé des conflits lors de l'exécution des tests. Idée : Utiliser un utilisateur de test pour chaque test.
 // [ Tests ]
 describe('AuthController Tests', () => {
-  beforeEach(() => {
+  beforeEach(async () => {
     vi.clearAllMocks();
   });
 
@@ -29,15 +30,15 @@ describe('AuthController Tests', () => {
       where: {
         users: {
           some: {
-            email: 'john@doe.com',
+            email: 'auth@test.com',
           },
         },
       },
     });
 
-    await prisma.user.delete({
+    await prisma.user.deleteMany({
       where: {
-        email: 'john@doe.com',
+        email: 'auth@test.com',
       },
     });
   });
@@ -48,8 +49,8 @@ describe('AuthController Tests', () => {
 
   it('should send a 400 status code if the password is invalid', async () => {
     const entryData = {
-      name: 'John Doe',
-      email: 'john@doe.com',
+      name: 'Auth Test User',
+      email: 'auth@test.com',
       password: 'Password123',
       settingColorId: 1,
     };
@@ -75,8 +76,8 @@ describe('AuthController Tests', () => {
 
   it('should insert a new user', async () => {
     const entryData = {
-      name: 'John Doe',
-      email: 'john@doe.com',
+      name: 'Auth Test User',
+      email: 'auth@test.com',
       password: 'Password123!',
       settingColorId: 1,
     };
@@ -94,13 +95,13 @@ describe('AuthController Tests', () => {
     expect(res.status).toHaveBeenCalledWith(201);
     expect(res.json).toHaveBeenCalledWith(
       expect.objectContaining({
-        name: 'John Doe',
-        email: 'john@doe.com',
+        name: 'Auth Test User',
+        email: 'auth@test.com',
       }),
     );
 
     const user = await prisma.user.findUnique({
-      where: { email: 'john@doe.com' },
+      where: { email: 'auth@test.com' },
     });
     expect(user).toBeDefined();
     expect(user?.password).not.toBe('Password123!');
@@ -108,8 +109,8 @@ describe('AuthController Tests', () => {
 
   it('should send a 409 status code if the user already exists', async () => {
     const entryData = {
-      name: 'John Doe',
-      email: 'john@doe.com',
+      name: 'Auth Test User',
+      email: 'auth@test.com',
       password: 'Password123!',
       settingColorId: 1,
     };
@@ -136,14 +137,14 @@ describe('AuthController Tests', () => {
       where: {
         users: {
           some: {
-            email: 'john@doe.com',
+            email: 'auth@test.com',
           },
         },
       },
     });
 
     expect(userGroup).toMatchObject({
-      name: `John Doe's family`,
+      name: `Auth Test User's family`,
       colorId: expect.any(Number),
     });
   });
@@ -154,7 +155,7 @@ describe('AuthController Tests', () => {
 
   it('should send a 401 status code if the email does not exist', async () => {
     const entryData = {
-      email: 'doe@john.com',
+      email: 'authauth@test.com',
       password: 'Password123!',
     };
 
@@ -177,7 +178,7 @@ describe('AuthController Tests', () => {
 
   it('should send a 401 status code if the password is invalid', async () => {
     const entryData = {
-      email: 'john@doe.com',
+      email: 'auth@test.com',
       password: 'Password1234!',
     };
 
@@ -200,7 +201,7 @@ describe('AuthController Tests', () => {
 
   it('should login an existing user', async () => {
     const entryData = {
-      email: 'john@doe.com',
+      email: 'auth@test.com',
       password: 'Password123!',
     };
 
@@ -217,8 +218,8 @@ describe('AuthController Tests', () => {
     expect(res.status).toHaveBeenCalledWith(200);
     expect(res.json).toHaveBeenCalledWith(
       expect.objectContaining({
-        name: 'John Doe',
-        email: 'john@doe.com',
+        name: 'Auth Test User',
+        email: 'auth@test.com',
         accessToken: expect.any(String),
         refreshToken: expect.any(String),
       }),
@@ -269,7 +270,7 @@ describe('AuthController Tests', () => {
 
   it('should send an access token if the refresh token is valid', async () => {
     const user = await prisma.user.findUnique({
-      where: { email: 'john@doe.com' },
+      where: { email: 'auth@test.com' },
     });
     const validRefreshToken = user?.refreshToken;
 

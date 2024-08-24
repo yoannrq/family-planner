@@ -12,14 +12,16 @@ import bcrypt from 'bcrypt';
 // [ Local imports ]
 import prisma from '../../src/models/client.js';
 import jwtService from '../../src/utils/jwtService.js';
-const createTestUser = () => __awaiter(void 0, void 0, void 0, function* () {
+const createTestUser = (scope) => __awaiter(void 0, void 0, void 0, function* () {
     const hashedPassword = yield bcrypt.hash('Password123!', 10);
     const testUserData = {
-        name: 'John Doe',
-        email: 'john@doe.com',
+        name: `${scope} Test User`,
+        email: `${scope}@test.com`,
         password: hashedPassword,
         settingColorId: 1,
-        refreshToken: jwtService.generateRefreshToken({ email: 'john@doe.com' }),
+        refreshToken: jwtService.generateRefreshToken({
+            email: `${scope}@test.com`,
+        }),
     };
     const accessToken = jwtService.generateAccessToken({
         email: testUserData.email,
