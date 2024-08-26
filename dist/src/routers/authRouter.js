@@ -3,6 +3,7 @@ import express from 'express';
 // [ Local imports ]
 import authController from '../controllers/authController.js';
 const router = express.Router();
+// [ Routes ]
 /**
  * @route POST /api/auth/signup
  * @summary Sign up a new user

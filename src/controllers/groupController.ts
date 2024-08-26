@@ -8,7 +8,10 @@ import groupSchema from '../utils/validations/groupSchema.js';
 const groupController = {
   getGroups: async (req: Request, res: Response, next: NextFunction) => {
     if (!req.user) {
-      return res.status(401).json({ message: 'Unauthorized' });
+      return next({
+        status: 401,
+        message: 'Unauthorized',
+      });
     }
     const userEmail = req.user.email;
 
@@ -23,7 +26,10 @@ const groupController = {
       });
 
       if (!userGroups) {
-        return res.status(404).json({ message: 'User not found' });
+        return next({
+          status: 404,
+          message: 'User not found',
+        });
       }
 
       return res.status(200).json(userGroups.groups);
@@ -36,7 +42,10 @@ const groupController = {
 
   createGroup: async (req: Request, res: Response, next: NextFunction) => {
     if (!req.user) {
-      return res.status(401).json({ message: 'Unauthorized' });
+      return next({
+        status: 401,
+        message: 'Unauthorized',
+      });
     }
     const userEmail = req.user.email;
 

@@ -102,7 +102,6 @@ const authController = {
                     message: 'Invalid email or password',
                 });
             }
-            user.password = '';
             const accessToken = jwtService.generateAccessToken({ email: user.email });
             const refreshToken = jwtService.generateRefreshToken({
                 email: user.email,
@@ -121,7 +120,8 @@ const authController = {
                     message: 'Failed to save refresh token',
                 });
             }
-            res.status(200).json(Object.assign(Object.assign({}, user), { accessToken }));
+            refreshTokenOnUser.password = '';
+            res.status(200).json(Object.assign(Object.assign({}, refreshTokenOnUser), { accessToken }));
         }
         catch (error) {
             return next({

@@ -3,14 +3,14 @@ import jwt from 'jsonwebtoken';
 const jwtService = {
     generateAccessToken: (payload) => {
         const privateKey = process.env.JWT_ACCESS_PRIVATE_KEY;
-        const expiresIn = process.env.NODE_ENV === 'production' ? 300 : 120;
+        const expiresIn = process.env.NODE_ENV === 'production' ? 300 : 60;
         return jwt.sign(Object.assign(Object.assign({}, payload), { exp: Math.floor(Date.now() / 1000) + expiresIn }), privateKey, {
             algorithm: 'ES256',
         });
     },
     generateRefreshToken: (payload) => {
         const privateKey = process.env.JWT_REFRESH_PRIVATE_KEY;
-        const expiresIn = process.env.NODE_ENV === 'production' ? 30 * 24 * 60 * 60 : 300;
+        const expiresIn = process.env.NODE_ENV === 'production' ? 30 * 24 * 60 * 60 : 6000;
         return jwt.sign(Object.assign(Object.assign({}, payload), { exp: Math.floor(Date.now() / 1000) + expiresIn }), privateKey, {
             algorithm: 'ES256',
         });

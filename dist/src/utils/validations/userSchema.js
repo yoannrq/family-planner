@@ -1,4 +1,5 @@
 import { z } from 'zod';
+// TODO Ajouter la vérification de l'url de profil
 const userSchema = z.object({
     name: z
         .string({
@@ -8,8 +9,8 @@ const userSchema = z.object({
         .min(3, {
         message: "The field 'name' must be at least 3 characters long.",
     })
-        .max(50, {
-        message: "The field 'name' must be at most 50 characters long.",
+        .max(30, {
+        message: "The field 'name' must be at most 30 characters long.",
     }),
     email: z
         .string({
@@ -29,6 +30,14 @@ const userSchema = z.object({
     })
         .min(8, {
         message: "The field 'password' must be at least 8 characters long.",
+    }),
+    settingColorId: z
+        .number({
+        required_error: "The field 'settingColorId' is required.",
+        invalid_type_error: "The field 'settingColorId' must be a number.",
+    })
+        .min(1, {
+        message: "The field 'settingColorId' must be at least 1 character long.",
     }),
 });
 export default userSchema;
