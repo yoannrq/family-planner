@@ -5,8 +5,8 @@
 	// [ Local imports ]
 	import type { PageData } from './$types';
 	import { getContacts } from '$lib/api/contact';
-	import { addError, clearError, errorStore } from '$lib/stores/errorStore';
-	import { addContact } from '$lib/stores/contactStore';
+	import { storeError, clearError, errorStore } from '$lib/stores/errorStore';
+	import { storeContact } from '$lib/stores/contactStore';
 	import ErrorDisplay from '$lib/components/ErrorDisplay.svelte';
 	import { loading } from '$lib/stores/loadingStatus';
 	import ContactDisplay from '$lib/components/ContactDisplay.svelte';
@@ -17,7 +17,7 @@
 	export let contacts: App.Contact[] = [];
 
 	function handleClick(contact: App.Contact) {
-		addContact(contact);
+		storeContact(contact);
 		clearError();
 		goto(`/me/${data.groupId}/contact/${contact.id}`);
 	}
@@ -27,7 +27,7 @@
 		loading.set(true);
 
 		if (!data.groupId) {
-			addError(404, 'Something went wrong with the group identifier.');
+			storeError(404, 'Something went wrong with the group identifier.');
 			loading.set(false);
 			return;
 		}

@@ -4,7 +4,7 @@ import { CapacitorHttp } from '@capacitor/core';
 // [ Local imports ]
 import { PUBLIC_URL_API } from '$env/static/public';
 import { getValidAccessTokenOrGoToLogin } from '$lib/auth';
-import { addError, clearError } from '$lib/stores/errorStore';
+import { storeError, clearError } from '$lib/stores/errorStore';
 
 /**
  * @function getContacts
@@ -26,7 +26,7 @@ export async function getContacts(groupId: string): Promise<App.Contact[]> {
 	if (status === 200 && data) {
 		return data;
 	} else {
-		addError(status, data.err.message);
+		storeError(status, data.err.message);
 		return [];
 	}
 }
@@ -55,12 +55,12 @@ export async function updateContact(contact: App.Contact): Promise<App.Contact |
 			clearError();
 			return data;
 		} else {
-			addError(status, data.message || 'Something went wrong');
+			storeError(status, data.message || 'Something went wrong');
 			return null;
 		}
 	} catch (error: unknown) {
 		console.error(error);
-		addError(500, 'Something went wrong');
+		storeError(500, 'Something went wrong');
 		return null;
 	}
 }
