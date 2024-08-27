@@ -12,6 +12,7 @@
 	import ContactDisplay from '$lib/components/ContactDisplay.svelte';
 	import CategoryHeader from '$lib/components/CategoryHeader.svelte';
 	import { goto } from '$app/navigation';
+	import FloatingCreationButton from '$lib/components/FloatingCreationButton.svelte';
 
 	export let data: PageData;
 	export let contacts: App.Contact[] = [];
@@ -68,6 +69,11 @@
 	{:else}
 		<p>There are no contacts in this group.</p>
 	{/if}
+	<FloatingCreationButton
+		groupId={data.groupId}
+		currentPage="contact"
+		settingColorId={data.user.settingColorId}
+	/>
 </main>
 
 <style>
