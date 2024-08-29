@@ -71,7 +71,6 @@ const contactSchema = z.object({
 
   type: z
     .string({
-      required_error: "The field 'type' is required.",
       invalid_type_error: "The field 'type' must be a string.",
     })
     .min(3, {

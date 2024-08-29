@@ -5,7 +5,9 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "test": "npm run build && vitest",
+    "test:api": "vitest",
+    "test:app": "cd app && vitest",
+    "test:all": "npm run test:api && npm run test:app",
     "dev": "npx nodemon --exec npx tsx src/index.ts",
     "build": "tsc",
     "start": "npm run build && node dist/index.js",

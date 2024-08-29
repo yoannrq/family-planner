@@ -61,7 +61,7 @@
 		const groupId = newGroup.id;
 
 		goToDashboard();
-	};
+	}
 
 	const goToDashboard = () => {
 		// Clear the error store
@@ -91,8 +91,8 @@
 			{/if}
 		</select>
 		<button class="submit-button" type="submit">Créer</button>
-		<button class="cancel-button" on:click={goToDashboard}>Annuler</button>
 	</form>
+	<button class="cancel-button" on:click|preventDefault={goToDashboard}>Annuler</button>
 </section>
 
 <style>
@@ -152,5 +152,6 @@
 		background-color: var(--color-tertiary);
 		color: white;
 		font-size: 1.1rem;
+		width: 55%;
 	}
 </style>

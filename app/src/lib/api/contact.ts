@@ -4,7 +4,7 @@ import { CapacitorHttp } from '@capacitor/core';
 // [ Local imports ]
 import { PUBLIC_URL_API } from '$env/static/public';
 import { getValidAccessTokenOrGoToLogin } from '$lib/auth';
-import { addError, clearError } from '$lib/stores/errorStore';
+import { storeError, clearError } from '$lib/stores/errorStore';
 
 /**
  * @function getContacts
@@ -26,8 +26,42 @@ export async function getContacts(groupId: string): Promise<App.Contact[]> {
 	if (status === 200 && data) {
 		return data;
 	} else {
-		addError(status, data.err.message);
+		storeError(status, data.err.message);
 		return [];
+	}
+}
+
+/**
+ * @function createContact
+ * @route POST /api/me/group/:groupId/contact
+ * @summary Create a contact
+ * @protected header {string} Authorization - Bearer token
+ * @param {App.Contact} contact - Contact object
+ * @returns {Promise<App.Contact>} - Created contact
+ */
+export async function createContact(contact: App.ContactCreationData): Promise<App.Contact | null> {
+	try {
+		const accessToken = await getValidAccessTokenOrGoToLogin();
+		const { data, status } = await CapacitorHttp.post({
+			url: `${PUBLIC_URL_API}/api/me/group/${contact.groupId}/contact`,
+			headers: {
+				'Content-Type': 'application/json',
+				Authorization: `Bearer ${accessToken}`
+			},
+			data: contact
+		});
+
+		if (status === 201 && data) {
+			clearError();
+			return data;
+		} else {
+			storeError(status, data.message || 'Something went wrong');
+			return null;
+		}
+	} catch (error: unknown) {
+		console.error(error);
+		storeError(500, 'Something went wrong');
+		return null;
 	}
 }
 
@@ -55,12 +89,12 @@ export async function updateContact(contact: App.Contact): Promise<App.Contact |
 			clearError();
 			return data;
 		} else {
-			addError(status, data.message || 'Something went wrong');
+			storeError(status, data.message || 'Something went wrong');
 			return null;
 		}
 	} catch (error: unknown) {
 		console.error(error);
-		addError(500, 'Something went wrong');
+		storeError(500, 'Something went wrong');
 		return null;
 	}
 }

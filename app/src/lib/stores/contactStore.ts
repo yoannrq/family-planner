@@ -3,7 +3,7 @@ import { writable } from 'svelte/store';
 
 export const contactStore = writable<App.Contact>();
 
-export function addContact(contact: App.Contact) {
+export function storeContact(contact: App.Contact) {
 	contactStore.set({ ...contact });
 }
 

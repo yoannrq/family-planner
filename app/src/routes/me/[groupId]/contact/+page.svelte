@@ -5,19 +5,20 @@
 	// [ Local imports ]
 	import type { PageData } from './$types';
 	import { getContacts } from '$lib/api/contact';
-	import { addError, clearError, errorStore } from '$lib/stores/errorStore';
-	import { addContact } from '$lib/stores/contactStore';
+	import { storeError, clearError, errorStore } from '$lib/stores/errorStore';
+	import { storeContact } from '$lib/stores/contactStore';
 	import ErrorDisplay from '$lib/components/ErrorDisplay.svelte';
 	import { loading } from '$lib/stores/loadingStatus';
 	import ContactDisplay from '$lib/components/ContactDisplay.svelte';
 	import CategoryHeader from '$lib/components/CategoryHeader.svelte';
 	import { goto } from '$app/navigation';
+	import FloatingCreationButton from '$lib/components/FloatingCreationButton.svelte';
 
 	export let data: PageData;
 	export let contacts: App.Contact[] = [];
 
 	function handleClick(contact: App.Contact) {
-		addContact(contact);
+		storeContact(contact);
 		clearError();
 		goto(`/me/${data.groupId}/contact/${contact.id}`);
 	}
@@ -25,12 +26,6 @@
 	onMount(async () => {
 		clearError();
 		loading.set(true);
-
-		if (!data.groupId) {
-			addError(404, 'Something went wrong with the group identifier.');
-			loading.set(false);
-			return;
-		}
 
 		contacts = await getContacts(data.groupId);
 		loading.set(false);
@@ -68,6 +63,11 @@
 	{:else}
 		<p>There are no contacts in this group.</p>
 	{/if}
+	<FloatingCreationButton
+		groupId={data.groupId}
+		currentPage="contact"
+		settingColorId={data.user.settingColorId}
+	/>
 </main>
 
 <style>

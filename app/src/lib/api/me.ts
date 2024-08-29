@@ -4,7 +4,7 @@ import { CapacitorHttp } from '@capacitor/core';
 // [ Local imports ]
 import { PUBLIC_URL_API } from '$env/static/public';
 import { getValidAccessTokenOrGoToLogin } from '$lib/auth';
-import { addError, clearError } from '$lib/stores/errorStore';
+import { storeError, clearError } from '$lib/stores/errorStore';
 
 /**
  * @function updateMe
@@ -39,12 +39,12 @@ export async function updateMe(
 			clearError(); // Effacer les erreurs précédentes en cas de succès
 			return data;
 		} else {
-			addError(status, data.message || 'Something went wrong');
+			storeError(status, data.message || 'Something went wrong');
 			return null;
 		}
 	} catch (error: unknown) {
 		console.error(error);
-		addError(500, 'Something went wrong');
+		storeError(500, 'Something went wrong');
 		return null;
 	}
 }
