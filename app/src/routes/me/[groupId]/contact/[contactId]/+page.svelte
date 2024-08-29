@@ -5,13 +5,17 @@
 	// [ Local imports ]
 	import type { PageData } from './$types';
 	import { goto } from '$app/navigation';
-	import SvgDisplay from '$lib/components/SvgDisplay.svelte';
-	import { contactStore } from '$lib/stores/contactStore';
-	import { errorStore, clearError } from '$lib/stores/errorStore';
-	import ErrorDisplay from '$lib/components/ErrorDisplay.svelte';
 	import { getPreferencesObject, setPreferencesObject } from '$lib/auth';
 	import { getColors } from '$lib/api/color';
 	import { updateContact } from '$lib/api/contact';
+
+	// [ Component imports ]
+	import SvgDisplay from '$lib/components/SvgDisplay.svelte';
+	import ErrorDisplay from '$lib/components/ErrorDisplay.svelte';
+
+	// [ Store imports ]
+	import { contactStore } from '$lib/stores/contactStore';
+	import { errorStore, clearError } from '$lib/stores/errorStore';
 
 	export let data: PageData;
 
@@ -29,8 +33,8 @@
 
 	const firstTwoLetters = $contactStore.firstname.slice(0, 2);
 
-	errorStore.subscribe(value => {
-  	error = value;
+	errorStore.subscribe((value) => {
+		error = value;
 	});
 
 	function getColorValueFromCSS(variableName: string) {
@@ -48,7 +52,7 @@
 		clearError();
 
 		try {
-			const updatedContact: App.Contact|null = await updateContact({
+			const updatedContact: App.Contact | null = await updateContact({
 				id: $contactStore.id,
 				firstname,
 				lastname,
@@ -107,7 +111,7 @@
 		/>
 	</button>
 </header>
-<section>
+<main>
 	{#if $contactStore.profilePictureUrl}
 		<!-- TODO gérer la gestion de l'image de profil -->
 		<img src={$contactStore.profilePictureUrl} alt="Profile" />
@@ -157,8 +161,7 @@
 				thisClass=""
 			/>
 			<div class="input-group">
-				<label for="firstname">Prénom :</label>
-				<input type="text" id="firstname" bind:value={firstname} required />
+				<input type="text" id="firstname" bind:value={firstname} placeholder="Prénom" required />
 			</div>
 		</div>
 		<div class="input-and-icon-block">
@@ -169,8 +172,7 @@
 				thisClass=""
 			/>
 			<div class="input-group">
-				<label for="lastname">Nom :</label>
-				<input type="text" id="lastname" bind:value={lastname} required />
+				<input type="text" id="lastname" bind:value={lastname} placeholder="Nom" required />
 			</div>
 		</div>
 		<div class="input-and-icon-block">
@@ -181,8 +183,7 @@
 				thisClass=""
 			/>
 			<div class="input-group">
-				<label for="phone">Téléphone :</label>
-				<input type="text" id="phone" bind:value={phone} required />
+				<input type="text" id="phone" bind:value={phone} placeholder="Téléphone" required />
 			</div>
 		</div>
 		<div class="input-and-icon-block">
@@ -193,8 +194,7 @@
 				thisClass=""
 			/>
 			<div class="input-group">
-				<label for="email">Email :</label>
-				<input type="text" id="email" bind:value={email} required />
+				<input type="text" id="email" bind:value={email} placeholder="Email" required />
 			</div>
 		</div>
 		<div class="input-and-icon-block">
@@ -205,8 +205,7 @@
 				thisClass=""
 			/>
 			<div class="input-group">
-				<label for="address">Adresse :</label>
-				<input type="text" id="address" bind:value={address} required />
+				<input type="text" id="address" bind:value={address} placeholder="Adresse" required />
 			</div>
 		</div>
 		<div class="input-and-icon-block">
@@ -217,8 +216,7 @@
 				thisClass=""
 			/>
 			<div class="input-group">
-				<label for="type">Étiquette :</label>
-				<input type="text" id="type" bind:value={type} required />
+				<input type="text" id="type" bind:value={type} placeholder="Étiquette" required />
 			</div>
 		</div>
 		<div class="input-and-icon-block">
@@ -229,12 +227,11 @@
 				thisClass=""
 			/>
 			<div class="input-group">
-				<label for="content">Note :</label>
-				<input type="text" id="content" bind:value={content} required />
+				<input type="text" id="content" bind:value={content} placeholder="Note" required />
 			</div>
 		</div>
 	</form>
-</section>
+</main>
 
 <style>
 	header {
@@ -273,7 +270,7 @@
 		background-color: var(--color-tertiary);
 	}
 
-	section {
+	main {
 		margin-top: 1rem;
 		margin-bottom: 2rem;
 		display: flex;
@@ -282,7 +279,7 @@
 		gap: 1rem;
 	}
 
-	section img {
+	main img {
 		width: 5rem; /* 80px */
 		height: 5rem;
 		border-radius: 50%;
