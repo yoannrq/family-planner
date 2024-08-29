@@ -168,7 +168,7 @@
 				thisClass=""
 			/>
 			<div class="input-group">
-				<input type="text" id="phone" bind:value={phone} placeholder="Téléphone" required />
+				<input type="text" id="phone" bind:value={phone} placeholder="Téléphone" />
 			</div>
 		</div>
 		<div class="input-and-icon-block">
@@ -179,7 +179,7 @@
 				thisClass=""
 			/>
 			<div class="input-group">
-				<input type="text" id="email" bind:value={email} placeholder="Email" required />
+				<input type="text" id="email" bind:value={email} placeholder="Email" />
 			</div>
 		</div>
 		<div class="input-and-icon-block">
@@ -190,7 +190,7 @@
 				thisClass=""
 			/>
 			<div class="input-group">
-				<input type="text" id="address" bind:value={address} placeholder="Adresse" required />
+				<input type="text" id="address" bind:value={address} placeholder="Adresse" />
 			</div>
 		</div>
 		<div class="input-and-icon-block">
@@ -201,7 +201,7 @@
 				thisClass=""
 			/>
 			<div class="input-group">
-				<input type="text" id="type" bind:value={type} placeholder="Étiquette" required />
+				<input type="text" id="type" bind:value={type} placeholder="Étiquette" />
 			</div>
 		</div>
 		<div class="input-and-icon-block">
@@ -212,7 +212,7 @@
 				thisClass=""
 			/>
 			<div class="input-group">
-				<input type="text" id="content" bind:value={content} placeholder="Note" required />
+				<input type="text" id="content" bind:value={content} placeholder="Note" />
 			</div>
 		</div>
 	</form>

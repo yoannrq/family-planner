@@ -9,7 +9,10 @@ import userSchema from '../utils/validations/userSchema.js';
 const meController = {
   updateMe: async (req: Request, res: Response, next: NextFunction) => {
     if (!req.user) {
-      return res.status(401).json({ message: 'Unauthorized' });
+      return next({
+        status: 401,
+        message: 'Unauthorized',
+      });
     }
     const userEmail = req.user.email;
 
