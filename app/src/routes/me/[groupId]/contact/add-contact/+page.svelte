@@ -7,6 +7,7 @@
 	import { goto } from '$app/navigation';
 	import { getPreferencesObject, setPreferencesObject } from '$lib/auth';
 	import { getColors } from '$lib/api/color';
+	import { createContact } from '$lib/api/contact';
 
 	// [ Component imports ]
 	import SvgDisplay from '$lib/components/SvgDisplay.svelte';
@@ -42,10 +43,9 @@
 
 	async function handleSubmit() {
 		clearError();
-		// TODO: Implementer la méthode createContact côté API et /lib/api/contact.ts
-		/*
+
 		try {
-			const createdContact: App.Contact | null = await createContact({
+			const createdContact: App.ContactCreationData | null = await createContact({
 				firstname,
 				lastname,
 				phone,
@@ -54,7 +54,7 @@
 				type,
 				content,
 				colorId,
-				groupId: data.groupId
+				groupId: parseInt(data.groupId)
 			});
 
 			if (createdContact === null) {
@@ -66,7 +66,6 @@
 		} catch (error: any) {
 			errorStore.set({ status: error.status, message: error.message });
 		}
-    */
 	}
 
 	onMount(async () => {

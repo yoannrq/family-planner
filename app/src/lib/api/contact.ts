@@ -32,6 +32,40 @@ export async function getContacts(groupId: string): Promise<App.Contact[]> {
 }
 
 /**
+ * @function createContact
+ * @route POST /api/me/group/:groupId/contact
+ * @summary Create a contact
+ * @protected header {string} Authorization - Bearer token
+ * @param {App.Contact} contact - Contact object
+ * @returns {Promise<App.Contact>} - Created contact
+ */
+export async function createContact(contact: App.ContactCreationData): Promise<App.Contact | null> {
+	try {
+		const accessToken = await getValidAccessTokenOrGoToLogin();
+		const { data, status } = await CapacitorHttp.post({
+			url: `${PUBLIC_URL_API}/api/me/group/${contact.groupId}/contact`,
+			headers: {
+				'Content-Type': 'application/json',
+				Authorization: `Bearer ${accessToken}`
+			},
+			data: contact
+		});
+
+		if (status === 201 && data) {
+			clearError();
+			return data;
+		} else {
+			storeError(status, data.message || 'Something went wrong');
+			return null;
+		}
+	} catch (error: unknown) {
+		console.error(error);
+		storeError(500, 'Something went wrong');
+		return null;
+	}
+}
+
+/**
  * @function updateContact
  * @route PATCH /api/me/group/:groupId/contact/:contactId
  * @summary Update a contact

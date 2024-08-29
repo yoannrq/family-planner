@@ -51,6 +51,14 @@
 	async function handleSubmit() {
 		clearError();
 
+		if (data.groupId !== $contactStore.groupId.toString()) {
+			errorStore.set({
+				status: 403,
+				message: "You don't have the permission to update this contact"
+			});
+			return;
+		}
+
 		try {
 			const updatedContact: App.Contact | null = await updateContact({
 				id: $contactStore.id,

@@ -27,12 +27,6 @@
 		clearError();
 		loading.set(true);
 
-		if (!data.groupId) {
-			storeError(404, 'Something went wrong with the group identifier.');
-			loading.set(false);
-			return;
-		}
-
 		contacts = await getContacts(data.groupId);
 		loading.set(false);
 	});

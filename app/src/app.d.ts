@@ -41,6 +41,8 @@ declare global {
 			updatedAt?: string;
 		}
 
+		type ContactCreationData = Omit<Contact, 'id' | 'createdAt' | 'updatedAt'>;
+
 		interface Locals {
 			user: User | null;
 		}
@@ -48,7 +50,7 @@ declare global {
 		interface LayoutData {
 			user: User;
 			groups: Group[];
-			groupId?: string;
+			groupId: string;
 		}
 
 		interface ErrorInfo {

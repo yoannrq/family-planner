@@ -489,13 +489,16 @@ describe('ContactController Tests', () => {
   });
 
   it('should update a contact', async () => {
+    const testContactToUpdate = await prisma.contact.findFirst({
+      where: { email: testContacts[0].email },
+    });
     const req = {
       user: {
         email: testUser.email,
       },
       params: {
         groupId: groupOfTestUser.id,
-        contactId: 1,
+        contactId: testContactToUpdate?.id,
       },
       body: {
         firstname: 'Contact 1 Updated',
