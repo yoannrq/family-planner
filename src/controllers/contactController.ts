@@ -134,8 +134,8 @@ const contactController = {
       });
     }
 
-    //Check if groupId in params is the same as groupId in body (wich is stored in svelte store as Contact object)
-    if (data.groupId !== groupId) {
+    //Check if groupId in params is the same as groupId in body, if provided (wich is stored in svelte store as Contact object)
+    if (data.groupId && data.groupId !== groupId) {
       return next({
         status: 401,
         message: 'Unauthorized',
@@ -150,6 +150,19 @@ const contactController = {
         return next({
           status: 403,
           message: 'Forbidden',
+        });
+      }
+
+      const isContactExist = await prisma.contact.findFirst({
+        where: {
+          id: contactId,
+        },
+      });
+
+      if (!isContactExist) {
+        return next({
+          status: 404,
+          message: 'Not found',
         });
       }
 

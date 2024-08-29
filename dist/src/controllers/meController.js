@@ -14,7 +14,10 @@ import userSchema from '../utils/validations/userSchema.js';
 const meController = {
     updateMe: (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
         if (!req.user) {
-            return res.status(401).json({ message: 'Unauthorized' });
+            return next({
+                status: 401,
+                message: 'Unauthorized',
+            });
         }
         const userEmail = req.user.email;
         const { success, data, error } = userSchema.partial().safeParse(req.body);
