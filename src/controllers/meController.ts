@@ -4,7 +4,7 @@ import bcrypt from 'bcrypt';
 
 // [ Local imports ]
 import prisma from '../models/client.js';
-import userSchema from '../utils/validations/userSchema.js';
+import { userSchema } from '../utils/validations/userSchema.js';
 
 const meController = {
   updateMe: async (req: Request, res: Response, next: NextFunction) => {

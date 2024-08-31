@@ -4,7 +4,7 @@ import { Request, Response, NextFunction } from 'express';
 // [ Local imports ]
 import prisma from '../models/client.js';
 import canAccessToGroup from '../utils/canAccessToGroup.js';
-import contactSchema from '../utils/validations/contactSchema.js';
+import { contactSchema } from '../utils/validations/contactSchema.js';
 
 const contactController = {
   getContacts: async (req: Request, res: Response, next: NextFunction) => {

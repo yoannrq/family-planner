@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 // TODO Ajouter la vérification de l'url de profil
 
-const contactSchema = z.object({
+export const contactSchema = z.object({
   firstname: z
     .string({
       required_error: "The field 'firstname' is required.",
@@ -103,4 +103,4 @@ const contactSchema = z.object({
     }),
 });
 
-export default contactSchema;
+export type ContactInput = z.infer<typeof contactSchema>;

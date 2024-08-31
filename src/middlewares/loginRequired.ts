@@ -4,6 +4,7 @@ import { Request, Response, NextFunction } from 'express';
 // [ Local imports ]
 import jwtService from '../utils/jwtService.js';
 import prisma from '../models/client.js';
+import { User } from '@prisma/client';
 
 async function loginRequired(req: Request, res: Response, next: NextFunction) {
   const authHeader = req.headers['authorization'];
@@ -21,7 +22,7 @@ async function loginRequired(req: Request, res: Response, next: NextFunction) {
       return res.status(401).json({ message: 'Unauthorized' });
     }
 
-    const isExist = await prisma.user.findUnique({
+    const isExist: User | null = await prisma.user.findUnique({
       where: {
         email: decoded.email,
       },

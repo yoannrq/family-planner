@@ -5,7 +5,8 @@ import { JwtPayload } from 'jsonwebtoken';
 
 // [ Local imports ]
 import prisma from '../models/client.js';
-import userSchema from '../utils/validations/userSchema.js';
+import { User, Group, Prisma } from '@prisma/client';
+import { userSchema, UserInput } from '../utils/validations/userSchema.js';
 import jwtService from '../utils/jwtService.js';
 
 // [ Type guard function - return boolean ]
@@ -27,7 +28,7 @@ const authController = {
 
       const { name, email, password } = data;
 
-      const user = await prisma.user.findUnique({
+      const user: User | null = await prisma.user.findUnique({
         where: {
           email,
         },
@@ -42,7 +43,7 @@ const authController = {
 
       const hashedPassword = await bcrypt.hash(password, 10);
 
-      let newUser = await prisma.user.create({
+      let newUser: Prisma.UserCreateInput = await prisma.user.create({
         data: {
           name,
           email,
@@ -54,7 +55,7 @@ const authController = {
 
       const randomColorId = Math.floor(Math.random() * 9) + 1;
 
-      const firstGroup = await prisma.group.create({
+      const firstGroup: Prisma.GroupCreateInput = await prisma.group.create({
         data: {
           name: `${name}'s family`,
           colorId: randomColorId,
@@ -82,11 +83,6 @@ const authController = {
   },
 
   login: async (req: Request, res: Response, next: NextFunction) => {
-    interface UserData {
-      email: string;
-      password: string;
-    }
-
     try {
       const { success, data, error } = userSchema.partial().safeParse(req.body);
 
@@ -97,9 +93,9 @@ const authController = {
         });
       }
 
-      const { email, password } = data as UserData;
+      const { email, password } = data as UserInput;
 
-      const user = await prisma.user.findUnique({
+      const user: User | null = await prisma.user.findUnique({
         where: {
           email,
         },
@@ -114,7 +110,7 @@ const authController = {
 
       const isPasswordValid = await bcrypt.compare(
         password,
-        user.password as UserData['password'],
+        user.password as UserInput['password'],
       );
 
       if (!isPasswordValid) {
@@ -129,14 +125,15 @@ const authController = {
         email: user.email,
       });
 
-      const refreshTokenOnUser = await prisma.user.update({
-        where: {
-          id: user.id,
-        },
-        data: {
-          refreshToken,
-        },
-      });
+      const refreshTokenOnUser: Prisma.UserUpdateInput =
+        await prisma.user.update({
+          where: {
+            id: user.id,
+          },
+          data: {
+            refreshToken,
+          },
+        });
 
       if (!refreshTokenOnUser) {
         return next({
@@ -182,7 +179,7 @@ const authController = {
       if (isJwtPayload(decodedToken) && decodedToken.email) {
         const { email } = decodedToken;
 
-        const verifyUser = await prisma.user.findUnique({
+        const verifyUser: User | null = await prisma.user.findUnique({
           where: {
             email_refreshToken: {
               email: email,

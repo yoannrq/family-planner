@@ -3,7 +3,7 @@ import { Request, Response, NextFunction } from 'express';
 
 // [ Local imports ]
 import prisma from '../models/client.js';
-import groupSchema from '../utils/validations/groupSchema.js';
+import { groupSchema } from '../utils/validations/groupSchema.js';
 
 const groupController = {
   getGroups: async (req: Request, res: Response, next: NextFunction) => {

@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 // [ Local imports ]
 import prisma from '../models/client.js';
-import groupSchema from '../utils/validations/groupSchema.js';
+import { groupSchema } from '../utils/validations/groupSchema.js';
 const groupController = {
     getGroups: (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
         if (!req.user) {

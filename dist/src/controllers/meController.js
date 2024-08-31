@@ -10,7 +10,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 import bcrypt from 'bcrypt';
 // [ Local imports ]
 import prisma from '../models/client.js';
-import userSchema from '../utils/validations/userSchema.js';
+import { userSchema } from '../utils/validations/userSchema.js';
 const meController = {
     updateMe: (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
         if (!req.user) {
