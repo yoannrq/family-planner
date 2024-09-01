@@ -15,8 +15,10 @@ import { Request, Response } from 'express';
 import groupController from '../src/controllers/groupController.js';
 import createTestUser from './helpers/authHelper.js';
 import prisma from '../src/models/client.js';
+import { GroupInput } from '../src/utils/validations/groupSchema.js';
+import { Prisma } from '@prisma/client';
 
-const testGroups = [
+const testGroups: GroupInput[] = [
   {
     name: 'Group 1',
     colorId: 1,
@@ -36,7 +38,7 @@ describe('GroupController Tests', () => {
   });
 
   beforeAll(async () => {
-    const testUser = await createTestUser('group');
+    const testUser: Prisma.UserCreateInput = await createTestUser('group');
 
     for (const group of testGroups) {
       await prisma.group.create({
