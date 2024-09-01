@@ -5,7 +5,7 @@ import { JwtPayload } from 'jsonwebtoken';
 
 // [ Local imports ]
 import prisma from '../models/client.js';
-import { User, Group, Prisma } from '@prisma/client';
+import { User, Prisma } from '@prisma/client';
 import { userSchema, UserInput } from '../utils/validations/userSchema.js';
 import jwtService from '../utils/jwtService.js';
 
@@ -26,7 +26,7 @@ const authController = {
         });
       }
 
-      const { name, email, password } = data;
+      const { name, email, password } = data as UserInput;
 
       const user: User | null = await prisma.user.findUnique({
         where: {

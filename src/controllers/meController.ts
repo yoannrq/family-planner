@@ -4,7 +4,8 @@ import bcrypt from 'bcrypt';
 
 // [ Local imports ]
 import prisma from '../models/client.js';
-import { userSchema } from '../utils/validations/userSchema.js';
+import { Prisma } from '@prisma/client';
+import { UserInput, userSchema } from '../utils/validations/userSchema.js';
 
 const meController = {
   updateMe: async (req: Request, res: Response, next: NextFunction) => {
@@ -15,8 +16,9 @@ const meController = {
       });
     }
     const userEmail = req.user.email;
+    const userInput: UserInput = req.body;
 
-    const { success, data, error } = userSchema.partial().safeParse(req.body);
+    const { success, data, error } = userSchema.partial().safeParse(userInput);
 
     try {
       if (!success) {
@@ -30,7 +32,7 @@ const meController = {
         data.password = await bcrypt.hash(data.password, 10);
       }
 
-      const updatedUser = await prisma.user.update({
+      const updatedUser: Prisma.UserUpdateInput = await prisma.user.update({
         where: {
           email: userEmail,
         },

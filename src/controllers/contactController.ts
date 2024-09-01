@@ -3,8 +3,12 @@ import { Request, Response, NextFunction } from 'express';
 
 // [ Local imports ]
 import prisma from '../models/client.js';
+import { Contact, Prisma } from '@prisma/client';
 import canAccessToGroup from '../utils/canAccessToGroup.js';
-import { contactSchema } from '../utils/validations/contactSchema.js';
+import {
+  ContactInput,
+  contactSchema,
+} from '../utils/validations/contactSchema.js';
 
 const contactController = {
   getContacts: async (req: Request, res: Response, next: NextFunction) => {
@@ -28,7 +32,7 @@ const contactController = {
         });
       }
 
-      const contacts = await prisma.contact.findMany({
+      const contacts: Contact[] = await prisma.contact.findMany({
         where: {
           groupId,
         },
@@ -51,11 +55,12 @@ const contactController = {
     }
     const userEmail = req.user.email;
     const groupId = parseInt(req.params.groupId);
+    const contactInput: ContactInput = req.body;
 
     // Zod schema validation with partial() to allow missing groupId
     const { success, data, error } = contactSchema
       .partial({ groupId: true })
-      .safeParse(req.body);
+      .safeParse(contactInput);
 
     if (!success) {
       return next({
@@ -83,7 +88,7 @@ const contactController = {
         });
       }
 
-      const newContact = await prisma.contact.create({
+      const newContact: Contact = await prisma.contact.create({
         data: {
           firstname: data.firstname,
           lastname: data.lastname,
@@ -123,9 +128,11 @@ const contactController = {
     const userEmail = req.user.email;
     const groupId = parseInt(req.params.groupId);
     const contactId = parseInt(req.params.contactId);
+    const contactInput: ContactInput = req.body;
+
     const { success, data, error } = contactSchema
       .partial()
-      .safeParse(req.body);
+      .safeParse(contactInput);
 
     if (!success) {
       return next({
@@ -153,7 +160,7 @@ const contactController = {
         });
       }
 
-      const isContactExist = await prisma.contact.findFirst({
+      const isContactExist: Contact | null = await prisma.contact.findFirst({
         where: {
           id: contactId,
         },
@@ -166,12 +173,13 @@ const contactController = {
         });
       }
 
-      const updatedContact = await prisma.contact.update({
-        where: {
-          id: contactId,
-        },
-        data,
-      });
+      const updatedContact: Prisma.ContactUpdateInput =
+        await prisma.contact.update({
+          where: {
+            id: contactId,
+          },
+          data,
+        });
 
       return res.status(200).json(updatedContact);
     } catch (error: any) {
