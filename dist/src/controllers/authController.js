@@ -11,7 +11,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 import bcrypt from 'bcrypt';
 // [ Local imports ]
 import prisma from '../models/client.js';
-import userSchema from '../utils/validations/userSchema.js';
+import { userSchema } from '../utils/validations/userSchema.js';
 import jwtService from '../utils/jwtService.js';
 // [ Type guard function - return boolean ]
 function isJwtPayload(token) {

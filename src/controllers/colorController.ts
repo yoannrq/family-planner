@@ -3,14 +3,17 @@ import { Request, Response, NextFunction } from 'express';
 
 // [ Local imports ]
 import prisma from '../models/client.js';
+import { Color } from '@prisma/client';
 
 const colorController = {
   getColors: async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const colors = await prisma.color.findMany();
+      const colors: Color[] = await prisma.color.findMany();
       res.status(200).json(colors);
-    } catch (error) {
-      next(error);
+    } catch (error: any) {
+      return next({
+        message: error.message,
+      });
     }
   },
 };

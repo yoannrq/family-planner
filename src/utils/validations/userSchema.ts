@@ -1,8 +1,9 @@
 import { z } from 'zod';
+import { Prisma } from '@prisma/client';
 
 // TODO Ajouter la vérification de l'url de profil
 
-const userSchema = z.object({
+export const userSchema = z.object({
   name: z
     .string({
       required_error: "The field 'name' is required.",
@@ -48,6 +49,21 @@ const userSchema = z.object({
     .min(1, {
       message: "The field 'settingColorId' must be at least 1 character long.",
     }),
+
+  profilePictureUrl: z
+    .string({
+      invalid_type_error: "The field 'profilePictureUrl' must be a string.",
+    })
+    .url({
+      message: "The field 'profilePictureUrl' must be a valid URL.",
+    })
+    .optional(),
+
+  refreshToken: z
+    .string({
+      invalid_type_error: "The field 'refreshToken' must be a string.",
+    })
+    .optional(),
 });
 
-export default userSchema;
+export type UserInput = z.infer<typeof userSchema>;

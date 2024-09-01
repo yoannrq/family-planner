@@ -1,5 +1,5 @@
 import { z } from 'zod';
-const groupSchema = z.object({
+export const groupSchema = z.object({
     name: z
         .string({
         required_error: "The field 'name' is required.",
@@ -20,4 +20,3 @@ const groupSchema = z.object({
         message: "The field 'colorId' must be at least 1 character long.",
     }),
 });
-export default groupSchema;

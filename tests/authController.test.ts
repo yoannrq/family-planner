@@ -14,7 +14,6 @@ import { Request, Response } from 'express';
 import authController from '../src/controllers/authController.js';
 import prisma from '../src/models/client.js';
 
-// TODO : Modifier la façon dont est utilisé l'utilisateur de test. cela créé des conflits lors de l'exécution des tests. Idée : Utiliser un utilisateur de test pour chaque test.
 // [ Tests ]
 describe('AuthController Tests', () => {
   beforeEach(async () => {

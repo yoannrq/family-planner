@@ -34,6 +34,7 @@ const testContacts = [
         content: 'Best friend',
     },
 ];
+const randomName = (Math.random() + 1).toString(36).substring(7);
 // [ Tests ]
 describe('ContactController Tests', () => {
     beforeEach(() => {
@@ -161,5 +162,277 @@ describe('ContactController Tests', () => {
             expect.objectContaining(Object.assign({}, testContacts[0])),
             expect.objectContaining(Object.assign({}, testContacts[1])),
         ]));
+    }));
+    it('should have a createContact method', () => {
+        expect(contactController.createContact).toBeDefined();
+    });
+    it('should return a 401 status code if the user is not authenticated', () => __awaiter(void 0, void 0, void 0, function* () {
+        const req = {};
+        const res = {
+            status: vi.fn().mockReturnThis(),
+            json: vi.fn(),
+        };
+        const next = vi.fn();
+        yield contactController.createContact(req, res, next);
+        expect(next).toHaveBeenCalledWith(expect.objectContaining({
+            status: 401,
+            message: 'Unauthorized',
+        }));
+    }));
+    it('should return a 400 status code if the colorId is a string', () => __awaiter(void 0, void 0, void 0, function* () {
+        const req = {
+            user: {
+                email: testUser.email,
+            },
+            params: {
+                groupId: groupOfTestUser.id,
+            },
+            body: {
+                firstname: 'Contact 3',
+                lastname: 'Test',
+                colorId: '1',
+                groupId: groupOfTestUser.id,
+            },
+        };
+        const res = {
+            status: vi.fn().mockReturnThis(),
+            json: vi.fn(),
+        };
+        const next = vi.fn();
+        yield contactController.createContact(req, res, next);
+        expect(next).toHaveBeenCalledWith(expect.objectContaining({
+            status: 400,
+            message: "The field 'colorId' must be a number.",
+        }));
+    }));
+    it('should return a 401 status code if the group id in body is different from the group id in params', () => __awaiter(void 0, void 0, void 0, function* () {
+        const wrongGroupId = groupOfTestUser.id - 1;
+        const req = {
+            user: {
+                email: testUser.email,
+            },
+            params: {
+                groupId: groupOfTestUser.id,
+            },
+            body: {
+                firstname: 'Contact 3',
+                lastname: 'Test',
+                colorId: 1,
+                groupId: wrongGroupId,
+            },
+        };
+        const res = {
+            status: vi.fn().mockReturnThis(),
+            json: vi.fn(),
+        };
+        const next = vi.fn();
+        yield contactController.createContact(req, res, next);
+        expect(next).toHaveBeenCalledWith(expect.objectContaining({
+            status: 401,
+            message: 'Unauthorized',
+        }));
+    }));
+    it('should return a 403 status code if the user is not authorized to access the group', () => __awaiter(void 0, void 0, void 0, function* () {
+        const req = {
+            user: {
+                email: `${randomName}@test.com`,
+            },
+            params: {
+                groupId: groupOfTestUser.id,
+            },
+            body: {
+                firstname: 'Contact 3',
+                lastname: 'Test',
+                colorId: 1,
+                groupId: groupOfTestUser.id,
+            },
+        };
+        const res = {
+            status: vi.fn().mockReturnThis(),
+            json: vi.fn(),
+        };
+        const next = vi.fn();
+        yield contactController.createContact(req, res, next);
+        expect(next).toHaveBeenCalledWith(expect.objectContaining({
+            status: 403,
+            message: 'Forbidden',
+        }));
+    }));
+    it('should create a contact', () => __awaiter(void 0, void 0, void 0, function* () {
+        const req = {
+            user: {
+                email: testUser.email,
+            },
+            params: {
+                groupId: groupOfTestUser.id,
+            },
+            body: {
+                firstname: 'Contact 3',
+                lastname: 'Test',
+                colorId: 1,
+                groupId: groupOfTestUser.id,
+            },
+        };
+        const res = {
+            status: vi.fn().mockReturnThis(),
+            json: vi.fn(),
+        };
+        const next = vi.fn();
+        yield contactController.createContact(req, res, next);
+        expect(next).not.toHaveBeenCalled();
+        expect(res.status).toHaveBeenCalledWith(201);
+        expect(res.json).toHaveBeenCalledWith(expect.objectContaining({
+            firstname: 'Contact 3',
+            lastname: 'Test',
+            colorId: 1,
+            groupId: groupOfTestUser.id,
+        }));
+    }));
+    it('should have an updateContact method', () => {
+        expect(contactController.updateContact).toBeDefined();
+    });
+    it('should return a 401 status code if the user is not authenticated', () => __awaiter(void 0, void 0, void 0, function* () {
+        const req = {};
+        const res = {
+            status: vi.fn().mockReturnThis(),
+            json: vi.fn(),
+        };
+        const next = vi.fn();
+        yield contactController.updateContact(req, res, next);
+        expect(next).toHaveBeenCalledWith(expect.objectContaining({
+            status: 401,
+            message: 'Unauthorized',
+        }));
+    }));
+    it('should return a 400 status code if the colorId is a string', () => __awaiter(void 0, void 0, void 0, function* () {
+        const req = {
+            user: {
+                email: testUser.email,
+            },
+            params: {
+                groupId: groupOfTestUser.id,
+                contactId: 1,
+            },
+            body: {
+                colorId: '1',
+            },
+        };
+        const res = {
+            status: vi.fn().mockReturnThis(),
+            json: vi.fn(),
+        };
+        const next = vi.fn();
+        yield contactController.updateContact(req, res, next);
+        expect(next).toHaveBeenCalledWith(expect.objectContaining({
+            status: 400,
+            message: "The field 'colorId' must be a number.",
+        }));
+    }));
+    it('should return a 401 status code if the group id in body is different from the group id in params', () => __awaiter(void 0, void 0, void 0, function* () {
+        const wrongGroupId = groupOfTestUser.id - 1;
+        const req = {
+            user: {
+                email: testUser.email,
+            },
+            params: {
+                groupId: groupOfTestUser.id,
+                contactId: 1,
+            },
+            body: {
+                colorId: 1,
+                groupId: wrongGroupId,
+            },
+        };
+        const res = {
+            status: vi.fn().mockReturnThis(),
+            json: vi.fn(),
+        };
+        const next = vi.fn();
+        yield contactController.updateContact(req, res, next);
+        expect(next).toHaveBeenCalledWith(expect.objectContaining({
+            status: 401,
+            message: 'Unauthorized',
+        }));
+    }));
+    it('should return a 403 status code if the user is not authorized to access the group', () => __awaiter(void 0, void 0, void 0, function* () {
+        const req = {
+            user: {
+                email: `${randomName}@test.com`,
+            },
+            params: {
+                groupId: groupOfTestUser.id,
+            },
+            body: {
+                firstname: 'Contact 3',
+                lastname: 'Test',
+                colorId: 1,
+                groupId: groupOfTestUser.id,
+            },
+        };
+        const res = {
+            status: vi.fn().mockReturnThis(),
+            json: vi.fn(),
+        };
+        const next = vi.fn();
+        yield contactController.updateContact(req, res, next);
+        expect(next).toHaveBeenCalledWith(expect.objectContaining({
+            status: 403,
+            message: 'Forbidden',
+        }));
+    }));
+    it('should return a 404 status code if the contact does not exist', () => __awaiter(void 0, void 0, void 0, function* () {
+        const req = {
+            user: {
+                email: testUser.email,
+            },
+            params: {
+                groupId: groupOfTestUser.id,
+                contactId: 99999,
+            },
+            body: {
+                colorId: 1,
+                groupId: groupOfTestUser.id,
+            },
+        };
+        const res = {
+            status: vi.fn().mockReturnThis(),
+            json: vi.fn(),
+        };
+        const next = vi.fn();
+        yield contactController.updateContact(req, res, next);
+        expect(next).toHaveBeenCalledWith(expect.objectContaining({
+            status: 404,
+            message: 'Not found',
+        }));
+    }));
+    it('should update a contact', () => __awaiter(void 0, void 0, void 0, function* () {
+        const testContactToUpdate = yield prisma.contact.findFirst({
+            where: { email: testContacts[0].email },
+        });
+        const req = {
+            user: {
+                email: testUser.email,
+            },
+            params: {
+                groupId: groupOfTestUser.id,
+                contactId: testContactToUpdate === null || testContactToUpdate === void 0 ? void 0 : testContactToUpdate.id,
+            },
+            body: {
+                firstname: 'Contact 1 Updated',
+                lastname: 'Test',
+            },
+        };
+        const res = {
+            status: vi.fn().mockReturnThis(),
+            json: vi.fn(),
+        };
+        const next = vi.fn();
+        yield contactController.updateContact(req, res, next);
+        expect(next).not.toHaveBeenCalled();
+        expect(res.status).toHaveBeenCalledWith(200);
+        expect(res.json).toHaveBeenCalledWith(expect.objectContaining({
+            firstname: 'Contact 1 Updated',
+            lastname: 'Test',
+        }));
     }));
 });

@@ -10,7 +10,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 // [ Local imports ]
 import prisma from '../models/client.js';
 import canAccessToGroup from '../utils/canAccessToGroup.js';
-import contactSchema from '../utils/validations/contactSchema.js';
+import { contactSchema } from '../utils/validations/contactSchema.js';
 const contactController = {
     getContacts: (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
         if (!req.user) {
@@ -126,8 +126,8 @@ const contactController = {
                 message: error.errors.map((err) => err.message).join(', '),
             });
         }
-        //Check if groupId in params is the same as groupId in body (wich is stored in svelte store as Contact object)
-        if (data.groupId !== groupId) {
+        //Check if groupId in params is the same as groupId in body, if provided (wich is stored in svelte store as Contact object)
+        if (data.groupId && data.groupId !== groupId) {
             return next({
                 status: 401,
                 message: 'Unauthorized',
@@ -140,6 +140,17 @@ const contactController = {
                 return next({
                     status: 403,
                     message: 'Forbidden',
+                });
+            }
+            const isContactExist = yield prisma.contact.findFirst({
+                where: {
+                    id: contactId,
+                },
+            });
+            if (!isContactExist) {
+                return next({
+                    status: 404,
+                    message: 'Not found',
                 });
             }
             const updatedContact = yield prisma.contact.update({

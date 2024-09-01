@@ -1,6 +1,6 @@
 import { z } from 'zod';
 // TODO Ajouter la vérification de l'url de profil
-const contactSchema = z.object({
+export const contactSchema = z.object({
     firstname: z
         .string({
         required_error: "The field 'firstname' is required.",
@@ -63,7 +63,6 @@ const contactSchema = z.object({
         .optional(),
     type: z
         .string({
-        required_error: "The field 'type' is required.",
         invalid_type_error: "The field 'type' must be a string.",
     })
         .min(3, {
@@ -93,4 +92,3 @@ const contactSchema = z.object({
         message: "The field 'groupId' must be at least 1 character long.",
     }),
 });
-export default contactSchema;

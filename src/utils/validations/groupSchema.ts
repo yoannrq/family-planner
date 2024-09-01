@@ -1,6 +1,7 @@
 import { z } from 'zod';
+import { Prisma } from '@prisma/client';
 
-const groupSchema = z.object({
+export const groupSchema = z.object({
   name: z
     .string({
       required_error: "The field 'name' is required.",
@@ -23,4 +24,4 @@ const groupSchema = z.object({
     }),
 });
 
-export default groupSchema;
+export type GroupInput = z.infer<typeof groupSchema>;

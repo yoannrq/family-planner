@@ -3,7 +3,8 @@ import { Request, Response, NextFunction } from 'express';
 
 // [ Local imports ]
 import prisma from '../models/client.js';
-import groupSchema from '../utils/validations/groupSchema.js';
+import { Group, Prisma } from '@prisma/client';
+import { GroupInput, groupSchema } from '../utils/validations/groupSchema.js';
 
 const groupController = {
   getGroups: async (req: Request, res: Response, next: NextFunction) => {
@@ -16,7 +17,7 @@ const groupController = {
     const userEmail = req.user.email;
 
     try {
-      const userGroups = await prisma.user.findUnique({
+      const userWithGroups = await prisma.user.findUnique({
         where: {
           email: userEmail,
         },
@@ -25,14 +26,16 @@ const groupController = {
         },
       });
 
-      if (!userGroups) {
+      if (!userWithGroups) {
         return next({
           status: 404,
           message: 'User not found',
         });
       }
 
-      return res.status(200).json(userGroups.groups);
+      const userGroups: Group[] = userWithGroups.groups;
+
+      return res.status(200).json(userGroups);
     } catch (error: any) {
       return next({
         message: error.message,
@@ -48,8 +51,9 @@ const groupController = {
       });
     }
     const userEmail = req.user.email;
+    const groupInput: GroupInput = req.body;
 
-    const { success, data, error } = groupSchema.safeParse(req.body);
+    const { success, data, error } = groupSchema.safeParse(groupInput);
 
     if (!success) {
       return next({
@@ -59,7 +63,7 @@ const groupController = {
     }
 
     try {
-      const newGroup = await prisma.group.create({
+      const newGroup: Prisma.GroupCreateInput = await prisma.group.create({
         data: {
           name: data.name,
           colorId: data.colorId,
