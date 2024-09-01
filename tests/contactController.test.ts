@@ -15,11 +15,11 @@ import { Request, Response } from 'express';
 import contactController from '../src/controllers/contactController.js';
 import createTestUser from './helpers/authHelper.js';
 import prisma from '../src/models/client.js';
+import { User, Group } from '@prisma/client';
 
 // [ Variables ]
-// TODO Reprendre les types proprement
-let testUser: any;
-let groupOfTestUser: any;
+let testUser: User;
+let groupOfTestUser: Group | null;
 const testContacts = [
   {
     firstname: 'Contact 1',
@@ -173,7 +173,7 @@ describe('ContactController Tests', () => {
         email: testUser.email,
       },
       params: {
-        groupId: groupOfTestUser.id,
+        groupId: groupOfTestUser?.id,
       },
     } as unknown as Request;
     const res = {
@@ -222,13 +222,13 @@ describe('ContactController Tests', () => {
         email: testUser.email,
       },
       params: {
-        groupId: groupOfTestUser.id,
+        groupId: groupOfTestUser?.id,
       },
       body: {
         firstname: 'Contact 3',
         lastname: 'Test',
         colorId: '1',
-        groupId: groupOfTestUser.id,
+        groupId: groupOfTestUser?.id,
       },
     } as unknown as Request;
     const res = {
@@ -248,13 +248,13 @@ describe('ContactController Tests', () => {
   });
 
   it('should return a 401 status code if the group id in body is different from the group id in params', async () => {
-    const wrongGroupId = groupOfTestUser.id - 1;
+    const wrongGroupId = groupOfTestUser?.id ? groupOfTestUser.id - 1 : 1;
     const req = {
       user: {
         email: testUser.email,
       },
       params: {
-        groupId: groupOfTestUser.id,
+        groupId: groupOfTestUser?.id,
       },
       body: {
         firstname: 'Contact 3',
@@ -285,13 +285,13 @@ describe('ContactController Tests', () => {
         email: `${randomName}@test.com`,
       },
       params: {
-        groupId: groupOfTestUser.id,
+        groupId: groupOfTestUser?.id,
       },
       body: {
         firstname: 'Contact 3',
         lastname: 'Test',
         colorId: 1,
-        groupId: groupOfTestUser.id,
+        groupId: groupOfTestUser?.id,
       },
     } as unknown as Request;
     const res = {
@@ -316,13 +316,13 @@ describe('ContactController Tests', () => {
         email: testUser.email,
       },
       params: {
-        groupId: groupOfTestUser.id,
+        groupId: groupOfTestUser?.id,
       },
       body: {
         firstname: 'Contact 3',
         lastname: 'Test',
         colorId: 1,
-        groupId: groupOfTestUser.id,
+        groupId: groupOfTestUser?.id,
       },
     } as unknown as Request;
     const res = {
@@ -340,7 +340,7 @@ describe('ContactController Tests', () => {
         firstname: 'Contact 3',
         lastname: 'Test',
         colorId: 1,
-        groupId: groupOfTestUser.id,
+        groupId: groupOfTestUser?.id,
       }),
     );
   });
@@ -373,7 +373,7 @@ describe('ContactController Tests', () => {
         email: testUser.email,
       },
       params: {
-        groupId: groupOfTestUser.id,
+        groupId: groupOfTestUser?.id,
         contactId: 1,
       },
       body: {
@@ -397,13 +397,13 @@ describe('ContactController Tests', () => {
   });
 
   it('should return a 401 status code if the group id in body is different from the group id in params', async () => {
-    const wrongGroupId = groupOfTestUser.id - 1;
+    const wrongGroupId = groupOfTestUser?.id ? groupOfTestUser.id - 1 : 1;
     const req = {
       user: {
         email: testUser.email,
       },
       params: {
-        groupId: groupOfTestUser.id,
+        groupId: groupOfTestUser?.id,
         contactId: 1,
       },
       body: {
@@ -433,13 +433,13 @@ describe('ContactController Tests', () => {
         email: `${randomName}@test.com`,
       },
       params: {
-        groupId: groupOfTestUser.id,
+        groupId: groupOfTestUser?.id,
       },
       body: {
         firstname: 'Contact 3',
         lastname: 'Test',
         colorId: 1,
-        groupId: groupOfTestUser.id,
+        groupId: groupOfTestUser?.id,
       },
     } as unknown as Request;
     const res = {
@@ -464,12 +464,12 @@ describe('ContactController Tests', () => {
         email: testUser.email,
       },
       params: {
-        groupId: groupOfTestUser.id,
+        groupId: groupOfTestUser?.id,
         contactId: 99999,
       },
       body: {
         colorId: 1,
-        groupId: groupOfTestUser.id,
+        groupId: groupOfTestUser?.id,
       },
     } as unknown as Request;
     const res = {
@@ -497,7 +497,7 @@ describe('ContactController Tests', () => {
         email: testUser.email,
       },
       params: {
-        groupId: groupOfTestUser.id,
+        groupId: groupOfTestUser?.id,
         contactId: testContactToUpdate?.id,
       },
       body: {
