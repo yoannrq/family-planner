@@ -19,11 +19,26 @@ router.use('/:groupId/contact', contactRouter);
  * @protected header {string} Authorization - Bearer token
  * @param {Object} req.user - User object added by loginRequired middleware
  * @param {string} req.user.email - Email of authenticated user
- * @returns {object[]} 200 - List of groups
+ * @returns {Object} 200 - List of groups
  * @returns {Error}  401 - Unauthorized
  * @returns {Error}  404 - User not found
  */
 router.get('/', groupController.getGroups);
+
+/**
+ * @route GET /api/me/group/{groupId}
+ * @summary Get group by id with users
+ * @group Group
+ * @protected header {string} Authorization - Bearer token
+ * @param {Object} req.user - User object added by loginRequired middleware
+ * @param {string} req.user.email - Email of authenticated user
+ * @param {string} req.params.groupId - Group id
+ * @returns {Object} 200 - Group with users
+ * @returns {Error}  401 - Unauthorized
+ * @returns {Error}  403 - Forbidden
+ * @returns {Error}  404 - Group not found
+ */
+router.get('/:groupId', groupController.getGroupByIdWithUsers);
 
 /**
  * @route POST /api/me/group
@@ -33,7 +48,7 @@ router.get('/', groupController.getGroups);
  * @param {Object} req.user - User object added by loginRequired middleware
  * @param {string} req.user.email - Email of authenticated user
  * @param {object} req.body - name and colorId of the group
- * @returns {object} 201 - Created group
+ * @returns {Object} 201 - Created group
  * @returns {Error}  400 - Bad request
  * @returns {Error}  401 - Unauthorized
  */

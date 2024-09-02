@@ -1,5 +1,4 @@
 import { z } from 'zod';
-import { Prisma } from '@prisma/client';
 
 // TODO Ajouter la vérification de l'url de profil
 

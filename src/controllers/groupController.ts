@@ -43,6 +43,54 @@ const groupController = {
     }
   },
 
+  getGroupByIdWithUsers: async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) => {
+    if (!req.user) {
+      return next({
+        status: 401,
+        message: 'Unauthorized',
+      });
+    }
+    const userEmail = req.user.email;
+    const groupId = parseInt(req.params.groupId);
+
+    try {
+      const group = await prisma.group.findUnique({
+        where: {
+          id: groupId,
+        },
+        include: {
+          users: true,
+        },
+      });
+
+      if (!group) {
+        return next({
+          status: 404,
+          message: 'Group not found',
+        });
+      }
+
+      const userIsMember = group.users.find((user) => user.email === userEmail);
+
+      if (!userIsMember) {
+        return next({
+          status: 403,
+          message: 'Forbidden',
+        });
+      }
+
+      return res.status(200).json(group);
+    } catch (error: any) {
+      return next({
+        message: error.message,
+      });
+    }
+  },
+
   createGroup: async (req: Request, res: Response, next: NextFunction) => {
     if (!req.user) {
       return next({
