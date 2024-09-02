@@ -7,7 +7,6 @@
 	import { initializeColorStore, getHexCodeColor } from '$lib/stores/colorStore';
 
 	export let user: App.User;
-	export let groups: App.Group[];
 	export let groupId: string | undefined;
 	export let categoryName: string;
 

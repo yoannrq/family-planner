@@ -5,14 +5,18 @@
 	// [ Local imports ]
 	import type { PageData } from './$types';
 	import { getContacts } from '$lib/api/contact';
-	import { storeError, clearError, errorStore } from '$lib/stores/errorStore';
-	import { storeContact } from '$lib/stores/contactStore';
+	import { goto } from '$app/navigation';
+
+	// [ Component imports ]
+	import FloatingCreationButton from '$lib/components/FloatingCreationButton.svelte';
 	import ErrorDisplay from '$lib/components/ErrorDisplay.svelte';
-	import { loading } from '$lib/stores/loadingStatus';
 	import ContactDisplay from '$lib/components/ContactDisplay.svelte';
 	import CategoryHeader from '$lib/components/CategoryHeader.svelte';
-	import { goto } from '$app/navigation';
-	import FloatingCreationButton from '$lib/components/FloatingCreationButton.svelte';
+
+	// [ Store imports ]
+	import { clearError, errorStore } from '$lib/stores/errorStore';
+	import { storeContact } from '$lib/stores/contactStore';
+	import { loading } from '$lib/stores/loadingStatus';
 
 	export let data: PageData;
 	export let contacts: App.Contact[] = [];
@@ -32,12 +36,7 @@
 	});
 </script>
 
-<CategoryHeader
-	user={data.user}
-	groups={data.groups}
-	groupId={data.groupId}
-	categoryName="Contact"
-/>
+<CategoryHeader user={data.user} groupId={data.groupId} categoryName="Contact" />
 
 <main>
 	{#if $errorStore.status > 0}
