@@ -17,6 +17,10 @@ declare global {
 			updatedAt?: string;
 		}
 
+		interface GroupWithUsers extends Group {
+			users: User[];
+		}
+
 		interface Color {
 			id: number;
 			name: string;
