@@ -3,6 +3,7 @@ import express from 'express';
 
 // [ Local imports ]
 import colorController from '../../controllers/colorController.js';
+import { Color } from '@prisma/client';
 
 const router = express.Router();
 
@@ -13,7 +14,7 @@ const router = express.Router();
  * @summary Get an array with all colors
  * @group Color
  * @public
- * @returns {object} 200 - Array with all colors
+ * @returns {Promise<Color[]>} 200 - Array with all colors
  */
 router.get('/', colorController.getColors);
 
