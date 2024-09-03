@@ -2,7 +2,7 @@
 	import { goto } from '$app/navigation';
 
 	export let message: string;
-	export let severity: 'info' | 'warning' | 'error' = 'error';
+	export let severity: 'info' | 'warning' | 'error';
 </script>
 
 <div class="error-container {severity}">
@@ -28,5 +28,13 @@
 	}
 	.error {
 		background-color: var(--color-error);
+	}
+
+	button {
+		background-color: var(--color-tertiary);
+		padding: 0.625rem; /* 10px */
+		border-radius: 0.3125rem; /* 5px */
+		border: none;
+		color: white;
 	}
 </style>

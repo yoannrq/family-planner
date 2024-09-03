@@ -6,16 +6,25 @@
 	import { setToken, setPreferencesObject, getToken } from '$lib/auth.js';
 	import { PUBLIC_URL_API } from '$env/static/public';
 	import { goto } from '$app/navigation';
-	import ErrorDisplay from '$lib/components/ErrorDisplay.svelte';
 	import { getUserGroups } from '$lib/api/group';
-	import { initializeColorStore } from '$lib/stores/colorStore';
 
-	let email = '';
-	let password = '';
-	let errorMessage = '';
+	// [ Component imports ]
+	import ErrorDisplay from '$lib/components/ErrorDisplay.svelte';
+
+	// [ Store imports ]
+	import { initializeColorStore } from '$lib/stores/colorStore';
+	import { clearError } from '$lib/stores/errorStore';
+	import { loading } from '$lib/stores/loadingStatus';
+
+	let email: string;
+	let password: string;
+	let errorMessage: string;
+	let severity: 'info' | 'warning' | 'error';
 
 	async function handleSubmit(event: any) {
 		event.preventDefault();
+		clearError();
+		loading.set(true);
 
 		try {
 			const { status, data } = await CapacitorHttp.request({
@@ -29,6 +38,7 @@
 					password
 				}
 			});
+			loading.set(false);
 
 			if (status === 200) {
 				// Store tokens in secure storage
@@ -47,6 +57,7 @@
 
 				if (groups.length === 0) {
 					errorMessage = "You don't have any group.";
+					severity = 'info';
 					return;
 				}
 
@@ -60,10 +71,13 @@
 
 				goto(`/me/${groupId}/dashboard`);
 			} else {
-				errorMessage = data.err.message;
+				errorMessage = data.message;
+				severity = 'warning';
 			}
 		} catch (error: any) {
-			errorMessage = error.message;
+			loading.set(false);
+			errorMessage = error.message || 'Server error';
+			severity = 'error';
 		}
 	}
 </script>
@@ -76,7 +90,7 @@
 		<form on:submit={handleSubmit}>
 			{#if errorMessage}
 				<!-- TODO : add a link to the forgot password page -->
-				<ErrorDisplay message={errorMessage} severity="warning" />
+				<ErrorDisplay message={errorMessage} {severity} />
 			{/if}
 			<div class="input-group">
 				<label for="email">Email :</label>
@@ -86,7 +100,11 @@
 				<label for="password">Mot de passe :</label>
 				<input type="password" id="password" bind:value={password} required />
 			</div>
-			<button type="submit">Se connecter</button>
+			{#if $loading}
+				<button class="loading-button" disabled></button>
+			{:else}
+				<button class="submit-button" type="submit">Se connecter</button>
+			{/if}
 			<div class="signup-link">
 				<a href="/signup">S'inscrire</a>
 			</div>
@@ -152,20 +170,14 @@
 		font-size: 1rem; /* 16px */
 	}
 
-	button {
+	.submit-button {
 		background-color: var(--color-primary);
 		color: white;
 		border: none;
 		padding: 0.75rem; /* 12px */
 		border-radius: 0.3125rem; /* 5px */
 		font-size: 1rem; /* 16px */
-		cursor: pointer;
-		transition: background-color 0.3s;
 		width: 70%;
-	}
-
-	button:hover {
-		background-color: var(--color-secondary);
 	}
 
 	.signup-link {
@@ -176,5 +188,47 @@
 	.signup-link a {
 		color: var(--color-primary);
 		text-decoration: none;
+	}
+
+	@keyframes pulseColor {
+		0% {
+			background-color: var(--color-primary);
+		}
+		50% {
+			background-color: var(--color-secondary);
+		}
+		100% {
+			background-color: var(--color-primary);
+		}
+	}
+
+	@keyframes loadingDots {
+		0% {
+			content: 'Connexion';
+		}
+		25% {
+			content: 'Connexion.';
+		}
+		50% {
+			content: 'Connexion..';
+		}
+		75% {
+			content: 'Connexion...';
+		}
+	}
+
+	.loading-button {
+		color: white;
+		border: none;
+		padding: 0.75rem; /* 12px */
+		border-radius: 0.3125rem; /* 5px */
+		font-size: 1rem; /* 16px */
+		width: 70%;
+		animation: pulseColor 2s infinite;
+	}
+
+	.loading-button::after {
+		content: '';
+		animation: loadingDots 1.5s steps(4, end) infinite;
 	}
 </style>
