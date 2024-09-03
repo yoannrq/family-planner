@@ -10,6 +10,7 @@
 	import CategoryHeader from '$lib/components/CategoryHeader.svelte';
 	import ErrorDisplay from '$lib/components/ErrorDisplay.svelte';
 	import PersonDisplay from '$lib/components/PersonDisplay.svelte';
+	import FloatingCreationButton from '$lib/components/FloatingCreationButton.svelte';
 
 	// [ Store imports ]
 	import { errorStore, clearError } from '$lib/stores/errorStore';
@@ -42,12 +43,18 @@
 			{#each users as user}
 				<li>
 					<PersonDisplay person={user} />
+					<button on:click={() => console.log(user)}></button>
 				</li>
 			{/each}
 		</ul>
 	{:else}
 		<p>Problème survenu lors de la récupération des membres de la famille.</p>
 	{/if}
+	<FloatingCreationButton
+		groupId={data.groupId}
+		currentPage="family"
+		settingColorId={data.user.settingColorId}
+	/>
 </main>
 
 <style>

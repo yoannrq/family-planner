@@ -62,12 +62,14 @@
     {
       "name": "Family",
       "color": "Perroquet",
-      "users": ["alice@smith.com", "bob@brown.com", "charlie@johnson.com"]
+      "users": ["alice@smith.com", "bob@brown.com", "charlie@johnson.com"],
+      "owner": "alice@smith.com"
     },
     {
       "name": "Friends",
       "color": "Tangerine",
-      "users": ["alice@smith.com", "bob@brown.com"]
+      "users": ["alice@smith.com", "bob@brown.com"],
+      "owner": "alice@smith.com"
     }
   ],
   "contacts": [

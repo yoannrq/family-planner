@@ -28,6 +28,7 @@ model User {
   groups            Group[]  @relation("UserHasGroup")
   messages          Message[] @relation("Sender")
   calendar_entries  CalendarEntry[] @relation("Author")
+  ownedGroups       Group[] @relation("Owner")
   @@unique([email, refreshToken])
 }
 
@@ -49,10 +50,12 @@ model Group {
   id          Int      @id @default(autoincrement())
   name        String   @db.VarChar(30)
   colorId     Int      @db.Integer @default(1)
+  ownerId     Int
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
   color               Color @relation("ColorGroup", fields: [colorId], references: [id]) 
+  owner               User @relation("Owner", fields: [ownerId], references: [id])
   users               User[] @relation("UserHasGroup")
   contacts            Contact[] @relation("ContactGroup")
   calendar_entries    CalendarEntry[] @relation("CalendarGroup")

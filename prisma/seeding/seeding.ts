@@ -11,6 +11,20 @@ async function hashPassword(password: string) {
 }
 
 async function main() {
+  /* Seeding color */
+  for (const color of seed.colors) {
+    await prisma.color.upsert({
+      where: { name: color.name },
+      update: {
+        hexCode: color.hexCode,
+      },
+      create: {
+        name: color.name,
+        hexCode: color.hexCode,
+      },
+    });
+  }
+
   /* Seeding users */
   for (const user of seed.users) {
     await prisma.user.upsert({
@@ -23,20 +37,6 @@ async function main() {
         email: user.email,
         password: await hashPassword(user.password),
         name: user.name,
-      },
-    });
-  }
-
-  /* Seeding color */
-  for (const color of seed.colors) {
-    await prisma.color.upsert({
-      where: { name: color.name },
-      update: {
-        hexCode: color.hexCode,
-      },
-      create: {
-        name: color.name,
-        hexCode: color.hexCode,
       },
     });
   }
@@ -55,6 +55,11 @@ async function main() {
           connect: group.users.map((user) => {
             return { email: user };
           }),
+        },
+        owner: {
+          connect: {
+            email: group.owner,
+          },
         },
       },
     });
