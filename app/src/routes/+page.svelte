@@ -21,8 +21,7 @@
 	let errorMessage: string;
 	let severity: 'info' | 'warning' | 'error';
 
-	async function handleSubmit(event: any) {
-		event.preventDefault();
+	async function handleSubmit() {
 		clearError();
 		loading.set(true);
 
@@ -45,8 +44,9 @@
 				setToken('access', data.accessToken);
 				setToken('refresh', data.refreshToken);
 
-				// Store user email, name and profil picture URL in Preferences storage
+				// Store user informations in Preferences storage
 				setPreferencesObject('user', {
+					id: data.id,
 					email: data.email,
 					name: data.name,
 					profilePictureUrl: data.profilpictureUrl,
@@ -87,7 +87,7 @@
 		<h1>Family Planner</h1>
 		<p>Votre outil de gestion familiale</p>
 		<img src="/family_logo.png" alt="Family Planner" />
-		<form on:submit={handleSubmit}>
+		<form on:submit|preventDefault={handleSubmit}>
 			{#if errorMessage}
 				<!-- TODO : add a link to the forgot password page -->
 				<ErrorDisplay message={errorMessage} {severity} />

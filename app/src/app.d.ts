@@ -3,6 +3,7 @@
 declare global {
 	namespace App {
 		interface User {
+			id: number;
 			email: string;
 			name: string;
 			settingColorId: number;
@@ -13,6 +14,7 @@ declare global {
 			id: number;
 			name: string;
 			colorId: number;
+			ownerId: number;
 			createdAt: string;
 			updatedAt?: string;
 		}
