@@ -8,6 +8,7 @@
 	import { getPreferencesObject, setPreferencesObject } from '$lib/auth';
 	import { getColors } from '$lib/api/color';
 	import { updateContact } from '$lib/api/contact';
+	import { getColorValueFromCSS } from '$lib/utils/getColorValueFromCSS';
 
 	// [ Component imports ]
 	import SvgDisplay from '$lib/components/SvgDisplay.svelte';
@@ -36,12 +37,6 @@
 	errorStore.subscribe((value) => {
 		error = value;
 	});
-
-	function getColorValueFromCSS(variableName: string) {
-		const style = getComputedStyle(document.documentElement);
-		const color = style.getPropertyValue(variableName);
-		return color;
-	}
 
 	function goToContactList() {
 		clearError();

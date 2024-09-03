@@ -45,6 +45,24 @@ declare global {
 			updatedAt?: string;
 		}
 
+		interface Person {
+			id?: number;
+			name?: string;
+			settingColorId?: number;
+			firstname?: string;
+			lastname?: string;
+			colorId?: number;
+			phone?: string;
+			email?: string;
+			address?: string;
+			type?: string;
+			profilePictureUrl?: string;
+			content?: string;
+			groupId?: number;
+			createdAt?: string;
+			updatedAt?: string;
+		}
+
 		type ContactCreationData = Omit<Contact, 'id' | 'createdAt' | 'updatedAt'>;
 
 		interface Locals {

@@ -4,23 +4,26 @@
 
 	// [ Local imports ]
 	import type { PageData } from './$types';
+	import { getGroupByIdWithUsers } from '$lib/api/group.js';
 
 	// [ Component imports ]
 	import CategoryHeader from '$lib/components/CategoryHeader.svelte';
 	import ErrorDisplay from '$lib/components/ErrorDisplay.svelte';
+	import PersonDisplay from '$lib/components/PersonDisplay.svelte';
 
 	// [ Store imports ]
 	import { errorStore, clearError } from '$lib/stores/errorStore';
 	import { loading } from '$lib/stores/loadingStatus';
 
 	export let data: PageData;
-	export let users: App.User[] = [];
+	export let users: App.User[] | undefined = [];
 
 	onMount(async () => {
 		clearError();
 		loading.set(true);
 
-		// TODO: users = await getUsers(data.groupId);
+		const groupWithUsers = await getGroupByIdWithUsers(data.groupId);
+		users = groupWithUsers?.users;
 		loading.set(false);
 	});
 </script>
@@ -33,9 +36,35 @@
 	{/if}
 	{#if $loading}
 		<!-- TODO COMPONENT LOADING SPINNER -->
-		<p>Chargement des contacts...</p>
+		<p>Chargement des membres de la famille...</p>
+	{:else if users}
+		<ul>
+			{#each users as user}
+				<li>
+					<PersonDisplay person={user} />
+				</li>
+			{/each}
+		</ul>
+	{:else}
+		<p>Problème survenu lors de la récupération des membres de la famille.</p>
 	{/if}
-	<ul></ul>
 </main>
 
-<style></style>
+<style>
+	main {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+	}
+
+	ul {
+		list-style-type: none;
+		padding: 0;
+		background-color: var(--color-deep-background);
+		margin: 0;
+	}
+
+	li {
+		border-bottom: solid 1px var(--color-light-text);
+	}
+</style>

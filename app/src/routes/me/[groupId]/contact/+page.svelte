@@ -10,7 +10,7 @@
 	// [ Component imports ]
 	import FloatingCreationButton from '$lib/components/FloatingCreationButton.svelte';
 	import ErrorDisplay from '$lib/components/ErrorDisplay.svelte';
-	import ContactDisplay from '$lib/components/ContactDisplay.svelte';
+	import PersonDisplay from '$lib/components/PersonDisplay.svelte';
 	import CategoryHeader from '$lib/components/CategoryHeader.svelte';
 
 	// [ Store imports ]
@@ -54,7 +54,7 @@
 						href="/me/{data.groupId}/contact/{contact.id}"
 						on:click|preventDefault={() => handleClick(contact)}
 					>
-						<ContactDisplay {contact} />
+						<PersonDisplay person={contact} />
 					</a>
 				</li>
 			{/each}
