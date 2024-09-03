@@ -60,7 +60,7 @@
 			{/each}
 		</ul>
 	{:else}
-		<p>There are no contacts in this group.</p>
+		<p>Il n'y a aucun contact dans le groupe</p>
 	{/if}
 	<FloatingCreationButton
 		groupId={data.groupId}

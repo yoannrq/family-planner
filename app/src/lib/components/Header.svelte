@@ -40,7 +40,7 @@
 		>{firstTwoLetters}</a
 	>
 	{#key groupId}
-		<h1 class="current-group">{currentGroupName}</h1>
+		<h1 class="current-group" style="color: {userColor}">{currentGroupName}</h1>
 	{/key}
 	<button on:click={modalGroups}>
 		<SvgDisplay

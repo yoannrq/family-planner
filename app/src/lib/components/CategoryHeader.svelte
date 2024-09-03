@@ -26,7 +26,7 @@
 			color={userColor}
 		/>
 	</a>
-	<h1>{categoryName}</h1>
+	<h1 style="color: {userColor}">{categoryName}</h1>
 </header>
 
 <style>
