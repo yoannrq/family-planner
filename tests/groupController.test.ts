@@ -16,7 +16,7 @@ import groupController from '../src/controllers/groupController.js';
 import createTestUser from './helpers/authHelper.js';
 import prisma from '../src/models/client.js';
 import { GroupInput } from '../src/utils/validations/groupSchema.js';
-import { Prisma } from '@prisma/client';
+import { User } from '@prisma/client';
 
 const testGroups: GroupInput[] = [
   {
@@ -29,7 +29,7 @@ const testGroups: GroupInput[] = [
   },
 ];
 const randomColorId = Math.floor(Math.random() * 9) + 1;
-const randomGroupName = (Math.random() + 1).toString(36).substring(7);
+const randomName = (Math.random() + 1).toString(36).substring(7);
 
 // [ Tests ]
 describe('GroupController Tests', () => {
@@ -38,7 +38,7 @@ describe('GroupController Tests', () => {
   });
 
   beforeAll(async () => {
-    const testUser: Prisma.UserCreateInput = await createTestUser('group');
+    const testUser: User = await createTestUser('group');
 
     for (const group of testGroups) {
       await prisma.group.create({
@@ -49,6 +49,7 @@ describe('GroupController Tests', () => {
               email: testUser.email,
             },
           },
+          ownerId: testUser.id,
         },
       });
     }
@@ -250,7 +251,7 @@ describe('GroupController Tests', () => {
         email: 'group@test.com',
       },
       body: {
-        name: randomGroupName,
+        name: randomName,
         colorId: '1',
       },
     } as unknown as Request;
@@ -270,13 +271,39 @@ describe('GroupController Tests', () => {
     );
   });
 
+  it('should return a 404 status code if the user is not found', async () => {
+    const req = {
+      user: {
+        email: `${randomName}@test.com`,
+      },
+      body: {
+        name: randomName,
+        colorId: randomColorId,
+      },
+    } as unknown as Request;
+    const res = {
+      status: vi.fn().mockReturnThis(),
+      json: vi.fn(),
+    } as unknown as Response;
+    const next = vi.fn();
+
+    await groupController.createGroup(req, res, next);
+
+    expect(next).toHaveBeenCalledWith(
+      expect.objectContaining({
+        status: 404,
+        message: 'User not found',
+      }),
+    );
+  });
+
   it('should create a new group', async () => {
     const req = {
       user: {
         email: 'group@test.com',
       },
       body: {
-        name: randomGroupName,
+        name: randomName,
         colorId: randomColorId,
       },
     } as unknown as Request;
@@ -287,14 +314,21 @@ describe('GroupController Tests', () => {
     } as unknown as Response;
     const next = vi.fn();
 
+    const groupTestUser = await prisma.user.findUnique({
+      where: {
+        email: 'group@test.com',
+      },
+    });
+
     await groupController.createGroup(req, res, next);
 
     expect(next).not.toHaveBeenCalled();
     expect(res.status).toHaveBeenCalledWith(201);
     expect(res.json).toHaveBeenCalledWith(
       expect.objectContaining({
-        name: randomGroupName,
+        name: randomName,
         colorId: randomColorId,
+        ownerId: groupTestUser?.id,
       }),
     );
   });

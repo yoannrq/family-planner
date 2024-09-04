@@ -111,7 +111,20 @@ const groupController = {
     }
 
     try {
-      const newGroup: Prisma.GroupCreateInput = await prisma.group.create({
+      const currentUser = await prisma.user.findUnique({
+        where: {
+          email: userEmail,
+        },
+      });
+
+      if (!currentUser) {
+        return next({
+          status: 404,
+          message: 'User not found',
+        });
+      }
+
+      const newGroup: Group = await prisma.group.create({
         data: {
           name: data.name,
           colorId: data.colorId,
@@ -120,6 +133,7 @@ const groupController = {
               email: userEmail,
             },
           },
+          ownerId: currentUser?.id,
         },
       });
 

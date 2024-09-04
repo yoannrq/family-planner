@@ -142,9 +142,14 @@ describe('AuthController Tests', () => {
       },
     });
 
+    const authTestUser = await prisma.user.findUnique({
+      where: { email: 'auth@test.com' },
+    });
+
     expect(userGroup).toMatchObject({
       name: `Auth Test User's family`,
       colorId: expect.any(Number),
+      ownerId: authTestUser?.id,
     });
   });
 

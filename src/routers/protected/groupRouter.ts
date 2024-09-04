@@ -53,6 +53,7 @@ router.get('/:groupId', groupController.getGroupByIdWithUsers);
  * @returns {Promise<Group>} 201 - Created group
  * @returns {Error}  400 - Bad request
  * @returns {Error}  401 - Unauthorized
+ * @returns {Error}  404 - User not found
  */
 router.post('/', groupController.createGroup);
 
