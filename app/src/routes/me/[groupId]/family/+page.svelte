@@ -4,7 +4,7 @@
 
 	// [ Local imports ]
 	import type { PageData } from './$types';
-	import { getGroupByIdWithUsers } from '$lib/api/group.js';
+	import { getGroupByIdWithUsers, updateGroup } from '$lib/api/group.js';
 	import { getColorValueFromCSS } from '$lib/utils/getColorValueFromCSS';
 
 	// [ Component imports ]
@@ -24,10 +24,37 @@
 	const promotingColor = getColorValueFromCSS('--color-primary');
 	const removingColor = getColorValueFromCSS('--color-error');
 
-	const currentGroup = data.groups.find((group) => group.id === parseInt(data.groupId));
+	$: currentGroup = data.groups.find((group) => group.id === parseInt(data.groupId));
 
-	async function promotingUser() {
-		console.log('promoting user');
+	/**
+	 * @function getGroupByIdAndUpdateGroupData
+	 * @summary Fetches a group by ID and updates group and user data.
+	 * @param {string} groupId - The ID of the group to fetch and update.
+	 * @returns {Promise<void>}
+	 */
+	async function getGroupByIdAndUpdateGroupData(groupId: string): Promise<void> {
+		const groupWithUsers = await getGroupByIdWithUsers(groupId);
+		// Update the group data with the new group data
+		if (groupWithUsers) {
+			data.groups = data.groups.map((group) => {
+				if (group.id === parseInt(groupId)) {
+					return groupWithUsers;
+				}
+				return group;
+			});
+		}
+		// Update the users with the new users
+		users = groupWithUsers?.users;
+	}
+
+	async function promotingUser(clickedUserId: number) {
+		clearError();
+		loading.set(true);
+
+		await updateGroup(parseInt(data.groupId), undefined, undefined, clickedUserId);
+		await getGroupByIdAndUpdateGroupData(data.groupId);
+
+		loading.set(false);
 	}
 
 	async function removingUser() {
@@ -38,8 +65,7 @@
 		clearError();
 		loading.set(true);
 
-		const groupWithUsers = await getGroupByIdWithUsers(data.groupId);
-		users = groupWithUsers?.users;
+		await getGroupByIdAndUpdateGroupData(data.groupId);
 		loading.set(false);
 	});
 </script>
@@ -51,8 +77,7 @@
 		<ErrorDisplay message={$errorStore.message} severity="warning" />
 	{/if}
 	{#if $loading}
-		<!-- TODO COMPONENT LOADING SPINNER -->
-		<p>Chargement des membres de la famille...</p>
+		<p class="loading-bloc"></p>
 	{:else if users}
 		<ul>
 			{#each users as user}
@@ -70,7 +95,7 @@
 					{/if}
 					<div class="buttons-container">
 						{#if data.user.id === currentGroup?.ownerId && user.id !== currentGroup?.ownerId}
-							<button on:click={promotingUser}>
+							<button on:click={() => promotingUser(user.id)}>
 								<SvgDisplay
 									pathToBeDrawn="M248 80a28 28 0 1 0-51.12 15.77l-26.79 33L146 73.4a28 28 0 1 0-36.06 0l-24.03 55.34l-26.79-33a28 28 0 1 0-26.6 12L47 194.63A16 16 0 0 0 62.78 208h130.44A16 16 0 0 0 209 194.63l14.47-86.85A28 28 0 0 0 248 80M128 40a12 12 0 1 1-12 12a12 12 0 0 1 12-12M24 80a12 12 0 1 1 12 12a12 12 0 0 1-12-12m169.22 112H62.78l-13.92-83.48L81.79 149a8 8 0 0 0 6.21 3a8 8 0 0 0 1.08-.07a8 8 0 0 0 6.26-4.74l29.3-67.4a27 27 0 0 0 6.72 0l29.3 67.4a8 8 0 0 0 6.26 4.74a8 8 0 0 0 1.08.07a8 8 0 0 0 6.21-3l32.93-40.52ZM220 92a12 12 0 1 1 12-12a12 12 0 0 1-12 12"
 									thisClass=""
@@ -140,5 +165,43 @@
 		border: none;
 		outline: none;
 		background: none;
+	}
+
+	@keyframes pulseColor {
+		0% {
+			color: var(--color-primary);
+		}
+		50% {
+			color: var(--color-secondary);
+		}
+		100% {
+			color: var(--color-primary);
+		}
+	}
+
+	@keyframes loadingDots {
+		0% {
+			content: 'Chargement des membres de la famille';
+		}
+		25% {
+			content: 'Chargement des membres de la famille.';
+		}
+		50% {
+			content: 'Chargement des membres de la famille..';
+		}
+		75% {
+			content: 'Chargement des membres de la famille...';
+		}
+	}
+
+	.loading-bloc {
+		font-size: 1.5rem; /* 16px */
+		width: 70%;
+		animation: pulseColor 2s infinite;
+	}
+
+	.loading-bloc::after {
+		content: '';
+		animation: loadingDots 1.5s steps(4, end) infinite;
 	}
 </style>

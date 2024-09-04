@@ -79,7 +79,7 @@ export async function getGroupByIdWithUsers(
  * @protected header {string} Authorization - Bearer token
  * @param {string} name - The name of the group
  * @param {number} colorId - The color of the group
- * @returns {Promise<App.Group>} - The created group
+ * @returns {Promise<App.Group | null>} - The created group
  */
 export async function createGroup(name: string, colorId: number): Promise<App.Group | null> {
 	try {
@@ -97,6 +97,52 @@ export async function createGroup(name: string, colorId: number): Promise<App.Gr
 		});
 
 		if (status === 201 && data) {
+			clearError();
+			return data as App.Group;
+		} else {
+			storeError(status, data.message || 'Something went wrong');
+			return null;
+		}
+	} catch (error: unknown) {
+		console.error(error);
+		storeError(500, 'Something went wrong');
+		return null;
+	}
+}
+
+/**
+ * @function updateGroup
+ * @route PATCH /api/me/group/:groupId
+ * @summary Update a group
+ * @protected header {string} Authorization - Bearer token
+ * @param {number} groupId - The id of the group
+ * @param {string} name - The name of the group
+ * @param {number} colorId - The color of the group
+ * @param {number} ownerId - The id of the owner
+ * @returns {Promise<App.Group | null>} - The updated group
+ */
+export async function updateGroup(
+	groupId: number,
+	name?: string,
+	colorId?: number,
+	ownerId?: number
+): Promise<App.Group | null> {
+	try {
+		const accessToken = await getValidAccessTokenOrGoToLogin();
+		const { data, status } = await CapacitorHttp.patch({
+			url: `${PUBLIC_URL_API}/api/me/group/${groupId}`,
+			headers: {
+				'Content-Type': 'application/json',
+				Authorization: `Bearer ${accessToken}`
+			},
+			data: {
+				name,
+				colorId,
+				ownerId
+			}
+		});
+
+		if (status === 200 && data) {
 			clearError();
 			return data as App.Group;
 		} else {

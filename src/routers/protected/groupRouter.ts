@@ -65,7 +65,7 @@ router.post('/', groupController.createGroup);
  * @param {Object} req.user - User object added by loginRequired middleware
  * @param {string} req.user.email - Email of authenticated user
  * @param {string} req.params.groupId - Group id
- * @param {GroupInput} req.body - name, colorId and ownerId of the group
+ * @param {Partial<GroupInput>} req.body - name, colorId and ownerId of the group
  * @returns {Promise<Group>} 200 - Updated group
  * @returns {Error}  400 - Bad request
  * @returns {Error}  401 - Unauthorized

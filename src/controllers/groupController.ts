@@ -153,9 +153,11 @@ const groupController = {
       });
     }
     const groupId = parseInt(req.params.groupId);
-    const groupInput: GroupInput = req.body;
+    const groupInput: Partial<GroupInput> = req.body;
 
-    const { success, data, error } = groupSchema.safeParse(groupInput);
+    const { success, data, error } = groupSchema
+      .partial()
+      .safeParse(groupInput);
 
     if (!success) {
       return next({
@@ -195,11 +197,7 @@ const groupController = {
         where: {
           id: groupId,
         },
-        data: {
-          name: data.name,
-          colorId: data.colorId,
-          ownerId: data.ownerId,
-        },
+        data,
       });
 
       return res.status(200).json(updatedGroup);
