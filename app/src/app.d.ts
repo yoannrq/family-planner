@@ -77,6 +77,11 @@ declare global {
 			groupId: string;
 		}
 
+		interface LayoutDataWithoutGroupId {
+			user: User;
+			groups: Group[];
+		}
+
 		interface ErrorInfo {
 			status: number;
 			message: string;

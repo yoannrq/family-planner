@@ -4,8 +4,8 @@
 import type { LayoutLoad } from './$types';
 import { goto } from '$app/navigation';
 
-export const load: LayoutLoad = async ({ parent }): Promise<App.LayoutData> => {
-	const parentData = (await parent()) as App.LayoutData;
+export const load: LayoutLoad = async ({ parent }): Promise<App.LayoutDataWithoutGroupId> => {
+	const parentData = (await parent()) as App.LayoutDataWithoutGroupId;
 
 	if (!parentData) {
 		goto('/');
