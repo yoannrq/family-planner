@@ -3,7 +3,7 @@ import { Request, Response, NextFunction } from 'express';
 
 // [ Local imports ]
 import prisma from '../models/client.js';
-import { Group, Prisma } from '@prisma/client';
+import { Group, User } from '@prisma/client';
 import { GroupInput, groupSchema } from '../utils/validations/groupSchema.js';
 
 const groupController = {
@@ -111,7 +111,7 @@ const groupController = {
     }
 
     try {
-      const currentUser = await prisma.user.findUnique({
+      const currentUser: User | null = await prisma.user.findUnique({
         where: {
           email: userEmail,
         },
@@ -138,6 +138,71 @@ const groupController = {
       });
 
       return res.status(201).json(newGroup);
+    } catch (error: any) {
+      return next({
+        message: error.message,
+      });
+    }
+  },
+
+  updateGroup: async (req: Request, res: Response, next: NextFunction) => {
+    if (!req.user) {
+      return next({
+        status: 401,
+        message: 'Unauthorized',
+      });
+    }
+    const groupId = parseInt(req.params.groupId);
+    const groupInput: GroupInput = req.body;
+
+    const { success, data, error } = groupSchema.safeParse(groupInput);
+
+    if (!success) {
+      return next({
+        status: 400,
+        message: error.errors.map((err) => err.message).join(', '),
+      });
+    }
+
+    try {
+      const currentUser: User | null = await prisma.user.findUnique({
+        where: {
+          email: req.user.email,
+        },
+      });
+
+      const group: Group | null = await prisma.group.findUnique({
+        where: {
+          id: groupId,
+        },
+      });
+
+      if (!group || !currentUser) {
+        return next({
+          status: 404,
+          message: 'User or Group not found',
+        });
+      }
+
+      if (group.ownerId !== currentUser.id) {
+        return next({
+          status: 403,
+          message: 'Forbidden',
+        });
+      }
+
+      const updatedGroup: Group = await prisma.group.update({
+        where: {
+          id: groupId,
+        },
+        data: {
+          name: data.name,
+          colorId: data.colorId,
+          ownerId: data.ownerId,
+        },
+      });
+
+      return res.status(200).json(updatedGroup);
     } catch (error: any) {
       return next({
         message: error.message,
