@@ -155,3 +155,37 @@ export async function updateGroup(
 		return null;
 	}
 }
+
+/**
+ * @function removeUserFromGroup
+ * @route DELETE /api/me/group/:groupId/user/:userId
+ * @summary Delete a user from a group
+ * @protected header {string} Authorization - Bearer token
+ * @param {number} groupId - The id of the group
+ * @param {number} userId - The id of the user
+ * @returns {Promise<boolean>} - True if the user was removed
+ */
+export async function removeUserFromGroup(groupId: number, userId: number): Promise<boolean> {
+	try {
+		const accessToken = await getValidAccessTokenOrGoToLogin();
+		const { status } = await CapacitorHttp.delete({
+			url: `${PUBLIC_URL_API}/api/me/group/${groupId}/user/${userId}`,
+			headers: {
+				'Content-Type': 'application/json',
+				Authorization: `Bearer ${accessToken}`
+			}
+		});
+
+		if (status === 204) {
+			clearError();
+			return true;
+		} else {
+			storeError(status, 'Something went wrong');
+			return false;
+		}
+	} catch (error: unknown) {
+		console.error(error);
+		storeError(500, 'Something went wrong');
+		return false;
+	}
+}

@@ -4,7 +4,7 @@
 
 	// [ Local imports ]
 	import type { PageData } from './$types';
-	import { getGroupByIdWithUsers, updateGroup } from '$lib/api/group.js';
+	import { getGroupByIdWithUsers, updateGroup, removeUserFromGroup } from '$lib/api/group.js';
 	import { getColorValueFromCSS } from '$lib/utils/getColorValueFromCSS';
 
 	// [ Component imports ]
@@ -57,8 +57,14 @@
 		loading.set(false);
 	}
 
-	async function removingUser() {
-		console.log('removing user');
+	async function removingUser(clickedUserId: number) {
+		clearError();
+		loading.set(true);
+
+		await removeUserFromGroup(parseInt(data.groupId), clickedUserId);
+		await getGroupByIdAndUpdateGroupData(data.groupId);
+
+		loading.set(false);
 	}
 
 	onMount(async () => {
@@ -103,7 +109,7 @@
 									size="2rem"
 								/>
 							</button>
-							<button on:click={removingUser}>
+							<button on:click={() => removingUser(user.id)}>
 								<SvgDisplay
 									pathToBeDrawn="M232 216h-24V40a16 16 0 0 0-16-16H64a16 16 0 0 0-16 16v176H24a8 8 0 0 0 0 16h208a8 8 0 0 0 0-16M64 40h128v176H64Zm104 92a12 12 0 1 1-12-12a12 12 0 0 1 12 12"
 									thisClass=""
