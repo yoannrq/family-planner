@@ -18,17 +18,9 @@ import prisma from '../src/models/client.js';
 import { GroupInput } from '../src/utils/validations/groupSchema.js';
 import { User } from '@prisma/client';
 
-const testGroups: GroupInput[] = [
-  {
-    name: 'Group 1',
-    colorId: 1,
-  },
-  {
-    name: 'Group 2',
-    colorId: 2,
-  },
-];
-const randomColorId = Math.floor(Math.random() * 9) + 1;
+let testGroups: GroupInput[] = [];
+let testUser: User;
+const randomId = Math.floor(Math.random() * 9) + 1;
 const randomName = (Math.random() + 1).toString(36).substring(7);
 
 // [ Tests ]
@@ -38,12 +30,25 @@ describe('GroupController Tests', () => {
   });
 
   beforeAll(async () => {
-    const testUser: User = await createTestUser('group');
+    testUser = await createTestUser('group');
+    testGroups = [
+      {
+        name: 'Group 1',
+        colorId: 1,
+        ownerId: testUser.id,
+      },
+      {
+        name: 'Group 2',
+        colorId: 2,
+        ownerId: testUser.id,
+      },
+    ];
 
     for (const group of testGroups) {
       await prisma.group.create({
         data: {
-          ...group,
+          name: group.name,
+          colorId: group.colorId,
           users: {
             connect: {
               email: testUser.email,
@@ -174,7 +179,8 @@ describe('GroupController Tests', () => {
       },
       body: {
         name: 3,
-        colorId: randomColorId,
+        colorId: randomId,
+        ownerId: testUser.id,
       },
     } as unknown as Request;
     const res = {
@@ -200,7 +206,8 @@ describe('GroupController Tests', () => {
       },
       body: {
         name: 'a',
-        colorId: randomColorId,
+        colorId: randomId,
+        ownerId: testUser.id,
       },
     } as unknown as Request;
     const res = {
@@ -226,7 +233,8 @@ describe('GroupController Tests', () => {
       },
       body: {
         name: 'a'.repeat(31),
-        colorId: randomColorId,
+        colorId: randomId,
+        ownerId: testUser.id,
       },
     } as unknown as Request;
     const res = {
@@ -253,6 +261,7 @@ describe('GroupController Tests', () => {
       body: {
         name: randomName,
         colorId: '1',
+        ownerId: testUser.id,
       },
     } as unknown as Request;
     const res = {
@@ -278,7 +287,8 @@ describe('GroupController Tests', () => {
       },
       body: {
         name: randomName,
-        colorId: randomColorId,
+        colorId: randomId,
+        ownerId: testUser.id,
       },
     } as unknown as Request;
     const res = {
@@ -300,11 +310,12 @@ describe('GroupController Tests', () => {
   it('should create a new group', async () => {
     const req = {
       user: {
-        email: 'group@test.com',
+        email: testUser.email,
       },
       body: {
         name: randomName,
-        colorId: randomColorId,
+        colorId: randomId,
+        ownerId: testUser.id,
       },
     } as unknown as Request;
 
@@ -314,12 +325,6 @@ describe('GroupController Tests', () => {
     } as unknown as Response;
     const next = vi.fn();
 
-    const groupTestUser = await prisma.user.findUnique({
-      where: {
-        email: 'group@test.com',
-      },
-    });
-
     await groupController.createGroup(req, res, next);
 
     expect(next).not.toHaveBeenCalled();
@@ -327,8 +332,8 @@ describe('GroupController Tests', () => {
     expect(res.json).toHaveBeenCalledWith(
       expect.objectContaining({
         name: randomName,
-        colorId: randomColorId,
-        ownerId: groupTestUser?.id,
+        colorId: randomId,
+        ownerId: testUser.id,
       }),
     );
   });

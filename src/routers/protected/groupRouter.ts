@@ -4,6 +4,7 @@ import express from 'express';
 // [ Local imports ]
 import groupController from '../../controllers/groupController.js';
 import contactRouter from './contactRouter.js';
+import userRouter from './userRouter.js';
 import { GroupInput } from '../../utils/validations/groupSchema.js';
 import { Group, User } from '@prisma/client';
 
@@ -11,6 +12,7 @@ const router = express.Router();
 
 // [ Sub-routers ]
 router.use('/:groupId/contact', contactRouter);
+router.use('/:groupId/user', userRouter);
 
 // [ Routes ]
 

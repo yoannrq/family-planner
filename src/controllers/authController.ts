@@ -167,7 +167,8 @@ const authController = {
     }
 
     try {
-      const decodedToken = jwtService.verifyRefreshToken(refreshToken);
+      const decodedToken: JwtPayload | false =
+        jwtService.verifyRefreshToken(refreshToken);
 
       if (!decodedToken) {
         return next({

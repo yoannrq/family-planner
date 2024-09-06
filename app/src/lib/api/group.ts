@@ -158,17 +158,20 @@ export async function updateGroup(
 
 /**
  * @function removeUserFromGroup
- * @route DELETE /api/me/group/:groupId/user/:userId
- * @summary Delete a user from a group
+ * @route PATCH /api/me/group/:groupId/user/:userId
+ * @summary Remove a user from a group
  * @protected header {string} Authorization - Bearer token
  * @param {number} groupId - The id of the group
  * @param {number} userId - The id of the user
  * @returns {Promise<boolean>} - True if the user was removed
  */
-export async function removeUserFromGroup(groupId: number, userId: number): Promise<boolean> {
+export async function removeUserFromGroup(
+	groupId: number,
+	userId: number
+): Promise<App.Group | null> {
 	try {
 		const accessToken = await getValidAccessTokenOrGoToLogin();
-		const { status } = await CapacitorHttp.delete({
+		const { status, data } = await CapacitorHttp.patch({
 			url: `${PUBLIC_URL_API}/api/me/group/${groupId}/user/${userId}`,
 			headers: {
 				'Content-Type': 'application/json',
@@ -176,16 +179,16 @@ export async function removeUserFromGroup(groupId: number, userId: number): Prom
 			}
 		});
 
-		if (status === 204) {
+		if (status === 200 && data) {
 			clearError();
-			return true;
+			return data as App.Group;
 		} else {
-			storeError(status, 'Something went wrong');
-			return false;
+			storeError(status, data.message || 'Something went wrong');
+			return null;
 		}
 	} catch (error: unknown) {
 		console.error(error);
 		storeError(500, 'Something went wrong');
-		return false;
+		return null;
 	}
 }

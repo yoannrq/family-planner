@@ -5,6 +5,7 @@ import { Request, Response, NextFunction } from 'express';
 import prisma from '../models/client.js';
 import { Group, User } from '@prisma/client';
 import { GroupInput, groupSchema } from '../utils/validations/groupSchema.js';
+import { GroupWithUsers } from '../../types/prisma-types.js';
 
 const groupController = {
   getGroups: async (req: Request, res: Response, next: NextFunction) => {
@@ -198,6 +199,102 @@ const groupController = {
           id: groupId,
         },
         data,
+      });
+
+      return res.status(200).json(updatedGroup);
+    } catch (error: any) {
+      return next({
+        message: error.message,
+      });
+    }
+  },
+
+  removeUserFromGroup: async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) => {
+    if (!req.user) {
+      return next({
+        status: 401,
+        message: 'Unauthorized',
+      });
+    }
+    const groupId = parseInt(req.params.groupId);
+    const userIdToRemove = parseInt(req.params.userId);
+
+    try {
+      const userToRemove: User | null = await prisma.user.findUnique({
+        where: { id: userIdToRemove },
+      });
+
+      if (!userToRemove) {
+        return next({
+          status: 404,
+          message: 'User not found',
+        });
+      }
+
+      const group: GroupWithUsers | null = await prisma.group.findUnique({
+        where: { id: groupId },
+        include: {
+          users: {
+            where: { id: userIdToRemove },
+          },
+        },
+      });
+
+      if (!group) {
+        return next({
+          status: 404,
+          message: 'Group not found',
+        });
+      }
+
+      if (group.users.length === 0) {
+        return next({
+          status: 404,
+          message: 'User is not in the group',
+        });
+      }
+
+      // Check if the user is trying to remove himself
+      if (req.user.id === userIdToRemove) {
+        // Check if the user is the owner of the group
+        if (group.ownerId === req.user.id) {
+          // Check if the group has more than one user
+          if (group.users.length > 1) {
+            return next({
+              status: 403,
+              message:
+                'You cannot remove yourself from a group you own, you should promote another user to owner first',
+            });
+          } else {
+            return next({
+              status: 403,
+              message:
+                'You are the only user left in the group, you should delete the group instead',
+            });
+          }
+        }
+      } else if (group.ownerId !== req.user.id) {
+        return next({
+          status: 403,
+          message: 'Forbidden',
+        });
+      }
+
+      const updatedGroup: Group = await prisma.group.update({
+        where: {
+          id: groupId,
+        },
+        data: {
+          users: {
+            disconnect: {
+              id: userIdToRemove,
+            },
+          },
+        },
       });
 
       return res.status(200).json(updatedGroup);

@@ -19,4 +19,12 @@ export const groupSchema = z.object({
         .min(1, {
         message: "The field 'colorId' must be at least 1 character long.",
     }),
+    ownerId: z
+        .number({
+        required_error: "The field 'ownerId' is required.",
+        invalid_type_error: "The field 'ownerId' must be a number.",
+    })
+        .min(1, {
+        message: "The field 'ownerId' must be at least 1 character long.",
+    }),
 });

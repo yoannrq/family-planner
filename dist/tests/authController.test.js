@@ -113,9 +113,13 @@ describe('AuthController Tests', () => {
                 },
             },
         });
+        const authTestUser = yield prisma.user.findUnique({
+            where: { email: 'auth@test.com' },
+        });
         expect(userGroup).toMatchObject({
             name: `Auth Test User's family`,
             colorId: expect.any(Number),
+            ownerId: authTestUser === null || authTestUser === void 0 ? void 0 : authTestUser.id,
         });
     }));
     it('should have a login method', () => {

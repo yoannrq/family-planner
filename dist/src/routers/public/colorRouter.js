@@ -9,7 +9,7 @@ const router = express.Router();
  * @summary Get an array with all colors
  * @group Color
  * @public
- * @returns {object} 200 - Array with all colors
+ * @returns {Promise<Color[]>} 200 - Array with all colors
  */
 router.get('/', colorController.getColors);
 export default router;

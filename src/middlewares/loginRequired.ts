@@ -22,17 +22,17 @@ async function loginRequired(req: Request, res: Response, next: NextFunction) {
       return res.status(401).json({ message: 'Unauthorized' });
     }
 
-    const isExist: User | null = await prisma.user.findUnique({
+    const currentUser: User | null = await prisma.user.findUnique({
       where: {
         email: decoded.email,
       },
     });
 
-    if (!isExist) {
+    if (!currentUser) {
       return res.status(401).json({ message: 'Unauthorized' });
     }
 
-    req.user = decoded;
+    req.user = currentUser;
     next();
   } catch (error: any) {
     return res.status(401).json({ message: 'Unauthorized' });

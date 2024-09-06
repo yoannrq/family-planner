@@ -20,7 +20,8 @@ const meController = {
             });
         }
         const userEmail = req.user.email;
-        const { success, data, error } = userSchema.partial().safeParse(req.body);
+        const userInput = req.body;
+        const { success, data, error } = userSchema.partial().safeParse(userInput);
         try {
             if (!success) {
                 return next({

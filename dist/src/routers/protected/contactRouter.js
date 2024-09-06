@@ -12,8 +12,8 @@ const router = express.Router({ mergeParams: true });
  * @protected header {string} Authorization - Bearer token
  * @param {Object} req.user - User object added by loginRequired middleware
  * @param {string} req.user.email - Email of authenticated user
- * @param {number} req.params.groupId - Group ID
- * @returns {object[]} 200 - List of contacts
+ * @param {string} req.params.groupId - Group ID
+ * @returns {Promise<Contact[]>} 200 - List of contacts
  * @returns {Error}  401 - Unauthorized
  * @returns {Error}  403 - Forbidden
  */
@@ -25,9 +25,9 @@ router.get('/', contactController.getContacts);
  * @protected header {string} Authorization - Bearer token
  * @param {Object} req.user - User object added by loginRequired middleware
  * @param {string} req.user.email - Email of authenticated user
- * @param {number} req.params.groupId - Group ID
- * @param {Object} req.body - Contact object
- * @returns {object} 201 - Created contact
+ * @param {string} req.params.groupId - Group ID
+ * @param {ContactInput} req.body - Contact object
+ * @returns {Promise<Contact>} 201 - Created contact
  * @returns {Error}  400 - Bad request (validation error)
  * @returns {Error}  401 - Unauthorized
  * @returns {Error}  403 - Forbidden
@@ -40,10 +40,10 @@ router.post('/', contactController.createContact);
  * @protected header {string} Authorization - Bearer token
  * @param {Object} req.user - User object added by loginRequired middleware
  * @param {string} req.user.email - Email of authenticated user
- * @param {number} req.params.groupId - Group ID
- * @param {number} req.params.contactId - Contact ID
- * @param {Object} req.body - Contact object
- * @returns {object} 200 - Updated contact
+ * @param {string} req.params.groupId - Group ID
+ * @param {string} req.params.contactId - Contact ID
+ * @param {ContactInput} req.body - Contact object
+ * @returns {Promise<Contact>} 200 - Updated contact
  * @returns {Error}  400 - Bad request (validation error)
  * @returns {Error}  401 - Unauthorized
  * @returns {Error}  403 - Forbidden
