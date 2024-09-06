@@ -23,7 +23,7 @@ const groupController = {
         where: {
           email: userEmail,
         },
-        select: {
+        include: {
           groups: true,
         },
       });
@@ -242,7 +242,7 @@ const groupController = {
       if (userToRemove.groups.length === 1) {
         const newGroupForUser: Group = await prisma.group.create({
           data: {
-            name: `${userToRemove.name}'s new family`,
+            name: `${userToRemove.name.substring(0, 10)}'s new family`,
             colorId: randomizer.id(),
             users: {
               connect: {
@@ -257,9 +257,7 @@ const groupController = {
       const group: GroupWithUsers | null = await prisma.group.findUnique({
         where: { id: groupId },
         include: {
-          users: {
-            where: { id: userIdToRemove },
-          },
+          users: true,
         },
       });
 

@@ -15,13 +15,15 @@ import { Request, Response } from 'express';
 import groupController from '../src/controllers/groupController.js';
 import createTestUser from './helpers/authHelper.js';
 import prisma from '../src/models/client.js';
-import { GroupInput } from '../src/utils/validations/groupSchema.js';
-import { User } from '@prisma/client';
+import { User, Group } from '@prisma/client';
+import randomizer from '../src/utils/randomizer.js';
 
-let testGroups: GroupInput[] = [];
+let testGroup: Group;
+let secondTestGroup: Group;
+let thirdTestGroup: Group;
 let testUser: User;
-const randomId = Math.floor(Math.random() * 9) + 1;
-const randomName = (Math.random() + 1).toString(36).substring(7);
+let secondTestUser: User;
+let thirdTestUser: User;
 
 // [ Tests ]
 describe('GroupController Tests', () => {
@@ -31,33 +33,29 @@ describe('GroupController Tests', () => {
 
   beforeAll(async () => {
     testUser = await createTestUser('group');
-    testGroups = [
-      {
-        name: 'Group 1',
-        colorId: 1,
-        ownerId: testUser.id,
-      },
-      {
-        name: 'Group 2',
-        colorId: 2,
-        ownerId: testUser.id,
-      },
-    ];
-
-    for (const group of testGroups) {
-      await prisma.group.create({
-        data: {
-          name: group.name,
-          colorId: group.colorId,
-          users: {
-            connect: {
-              email: testUser.email,
-            },
+    secondTestUser = await createTestUser('secondgroup');
+    testGroup = await prisma.group.create({
+      data: {
+        name: randomizer.name(),
+        colorId: randomizer.id(),
+        users: {
+          connect: {
+            email: testUser.email,
           },
-          ownerId: testUser.id,
         },
-      });
-    }
+        ownerId: testUser.id,
+      },
+    });
+    secondTestGroup = await prisma.group.create({
+      data: {
+        name: randomizer.name(),
+        colorId: randomizer.id(),
+        users: {
+          connect: [{ email: testUser.email }, { email: secondTestUser.email }],
+        },
+        ownerId: testUser.id,
+      },
+    });
   });
 
   afterEach(() => {
@@ -69,7 +67,9 @@ describe('GroupController Tests', () => {
       where: {
         users: {
           some: {
-            email: 'group@test.com',
+            email: {
+              in: [testUser.email, secondTestUser.email, thirdTestUser.email],
+            },
           },
         },
       },
@@ -77,7 +77,9 @@ describe('GroupController Tests', () => {
 
     await prisma.user.deleteMany({
       where: {
-        email: 'group@test.com',
+        email: {
+          in: [testUser.email, secondTestUser.email, thirdTestUser.email],
+        },
       },
     });
   });
@@ -129,10 +131,9 @@ describe('GroupController Tests', () => {
   it('should return a list of groups', async () => {
     const req = {
       user: {
-        email: 'group@test.com',
+        email: testUser.email,
       },
     } as unknown as Request;
-
     const res = {
       status: vi.fn().mockReturnThis(),
       json: vi.fn(),
@@ -144,9 +145,10 @@ describe('GroupController Tests', () => {
     expect(next).not.toHaveBeenCalled();
     expect(res.status).toHaveBeenCalledWith(200);
     expect(res.json).toHaveBeenCalledWith(
-      expect.arrayContaining(
-        testGroups.map((group) => expect.objectContaining(group)),
-      ),
+      expect.arrayContaining([
+        expect.objectContaining(testGroup),
+        expect.objectContaining(secondTestGroup),
+      ]),
     );
   });
 
@@ -179,7 +181,7 @@ describe('GroupController Tests', () => {
       },
       body: {
         name: 3,
-        colorId: randomId,
+        colorId: randomizer.id(),
         ownerId: testUser.id,
       },
     } as unknown as Request;
@@ -206,7 +208,7 @@ describe('GroupController Tests', () => {
       },
       body: {
         name: 'a',
-        colorId: randomId,
+        colorId: randomizer.id(),
         ownerId: testUser.id,
       },
     } as unknown as Request;
@@ -233,7 +235,7 @@ describe('GroupController Tests', () => {
       },
       body: {
         name: 'a'.repeat(31),
-        colorId: randomId,
+        colorId: randomizer.id(),
         ownerId: testUser.id,
       },
     } as unknown as Request;
@@ -259,7 +261,7 @@ describe('GroupController Tests', () => {
         email: 'group@test.com',
       },
       body: {
-        name: randomName,
+        name: randomizer.name(),
         colorId: '1',
         ownerId: testUser.id,
       },
@@ -283,11 +285,11 @@ describe('GroupController Tests', () => {
   it('should return a 404 status code if the user is not found', async () => {
     const req = {
       user: {
-        email: `${randomName}@test.com`,
+        email: `${randomizer.name()}@test.com`,
       },
       body: {
-        name: randomName,
-        colorId: randomId,
+        name: randomizer.name(),
+        colorId: randomizer.id(),
         ownerId: testUser.id,
       },
     } as unknown as Request;
@@ -308,13 +310,15 @@ describe('GroupController Tests', () => {
   });
 
   it('should create a new group', async () => {
+    const randomNameCreation = randomizer.name();
+    const randomColorIdCreation = randomizer.id();
     const req = {
       user: {
         email: testUser.email,
       },
       body: {
-        name: randomName,
-        colorId: randomId,
+        name: randomNameCreation,
+        colorId: randomColorIdCreation,
         ownerId: testUser.id,
       },
     } as unknown as Request;
@@ -331,10 +335,182 @@ describe('GroupController Tests', () => {
     expect(res.status).toHaveBeenCalledWith(201);
     expect(res.json).toHaveBeenCalledWith(
       expect.objectContaining({
-        name: randomName,
-        colorId: randomId,
+        name: randomNameCreation,
+        colorId: randomColorIdCreation,
         ownerId: testUser.id,
       }),
     );
+  });
+
+  it('should have a removeUserFromGroup method', () => {
+    expect(groupController.removeUserFromGroup).toBeDefined();
+  });
+
+  it('should return a 401 status code if the user is not authenticated', async () => {
+    const req = {} as Request;
+    const res = {
+      status: vi.fn().mockReturnThis(),
+      json: vi.fn(),
+    } as unknown as Response;
+    const next = vi.fn();
+
+    await groupController.removeUserFromGroup(req, res, next);
+
+    expect(next).toHaveBeenCalledWith(
+      expect.objectContaining({
+        status: 401,
+        message: 'Unauthorized',
+      }),
+    );
+  });
+
+  it('should return a 404 status code if the user is not found', async () => {
+    const req = {
+      user: {
+        email: testUser.email,
+      },
+      params: {
+        groupId: testGroup.id,
+        userId: testUser.id + 999,
+      },
+    } as unknown as Request;
+    const res = {
+      status: vi.fn().mockReturnThis(),
+      json: vi.fn(),
+    } as unknown as Response;
+    const next = vi.fn();
+
+    await groupController.removeUserFromGroup(req, res, next);
+
+    expect(next).toHaveBeenCalledWith(
+      expect.objectContaining({
+        status: 404,
+        message: 'User not found',
+      }),
+    );
+  });
+
+  it('should return a 404 status code if the group is not found', async () => {
+    const req = {
+      user: {
+        email: testUser.email,
+      },
+      params: {
+        groupId: testGroup.id + 9999999,
+        userId: testUser.id,
+      },
+    } as unknown as Request;
+    const res = {
+      status: vi.fn().mockReturnThis(),
+      json: vi.fn(),
+    } as unknown as Response;
+    const next = vi.fn();
+
+    await groupController.removeUserFromGroup(req, res, next);
+
+    expect(next).toHaveBeenCalledWith(
+      expect.objectContaining({
+        status: 404,
+        message: 'Group not found',
+      }),
+    );
+  });
+
+  it('should return a 403 status code if the user is not the owner of the group', async () => {
+    const req = {
+      user: {
+        email: secondTestUser.email,
+      },
+      params: {
+        groupId: secondTestGroup.id,
+        userId: testUser.id,
+      },
+    } as unknown as Request;
+    const res = {
+      status: vi.fn().mockReturnThis(),
+      json: vi.fn(),
+    } as unknown as Response;
+    const next = vi.fn();
+
+    await groupController.removeUserFromGroup(req, res, next);
+
+    expect(next).toHaveBeenCalledWith(
+      expect.objectContaining({
+        status: 403,
+        message: 'Forbidden',
+      }),
+    );
+  });
+
+  it('should return a 403 status code if the user is the owner of the group', async () => {
+    const req = {
+      user: {
+        id: testUser.id,
+        email: testUser.email,
+      },
+      params: {
+        groupId: secondTestGroup.id,
+        userId: testUser.id,
+      },
+    } as unknown as Request;
+    const res = {
+      status: vi.fn().mockReturnThis(),
+      json: vi.fn(),
+    } as unknown as Response;
+    const next = vi.fn();
+
+    await groupController.removeUserFromGroup(req, res, next);
+
+    expect(next).toHaveBeenCalledWith(
+      expect.objectContaining({
+        status: 403,
+        message:
+          'You cannot remove yourself from a group you own, you should promote another user to owner first',
+      }),
+    );
+  });
+
+  it('should create a new group if the user to be removed dont have any other group and then remove this user from the group targeted', async () => {
+    thirdTestUser = await createTestUser('thirdgroup');
+    thirdTestGroup = await prisma.group.create({
+      data: {
+        name: randomizer.name(),
+        colorId: randomizer.id(),
+        users: {
+          connect: [{ email: testUser.email }, { email: thirdTestUser.email }],
+        },
+        ownerId: testUser.id,
+      },
+    });
+    const req = {
+      user: { ...testUser },
+      params: {
+        groupId: thirdTestGroup.id,
+        userId: thirdTestUser.id,
+      },
+    } as unknown as Request;
+    const res = {
+      status: vi.fn().mockReturnThis(),
+      json: vi.fn(),
+    } as unknown as Response;
+    const next = vi.fn();
+
+    await groupController.removeUserFromGroup(req, res, next);
+
+    const newGroup = await prisma.group.findFirst({
+      where: {
+        ownerId: thirdTestUser.id,
+      },
+    });
+
+    expect(next).not.toHaveBeenCalled();
+    expect(res.status).toHaveBeenCalledWith(200);
+    expect(res.json).toHaveBeenCalledWith(
+      expect.objectContaining({ ...thirdTestGroup }),
+    );
+    expect(newGroup).toMatchObject({
+      ownerId: thirdTestUser.id,
+      name: `${thirdTestUser.name.substring(0, 10)}'s new family`,
+    });
   });
 });

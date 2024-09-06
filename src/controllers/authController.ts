@@ -56,7 +56,7 @@ const authController = {
 
       const firstGroup: Group = await prisma.group.create({
         data: {
-          name: `${name}'s family`,
+          name: `${name.substring(0, 10)}'s family`,
           colorId: randomizer.id(),
           users: {
             connect: {
