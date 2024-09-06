@@ -5,7 +5,8 @@ import { Request, Response, NextFunction } from 'express';
 import prisma from '../models/client.js';
 import { Group, User } from '@prisma/client';
 import { GroupInput, groupSchema } from '../utils/validations/groupSchema.js';
-import { GroupWithUsers } from '../../types/prisma-types.js';
+import { GroupWithUsers, UserWithGroups } from '../../types/prisma-types.js';
+import randomizer from '../utils/randomizer.js';
 
 const groupController = {
   getGroups: async (req: Request, res: Response, next: NextFunction) => {
@@ -224,14 +225,32 @@ const groupController = {
     const userIdToRemove = parseInt(req.params.userId);
 
     try {
-      const userToRemove: User | null = await prisma.user.findUnique({
+      const userToRemove: UserWithGroups | null = await prisma.user.findUnique({
         where: { id: userIdToRemove },
+        include: {
+          groups: true,
+        },
       });
 
       if (!userToRemove) {
         return next({
           status: 404,
           message: 'User not found',
+        });
+      }
+
+      if (userToRemove.groups.length === 1) {
+        const newGroupForUser: Group = await prisma.group.create({
+          data: {
+            name: `${userToRemove.name}'s new family`,
+            colorId: randomizer.id(),
+            users: {
+              connect: {
+                id: userIdToRemove,
+              },
+            },
+            ownerId: userIdToRemove,
+          },
         });
       }
 

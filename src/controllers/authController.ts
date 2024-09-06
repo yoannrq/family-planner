@@ -8,6 +8,7 @@ import prisma from '../models/client.js';
 import { User, Prisma, Group } from '@prisma/client';
 import { userSchema, UserInput } from '../utils/validations/userSchema.js';
 import jwtService from '../utils/jwtService.js';
+import randomizer from '../utils/randomizer.js';
 
 // [ Type guard function - return boolean ]
 function isJwtPayload(token: string | JwtPayload): token is JwtPayload {
@@ -53,12 +54,10 @@ const authController = {
 
       newUser.password = '';
 
-      const randomColorId = Math.floor(Math.random() * 9) + 1;
-
       const firstGroup: Group = await prisma.group.create({
         data: {
           name: `${name}'s family`,
-          colorId: randomColorId,
+          colorId: randomizer.id(),
           users: {
             connect: {
               email,
