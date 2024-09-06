@@ -6,6 +6,9 @@
 	import type { PageData } from './$types';
 	import { getGroupByIdWithUsers, updateGroup, removeUserFromGroup } from '$lib/api/group.js';
 	import { getColorValueFromCSS } from '$lib/utils/getColorValueFromCSS';
+	import { getUserGroups } from '$lib/api/group.js';
+	import { setPreferencesObject } from '$lib/auth.js';
+	import { goto } from '$app/navigation';
 
 	// [ Component imports ]
 	import CategoryHeader from '$lib/components/CategoryHeader.svelte';
@@ -67,6 +70,26 @@
 		loading.set(false);
 	}
 
+	async function leavingCurrentGroup(clickedUserId: number) {
+		clearError();
+		loading.set(true);
+
+		const isRemoved = await removeUserFromGroup(parseInt(data.groupId), clickedUserId);
+
+		if (!isRemoved) {
+			loading.set(false);
+			return;
+		}
+		// Update Preferences groups data
+		const groups: App.Group[] = await getUserGroups();
+		setPreferencesObject('groups', groups);
+
+		const groupId = groups[0].id;
+		loading.set(false);
+
+		goto(`/me/${groupId}/dashboard`);
+	}
+
 	onMount(async () => {
 		clearError();
 		loading.set(true);
@@ -110,6 +133,15 @@
 								/>
 							</button>
 							<button on:click={() => removingUser(user.id)}>
+								<SvgDisplay
+									pathToBeDrawn="M232 216h-24V40a16 16 0 0 0-16-16H64a16 16 0 0 0-16 16v176H24a8 8 0 0 0 0 16h208a8 8 0 0 0 0-16M64 40h128v176H64Zm104 92a12 12 0 1 1-12-12a12 12 0 0 1 12 12"
+									thisClass=""
+									color={removingColor}
+									size="2rem"
+								/>
+							</button>
+						{:else if data.user.id === user.id && user.id !== currentGroup?.ownerId}
+							<button on:click={() => leavingCurrentGroup(user.id)}>
 								<SvgDisplay
 									pathToBeDrawn="M232 216h-24V40a16 16 0 0 0-16-16H64a16 16 0 0 0-16 16v176H24a8 8 0 0 0 0 16h208a8 8 0 0 0 0-16M64 40h128v176H64Zm104 92a12 12 0 1 1-12-12a12 12 0 0 1 12 12"
 									thisClass=""

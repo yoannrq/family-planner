@@ -53,7 +53,7 @@
 					settingColorId: data.settingColorId
 				});
 
-				const groups = await getUserGroups();
+				const groups: App.Group[] = await getUserGroups();
 
 				if (groups.length === 0) {
 					errorMessage = "You don't have any group.";
