@@ -158,7 +158,7 @@ export async function updateGroup(
 
 /**
  * @function removeUserFromGroup
- * @route PATCH /api/me/group/:groupId/user/:userId
+ * @route DELETE /api/me/group/:groupId/user/:userId
  * @summary Remove a user from a group
  * @protected header {string} Authorization - Bearer token
  * @param {number} groupId - The id of the group
@@ -171,7 +171,7 @@ export async function removeUserFromGroup(
 ): Promise<App.Group | null> {
 	try {
 		const accessToken = await getValidAccessTokenOrGoToLogin();
-		const { status, data } = await CapacitorHttp.patch({
+		const { status, data } = await CapacitorHttp.delete({
 			url: `${PUBLIC_URL_API}/api/me/group/${groupId}/user/${userId}`,
 			headers: {
 				'Content-Type': 'application/json',
