@@ -299,7 +299,7 @@
 
 	button {
 		border: none;
-		background-color: var(--color-secondary);
+		background-color: var(--color-primary);
 		color: var(--color-background);
 		padding: 0.625rem; /* 10px */
 		border-radius: 0.3125rem; /* 5px */

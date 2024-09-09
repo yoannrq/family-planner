@@ -132,7 +132,7 @@
 	input,
 	select {
 		padding: 0.5rem;
-		border: 1px solid var(--color-secondary);
+		border: 1px solid var(--color-primary);
 		border-radius: 0.25rem;
 	}
 
