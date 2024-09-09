@@ -12,6 +12,7 @@
 	// [ Component imports ]
 	import SvgDisplay from '$lib/components/SvgDisplay.svelte';
 	import ErrorDisplay from '$lib/components/ErrorDisplay.svelte';
+	import CategoryHeader from '$lib/components/CategoryHeader.svelte';
 
 	// [ Store imports ]
 	import { getHexCodeColor } from '$lib/stores/colorStore';
@@ -82,25 +83,8 @@
 	});
 </script>
 
-<header>
-	<button on:click={goToContactList}>
-		<SvgDisplay
-			pathToBeDrawn="M205.66 194.34a8 8 0 0 1-11.32 11.32L128 139.31l-66.34 66.35a8 8 0 0 1-11.32-11.32L116.69 128L50.34 61.66a8 8 0 0 1 11.32-11.32L128 116.69l66.34-66.35a8 8 0 0 1 11.32 11.32L139.31 128Z"
-			thisClass=""
-			size="1.65rem"
-			color={userColor}
-		/>
-	</button>
-	<h1>Ajouter un contact</h1>
-	<button type="submit" form="add-contact">
-		<SvgDisplay
-			pathToBeDrawn="M229.66 77.66l-128 128a8 8 0 0 1-11.32 0l-56-56a8 8 0 0 1 11.32-11.32L96 188.69L218.34 66.34a8 8 0 0 1 11.32 11.32"
-			thisClass=""
-			size="1.65rem"
-			color={userColor}
-		/>
-	</button>
-</header>
+<CategoryHeader user={data.user} groupId={data.groupId} currentPage="addContact" />
+
 <main>
 	<form on:submit|preventDefault={handleSubmit} id="add-contact">
 		{#if $errorStore.status > 0}
@@ -214,34 +198,11 @@
 				<input type="text" id="content" bind:value={content} placeholder="Note" />
 			</div>
 		</div>
+		<button type="submit">Ajouter</button>
 	</form>
 </main>
 
 <style>
-	header {
-		height: 4rem;
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		padding: 0 1rem;
-		box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-		position: relative;
-		z-index: 100;
-	}
-
-	h1 {
-		font-size: 1.2rem;
-		font-weight: 500;
-		margin: auto;
-		padding: 0 2rem;
-	}
-	header button {
-		background-color: transparent;
-		padding: 0.5rem;
-		border: none;
-		margin: auto;
-	}
-
 	main {
 		margin-top: 2.5rem;
 		display: flex;
@@ -294,5 +255,14 @@
 
 	.input-color-picker {
 		display: none;
+	}
+
+	button {
+		border: none;
+		background-color: var(--color-secondary);
+		color: var(--color-background);
+		padding: 0.625rem; /* 10px */
+		border-radius: 0.3125rem; /* 5px */
+		font-size: 1.2rem;
 	}
 </style>

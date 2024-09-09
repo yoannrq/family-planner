@@ -13,6 +13,7 @@
 	// [ Component imports ]
 	import SvgDisplay from '$lib/components/SvgDisplay.svelte';
 	import ErrorDisplay from '$lib/components/ErrorDisplay.svelte';
+	import CategoryHeader from '$lib/components/CategoryHeader.svelte';
 
 	// [ Store imports ]
 	import { contactStore } from '$lib/stores/contactStore';
@@ -95,25 +96,8 @@
 	});
 </script>
 
-<header>
-	<button on:click={goToContactList}>
-		<SvgDisplay
-			pathToBeDrawn="M205.66 194.34a8 8 0 0 1-11.32 11.32L128 139.31l-66.34 66.35a8 8 0 0 1-11.32-11.32L116.69 128L50.34 61.66a8 8 0 0 1 11.32-11.32L128 116.69l66.34-66.35a8 8 0 0 1 11.32 11.32L139.31 128Z"
-			thisClass=""
-			size="1.65rem"
-			color={editColor}
-		/>
-	</button>
-	<h1>Modifier le contact</h1>
-	<button type="submit" form="edit-contact">
-		<SvgDisplay
-			pathToBeDrawn="M229.66 77.66l-128 128a8 8 0 0 1-11.32 0l-56-56a8 8 0 0 1 11.32-11.32L96 188.69L218.34 66.34a8 8 0 0 1 11.32 11.32"
-			thisClass=""
-			size="1.65rem"
-			color={editColor}
-		/>
-	</button>
-</header>
+<CategoryHeader user={data.user} groupId={data.groupId} currentPage="editContact" />
+
 <main>
 	{#if $contactStore.profilePictureUrl}
 		<!-- TODO gérer la gestion de l'image de profil -->
@@ -233,32 +217,11 @@
 				<input type="text" id="content" bind:value={content} placeholder="Note" required />
 			</div>
 		</div>
+		<button type="submit">Modifier</button>
 	</form>
 </main>
 
 <style>
-	header {
-		display: flex;
-		justify-content: space-around;
-		align-items: center;
-		height: 3rem;
-		width: 100%;
-		padding: 1rem 0;
-		background-color: var(--color-tertiary);
-	}
-
-	header button {
-		background-color: var(--color-background);
-		padding: 0.5rem;
-		border: none;
-		border-radius: 50%;
-	}
-
-	header h1 {
-		font-size: 1.3rem;
-		color: white;
-	}
-
 	.personal-avatar {
 		width: 7rem; /* 112px */
 		height: 7rem;
@@ -332,5 +295,14 @@
 
 	.input-color-picker {
 		display: none;
+	}
+
+	button {
+		border: none;
+		background-color: var(--color-secondary);
+		color: var(--color-background);
+		padding: 0.625rem; /* 10px */
+		border-radius: 0.3125rem; /* 5px */
+		font-size: 1.2rem;
 	}
 </style>

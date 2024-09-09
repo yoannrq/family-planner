@@ -99,7 +99,7 @@
 	});
 </script>
 
-<CategoryHeader user={data.user} groupId={data.groupId} categoryName="Ma Famille" />
+<CategoryHeader user={data.user} groupId={data.groupId} currentPage="family" />
 
 <main>
 	{#if $errorStore.status > 0}
