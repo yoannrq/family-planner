@@ -36,7 +36,7 @@
 	});
 </script>
 
-<CategoryHeader user={data.user} groupId={data.groupId} categoryName="Contact" />
+<CategoryHeader user={data.user} groupId={data.groupId} currentPage="contact" />
 
 <main>
 	{#if $errorStore.status > 0}
