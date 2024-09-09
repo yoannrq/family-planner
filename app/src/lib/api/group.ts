@@ -79,9 +79,14 @@ export async function getGroupByIdWithUsers(
  * @protected header {string} Authorization - Bearer token
  * @param {string} name - The name of the group
  * @param {number} colorId - The color of the group
+ * @param {number} ownerId - The id of the owner
  * @returns {Promise<App.Group | null>} - The created group
  */
-export async function createGroup(name: string, colorId: number): Promise<App.Group | null> {
+export async function createGroup(
+	name: string,
+	colorId: number,
+	ownerId: number
+): Promise<App.Group | null> {
 	try {
 		const accessToken = await getValidAccessTokenOrGoToLogin();
 		const { data, status } = await CapacitorHttp.post({
@@ -92,7 +97,8 @@ export async function createGroup(name: string, colorId: number): Promise<App.Gr
 			},
 			data: {
 				name,
-				colorId
+				colorId,
+				ownerId
 			}
 		});
 
