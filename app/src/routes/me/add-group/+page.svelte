@@ -109,7 +109,7 @@
 	}
 
 	img {
-		width: 10rem; /* 160px */
+		width: 13rem; 
 	}
 
 	.attribute {
