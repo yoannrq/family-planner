@@ -13,6 +13,8 @@
 
   // [ Store imports ]
   import { clearError, errorStore } from '$lib/stores/errorStore';
+	import { addUserToGroup } from '$lib/api/group';
+  import { loading } from '$lib/stores/loadingStatus';
 
 
   export let data: PageData;
@@ -23,12 +25,17 @@
 
   async function handleSubmit() {
     clearError();
+    loading.set(true);
 
     try {
-      // Add the user to the group
-      // await addFamilyMember(data.groupId, email);
-      // Clear the email input
+      const isAddedToGroup = await addUserToGroup(data.groupId, email);
+
+      if (isAddedToGroup === null) {
+        loading.set(false);
+        return;
+      }
       email = '';
+      loading.set(false);
 
       goto(`/me/${data.groupId}/family`);
     } catch (error: any) {
@@ -57,8 +64,11 @@
 				<input type="text" bind:value={email} placeholder="Email" />
 			</div>
 		</div>
-
+    {#if $loading}
+		<p class="loading-bloc"></p>
+    {:else}
     <button type="submit">Ajouter au groupe</button>
+    {/if}
   </form>
 </main>
 
@@ -118,4 +128,43 @@
 		color: white;
     font-size: 1.2rem;
   }
+
+  @keyframes pulseColor {
+		0% {
+			color: var(--color-primary);
+		}
+		50% {
+			color: var(--color-secondary);
+		}
+		100% {
+			color: var(--color-primary);
+		}
+	}
+
+	@keyframes loadingDots {
+		0% {
+			content: 'Chargement';
+		}
+		25% {
+			content: 'Chargement.';
+		}
+		50% {
+			content: 'Chargement..';
+		}
+		75% {
+			content: 'Chargement...';
+		}
+	}
+
+	.loading-bloc {
+		font-size: 1.5rem; /* 16px */
+		width: 70%;
+		animation: pulseColor 2s infinite;
+    margin:auto;
+	}
+
+	.loading-bloc::after {
+		content: '';
+		animation: loadingDots 1.5s steps(4, end) infinite;
+	}
 </style>

@@ -198,3 +198,43 @@ export async function removeUserFromGroup(
 		return null;
 	}
 }
+
+/**
+ * @function addUserToGroup
+ * @route PATCH /api/me/group/:groupId/user
+ * @summary Add a user to a group
+ * @protected header {string} Authorization - Bearer token
+ * @param {number} groupId - The id of the group
+ * @param {string} userEmail - The email of the user
+ * @returns {Promise<App.GroupWithUsers | null>} - The updated group
+ */
+export async function addUserToGroup(
+	groupId: number | string,
+	userEmail: string
+): Promise<App.GroupWithUsers | null> {
+	try {
+		const accessToken = await getValidAccessTokenOrGoToLogin();
+		const { status, data } = await CapacitorHttp.patch({
+			url: `${PUBLIC_URL_API}/api/me/group/${groupId}/user`,
+			headers: {
+				'Content-Type': 'application/json',
+				Authorization: `Bearer ${accessToken}`
+			},
+			data: {
+				email: userEmail
+			}
+		});
+
+		if (status === 200 && data) {
+			clearError();
+			return data;
+		} else {
+			storeError(status, data.message || 'Something went wrong');
+			return null;
+		}
+	} catch (error: unknown) {
+		console.error(error);
+		storeError(500, 'Something went wrong');
+		return null;
+	}
+}
