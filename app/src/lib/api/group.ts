@@ -169,7 +169,7 @@ export async function updateGroup(
  * @protected header {string} Authorization - Bearer token
  * @param {number} groupId - The id of the group
  * @param {number} userId - The id of the user
- * @returns {Promise<App.Group | null>} - The updated group
+ * @returns {Promise<boolean>} - True if the user was removed
  */
 export async function removeUserFromGroup(
 	groupId: number,
