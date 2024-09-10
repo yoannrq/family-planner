@@ -321,6 +321,84 @@ const groupController = {
       });
     }
   },
+
+  addUserToGroup: async (req: Request, res: Response, next: NextFunction) => {
+    if (!req.user) {
+      return next({
+        status: 401,
+        message: 'Unauthorized',
+      });
+    }
+    const groupId = parseInt(req.params.groupId);
+    const userIdToAdd = parseInt(req.params.userId);
+
+    try {
+      const userToAdd: User | null = await prisma.user.findUnique({
+        where: { id: userIdToAdd },
+      });
+
+      if (!userToAdd) {
+        return next({
+          status: 404,
+          message: 'User not found',
+        });
+      }
+
+      const group = await prisma.group.findUnique({
+        where: { id: groupId },
+        include: {
+          users: true,
+        },
+      });
+
+      if (!group) {
+        return next({
+          status: 404,
+          message: 'Group not found',
+        });
+      }
+
+      const isUserInGroup = group.users.find((user) => user.id === userIdToAdd);
+      if (isUserInGroup) {
+        return next({
+          status: 409,
+          message: 'User is already in the group',
+        });
+      }
+
+      const isCurrentUserIngroup = group.users.find(
+        (user) => user.id === req.user.id,
+      );
+      if (!isCurrentUserIngroup) {
+        return next({
+          status: 403,
+          message: 'Forbidden',
+        });
+      }
+
+      const updatedGroup: GroupWithUsers = await prisma.group.update({
+        where: {
+          id: groupId,
+        },
+        data: {
+          users: {
+            connect: {
+              id: userIdToAdd,
+            },
+          },
+        },
+        include: {
+          users: true,
+        },
+      });
+
+      return res.status(200).json(updatedGroup);
+    } catch (error: any) {
+      return next({
+        message: error.message,
+      });
+    }
+  },
 };
 
 export default groupController;

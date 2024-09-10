@@ -25,4 +25,22 @@ const router = express.Router({ mergeParams: true });
  */
 router.delete('/:userId', groupController.removeUserFromGroup);
 
+/**
+ * @route PATCH /api/me/group/{groupId}/user/{userId}
+ * @summary Add user to group
+ * @group Group
+ * @protected header {string} Authorization - Bearer token
+ * @param {Object} req.user - User object added by loginRequired middleware
+ * @param {number} req.user.id - Id of authenticated user
+ * @param {string} req.user.email - Email of authenticated user
+ * @param {string} req.params.groupId - Group id
+ * @param {string} req.params.userId - User id to add
+ * @returns {Promise<GroupWithUsers>} 200 - Updated group
+ * @returns {Error}  401 - Unauthorized
+ * @returns {Error}  403 - Forbidden
+ * @returns {Error}  404 - User not found || Group not found
+ * @returns {Error}  409 - User is already in the group
+ */
+router.patch('/:userId', groupController.addUserToGroup);
+
 export default router;
