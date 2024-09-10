@@ -16,7 +16,9 @@ const colorController = {
             res.status(200).json(colors);
         }
         catch (error) {
-            next(error);
+            return next({
+                message: error.message,
+            });
         }
     }),
 };

@@ -13,6 +13,7 @@ export const load: LayoutLoad = async ({ parent }): Promise<App.LayoutData> => {
 
 	return {
 		user: parentData.user,
-		groups: parentData.groups
+		groups: parentData.groups,
+		groupId: parentData.groupId
 	};
 };

@@ -4,11 +4,15 @@ import express from 'express';
 // [ Local imports ]
 import groupController from '../../controllers/groupController.js';
 import contactRouter from './contactRouter.js';
+import userRouter from './userRouter.js';
+import { GroupInput } from '../../utils/validations/groupSchema.js';
+import { Group, User } from '@prisma/client';
 
 const router = express.Router();
 
 // [ Sub-routers ]
 router.use('/:groupId/contact', contactRouter);
+router.use('/:groupId/user', userRouter);
 
 // [ Routes ]
 
@@ -19,11 +23,26 @@ router.use('/:groupId/contact', contactRouter);
  * @protected header {string} Authorization - Bearer token
  * @param {Object} req.user - User object added by loginRequired middleware
  * @param {string} req.user.email - Email of authenticated user
- * @returns {object[]} 200 - List of groups
+ * @returns {Promise<Group[]>} 200 - List of groups
  * @returns {Error}  401 - Unauthorized
  * @returns {Error}  404 - User not found
  */
 router.get('/', groupController.getGroups);
+
+/**
+ * @route GET /api/me/group/{groupId}
+ * @summary Get group by id with users
+ * @group Group
+ * @protected header {string} Authorization - Bearer token
+ * @param {Object} req.user - User object added by loginRequired middleware
+ * @param {string} req.user.email - Email of authenticated user
+ * @param {string} req.params.groupId - Group id
+ * @returns {Promise<Group & { users: User[] }>} 200 - Group with users
+ * @returns {Error}  401 - Unauthorized
+ * @returns {Error}  403 - Forbidden
+ * @returns {Error}  404 - Group not found
+ */
+router.get('/:groupId', groupController.getGroupByIdWithUsers);
 
 /**
  * @route POST /api/me/group
@@ -32,11 +51,29 @@ router.get('/', groupController.getGroups);
  * @protected header {string} Authorization - Bearer token
  * @param {Object} req.user - User object added by loginRequired middleware
  * @param {string} req.user.email - Email of authenticated user
- * @param {object} req.body - name and colorId of the group
- * @returns {object} 201 - Created group
+ * @param {GroupInput} req.body - name, colorId and ownerId of the group
+ * @returns {Promise<Group>} 201 - Created group
  * @returns {Error}  400 - Bad request
  * @returns {Error}  401 - Unauthorized
+ * @returns {Error}  404 - User not found
  */
 router.post('/', groupController.createGroup);
+
+/**
+ * @route PATCH /api/me/group/{groupId}
+ * @summary Update group by id
+ * @group Group
+ * @protected header {string} Authorization - Bearer token
+ * @param {Object} req.user - User object added by loginRequired middleware
+ * @param {string} req.user.email - Email of authenticated user
+ * @param {string} req.params.groupId - Group id
+ * @param {Partial<GroupInput>} req.body - name, colorId and ownerId of the group
+ * @returns {Promise<Group>} 200 - Updated group
+ * @returns {Error}  400 - Bad request
+ * @returns {Error}  401 - Unauthorized
+ * @returns {Error}  403 - Forbidden
+ * @returns {Error}  404 - User or Group not found
+ */
+router.patch('/:groupId', groupController.updateGroup);
 
 export default router;

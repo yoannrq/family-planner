@@ -43,7 +43,7 @@
 		// Clear the error store
 		clearError();
 
-		const newGroup = await createGroup(groupName, selectedColorId);
+		const newGroup = await createGroup(groupName, selectedColorId, data.user.id);
 
 		if (!newGroup) {
 			return;
@@ -58,15 +58,15 @@
 		// Store user groups in Preferences storage
 		setPreferencesObject('groups', groups);
 
-		const groupId = newGroup.id;
+		const groupId = (newGroup.id).toString();
 
-		goToDashboard();
+		goToDashboard(groupId);
 	}
 
-	const goToDashboard = () => {
+	const goToDashboard = (id: string) => {
 		// Clear the error store
 		clearError();
-		goto(`/me/${data.groupId}/dashboard`);
+		goto(`/me/${id}/dashboard`);
 	};
 </script>
 
@@ -92,7 +92,7 @@
 		</select>
 		<button class="submit-button" type="submit">Créer</button>
 	</form>
-	<button class="cancel-button" on:click|preventDefault={goToDashboard}>Annuler</button>
+	<button class="cancel-button" on:click|preventDefault={() => goToDashboard(data.groupId)}>Annuler</button>
 </section>
 
 <style>
@@ -132,7 +132,7 @@
 	input,
 	select {
 		padding: 0.5rem;
-		border: 1px solid var(--color-secondary);
+		border: 1px solid var(--color-primary);
 		border-radius: 0.25rem;
 	}
 

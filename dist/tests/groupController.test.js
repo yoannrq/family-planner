@@ -13,32 +13,41 @@ import { describe, it, expect, vi, beforeEach, afterEach, afterAll, beforeAll, }
 import groupController from '../src/controllers/groupController.js';
 import createTestUser from './helpers/authHelper.js';
 import prisma from '../src/models/client.js';
-const testGroups = [
-    {
-        name: 'Group 1',
-        colorId: 1,
-    },
-    {
-        name: 'Group 2',
-        colorId: 2,
-    },
-];
-const randomColorId = Math.floor(Math.random() * 9) + 1;
-const randomGroupName = (Math.random() + 1).toString(36).substring(7);
+let testGroups = [];
+let testUser;
+const randomId = Math.floor(Math.random() * 9) + 1;
+const randomName = (Math.random() + 1).toString(36).substring(7);
 // [ Tests ]
 describe('GroupController Tests', () => {
     beforeEach(() => {
         vi.clearAllMocks();
     });
     beforeAll(() => __awaiter(void 0, void 0, void 0, function* () {
-        const testUser = yield createTestUser('group');
+        testUser = yield createTestUser('group');
+        testGroups = [
+            {
+                name: 'Group 1',
+                colorId: 1,
+                ownerId: testUser.id,
+            },
+            {
+                name: 'Group 2',
+                colorId: 2,
+                ownerId: testUser.id,
+            },
+        ];
         for (const group of testGroups) {
             yield prisma.group.create({
-                data: Object.assign(Object.assign({}, group), { users: {
+                data: {
+                    name: group.name,
+                    colorId: group.colorId,
+                    users: {
                         connect: {
                             email: testUser.email,
                         },
-                    } }),
+                    },
+                    ownerId: testUser.id,
+                },
             });
         }
     }));
@@ -133,7 +142,8 @@ describe('GroupController Tests', () => {
             },
             body: {
                 name: 3,
-                colorId: randomColorId,
+                colorId: randomId,
+                ownerId: testUser.id,
             },
         };
         const res = {
@@ -154,7 +164,8 @@ describe('GroupController Tests', () => {
             },
             body: {
                 name: 'a',
-                colorId: randomColorId,
+                colorId: randomId,
+                ownerId: testUser.id,
             },
         };
         const res = {
@@ -175,7 +186,8 @@ describe('GroupController Tests', () => {
             },
             body: {
                 name: 'a'.repeat(31),
-                colorId: randomColorId,
+                colorId: randomId,
+                ownerId: testUser.id,
             },
         };
         const res = {
@@ -195,8 +207,9 @@ describe('GroupController Tests', () => {
                 email: 'group@test.com',
             },
             body: {
-                name: randomGroupName,
+                name: randomName,
                 colorId: '1',
+                ownerId: testUser.id,
             },
         };
         const res = {
@@ -210,14 +223,37 @@ describe('GroupController Tests', () => {
             message: "The field 'colorId' must be a number.",
         }));
     }));
+    it('should return a 404 status code if the user is not found', () => __awaiter(void 0, void 0, void 0, function* () {
+        const req = {
+            user: {
+                email: `${randomName}@test.com`,
+            },
+            body: {
+                name: randomName,
+                colorId: randomId,
+                ownerId: testUser.id,
+            },
+        };
+        const res = {
+            status: vi.fn().mockReturnThis(),
+            json: vi.fn(),
+        };
+        const next = vi.fn();
+        yield groupController.createGroup(req, res, next);
+        expect(next).toHaveBeenCalledWith(expect.objectContaining({
+            status: 404,
+            message: 'User not found',
+        }));
+    }));
     it('should create a new group', () => __awaiter(void 0, void 0, void 0, function* () {
         const req = {
             user: {
-                email: 'group@test.com',
+                email: testUser.email,
             },
             body: {
-                name: randomGroupName,
-                colorId: randomColorId,
+                name: randomName,
+                colorId: randomId,
+                ownerId: testUser.id,
             },
         };
         const res = {
@@ -229,8 +265,9 @@ describe('GroupController Tests', () => {
         expect(next).not.toHaveBeenCalled();
         expect(res.status).toHaveBeenCalledWith(201);
         expect(res.json).toHaveBeenCalledWith(expect.objectContaining({
-            name: randomGroupName,
-            colorId: randomColorId,
+            name: randomName,
+            colorId: randomId,
+            ownerId: testUser.id,
         }));
     }));
 });

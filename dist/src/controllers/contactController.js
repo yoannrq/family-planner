@@ -10,7 +10,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 // [ Local imports ]
 import prisma from '../models/client.js';
 import canAccessToGroup from '../utils/canAccessToGroup.js';
-import { contactSchema } from '../utils/validations/contactSchema.js';
+import { contactSchema, } from '../utils/validations/contactSchema.js';
 const contactController = {
     getContacts: (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
         if (!req.user) {
@@ -52,10 +52,11 @@ const contactController = {
         }
         const userEmail = req.user.email;
         const groupId = parseInt(req.params.groupId);
+        const contactInput = req.body;
         // Zod schema validation with partial() to allow missing groupId
         const { success, data, error } = contactSchema
             .partial({ groupId: true })
-            .safeParse(req.body);
+            .safeParse(contactInput);
         if (!success) {
             return next({
                 status: 400,
@@ -117,9 +118,10 @@ const contactController = {
         const userEmail = req.user.email;
         const groupId = parseInt(req.params.groupId);
         const contactId = parseInt(req.params.contactId);
+        const contactInput = req.body;
         const { success, data, error } = contactSchema
             .partial()
-            .safeParse(req.body);
+            .safeParse(contactInput);
         if (!success) {
             return next({
                 status: 400,

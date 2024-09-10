@@ -5,9 +5,10 @@ import { JwtPayload } from 'jsonwebtoken';
 
 // [ Local imports ]
 import prisma from '../models/client.js';
-import { User, Prisma } from '@prisma/client';
+import { User, Prisma, Group } from '@prisma/client';
 import { userSchema, UserInput } from '../utils/validations/userSchema.js';
 import jwtService from '../utils/jwtService.js';
+import randomizer from '../utils/randomizer.js';
 
 // [ Type guard function - return boolean ]
 function isJwtPayload(token: string | JwtPayload): token is JwtPayload {
@@ -43,7 +44,7 @@ const authController = {
 
       const hashedPassword = await bcrypt.hash(password, 10);
 
-      let newUser: Prisma.UserCreateInput = await prisma.user.create({
+      let newUser: User = await prisma.user.create({
         data: {
           name,
           email,
@@ -53,17 +54,16 @@ const authController = {
 
       newUser.password = '';
 
-      const randomColorId = Math.floor(Math.random() * 9) + 1;
-
-      const firstGroup: Prisma.GroupCreateInput = await prisma.group.create({
+      const firstGroup: Group = await prisma.group.create({
         data: {
-          name: `${name}'s family`,
-          colorId: randomColorId,
+          name: `${name.substring(0, 10)}'s family`,
+          colorId: randomizer.id(),
           users: {
             connect: {
               email,
             },
           },
+          ownerId: newUser.id,
         },
       });
 
@@ -166,7 +166,8 @@ const authController = {
     }
 
     try {
-      const decodedToken = jwtService.verifyRefreshToken(refreshToken);
+      const decodedToken: JwtPayload | false =
+        jwtService.verifyRefreshToken(refreshToken);
 
       if (!decodedToken) {
         return next({

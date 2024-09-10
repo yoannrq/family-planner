@@ -1,5 +1,4 @@
 import { z } from 'zod';
-import { Prisma } from '@prisma/client';
 
 // TODO Ajouter la vérification de l'url de profil
 
@@ -23,7 +22,8 @@ export const userSchema = z.object({
     })
     .email({
       message: "The field 'email' must be a valid email address.",
-    }),
+    })
+    .toLowerCase(),
 
   password: z
     .string({

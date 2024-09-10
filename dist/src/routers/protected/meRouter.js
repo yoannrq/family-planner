@@ -14,8 +14,8 @@ router.use('/group', groupRouter);
  * @protected header {string} Authorization - Bearer token
  * @param   {Object} req.user - User object added by loginRequired middleware
  * @param   {string} req.user.email - Email of authenticated user
- * @param   {object} req.body - User information to update
- * @returns {object} 200 - Updated user
+ * @param   {UserInput} req.body - User information to update
+ * @returns {Promise<User>} 200 - Updated user
  * @returns {Error}  401 - Unauthorized
  */
 router.patch('/', meController.updateMe);

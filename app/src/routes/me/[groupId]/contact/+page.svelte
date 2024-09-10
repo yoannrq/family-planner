@@ -5,14 +5,18 @@
 	// [ Local imports ]
 	import type { PageData } from './$types';
 	import { getContacts } from '$lib/api/contact';
-	import { storeError, clearError, errorStore } from '$lib/stores/errorStore';
-	import { storeContact } from '$lib/stores/contactStore';
-	import ErrorDisplay from '$lib/components/ErrorDisplay.svelte';
-	import { loading } from '$lib/stores/loadingStatus';
-	import ContactDisplay from '$lib/components/ContactDisplay.svelte';
-	import CategoryHeader from '$lib/components/CategoryHeader.svelte';
 	import { goto } from '$app/navigation';
+
+	// [ Component imports ]
 	import FloatingCreationButton from '$lib/components/FloatingCreationButton.svelte';
+	import ErrorDisplay from '$lib/components/ErrorDisplay.svelte';
+	import PersonDisplay from '$lib/components/PersonDisplay.svelte';
+	import CategoryHeader from '$lib/components/CategoryHeader.svelte';
+
+	// [ Store imports ]
+	import { clearError, errorStore } from '$lib/stores/errorStore';
+	import { storeContact } from '$lib/stores/contactStore';
+	import { loading } from '$lib/stores/loadingStatus';
 
 	export let data: PageData;
 	export let contacts: App.Contact[] = [];
@@ -32,12 +36,7 @@
 	});
 </script>
 
-<CategoryHeader
-	user={data.user}
-	groups={data.groups}
-	groupId={data.groupId}
-	categoryName="Contact"
-/>
+<CategoryHeader user={data.user} groupId={data.groupId} currentPage="contact" />
 
 <main>
 	{#if $errorStore.status > 0}
@@ -55,13 +54,13 @@
 						href="/me/{data.groupId}/contact/{contact.id}"
 						on:click|preventDefault={() => handleClick(contact)}
 					>
-						<ContactDisplay {contact} />
+						<PersonDisplay person={contact} />
 					</a>
 				</li>
 			{/each}
 		</ul>
 	{:else}
-		<p>There are no contacts in this group.</p>
+		<p>Il n'y a aucun contact dans le groupe</p>
 	{/if}
 	<FloatingCreationButton
 		groupId={data.groupId}

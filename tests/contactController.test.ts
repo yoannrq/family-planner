@@ -66,6 +66,7 @@ describe('ContactController Tests', () => {
               email: testUser.email,
             },
           },
+          ownerId: testUser.id,
         },
       });
     }

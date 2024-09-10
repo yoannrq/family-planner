@@ -26,8 +26,8 @@
 	const firstTwoLetters = data.user.name.slice(0, 2);
 	const userColor = getHexCodeColor(data.user.settingColorId);
 
-	errorStore.subscribe(value => {
-  	error = value;
+	errorStore.subscribe((value) => {
+		error = value;
 	});
 
 	function goToProfile() {
@@ -53,8 +53,9 @@
 				return;
 			}
 
-			// Store user email, name and profil picture URL in Preferences storage
+			// Store user informations in Preferences storage
 			setPreferencesObject('user', {
+				id: updatedUser.id,
 				email: updatedUser.email,
 				name: updatedUser.name,
 				profilePictureUrl: updatedUser.profilePictureUrl,

@@ -14,7 +14,7 @@ import { getColors } from '$lib/api/color';
 import { setPreferencesObject } from '$lib/auth';
 import { initializeColorStore } from '$lib/stores/colorStore';
 
-export const load: LayoutLoad = async ({ url }): Promise<App.LayoutData | null> => {
+export const load: LayoutLoad = async ({ url }): Promise<App.LayoutDataWithoutGroupId | null> => {
 	const currentPath = url.pathname;
 	const accessToken = await getToken('access');
 	const user = await getPreferencesObject<App.User>('user');

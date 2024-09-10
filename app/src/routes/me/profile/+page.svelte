@@ -5,7 +5,11 @@
 	import type { PageData } from './$types';
 	import { goto } from '$app/navigation';
 	import { clearPreferencesObjectAndSecureStorage, setToken } from '$lib/auth.js';
+
+	// [ Component imports ]
 	import SvgDisplay from '$lib/components/SvgDisplay.svelte';
+
+	// [ Store imports ]
 	import { getHexCodeColor } from '$lib/stores/colorStore';
 
 	export let data: PageData;

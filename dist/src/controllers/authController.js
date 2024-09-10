@@ -58,6 +58,7 @@ const authController = {
                             email,
                         },
                     },
+                    ownerId: newUser.id,
                 },
             });
             if (!firstGroup) {
@@ -102,7 +103,10 @@ const authController = {
                     message: 'Invalid email or password',
                 });
             }
-            const accessToken = jwtService.generateAccessToken({ email: user.email });
+            const accessToken = jwtService.generateAccessToken({
+                id: user.id,
+                email: user.email,
+            });
             const refreshToken = jwtService.generateRefreshToken({
                 email: user.email,
             });
