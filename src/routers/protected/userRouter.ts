@@ -8,6 +8,26 @@ import groupController from '../../controllers/groupController.js';
 const router = express.Router({ mergeParams: true });
 
 // [ Routes ]
+
+/**
+ * @route PATCH /api/me/group/{groupId}/user
+ * @summary Add user to group
+ * @group Group
+ * @protected header {string} Authorization - Bearer token
+ * @param {Object} req.user - User object added by loginRequired middleware
+ * @param {number} req.user.id - Id of authenticated user
+ * @param {string} req.user.email - Email of authenticated user
+ * @param {string} req.params.groupId - Group id
+ * @param {string} req.body.email - Email of user to add
+ * @returns {Promise<GroupWithUsers>} 200 - Updated group
+ * @returns {Error}  400 - Bad request
+ * @returns {Error}  401 - Unauthorized
+ * @returns {Error}  403 - Forbidden
+ * @returns {Error}  404 - User or Group not found
+ * @returns {Error}  409 - User is already in the group
+ */
+router.patch('/', groupController.addUserToGroup);
+
 /**
  * @route DELETE /api/me/group/{groupId}/user/{userId}
  * @summary Remove user from group

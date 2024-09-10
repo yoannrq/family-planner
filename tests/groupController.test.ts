@@ -21,6 +21,7 @@ import randomizer from '../src/utils/randomizer.js';
 let testGroup: Group;
 let secondTestGroup: Group;
 let thirdTestGroup: Group;
+let fourthTestGroup: Group;
 let testUser: User;
 let secondTestUser: User;
 let thirdTestUser: User;
@@ -512,5 +513,198 @@ describe('GroupController Tests', () => {
       ownerId: thirdTestUser.id,
       name: `${thirdTestUser.name.substring(0, 10)}'s new family`,
     });
+  });
+
+  it('should have an addUserToGroup method', () => {
+    expect(groupController.addUserToGroup).toBeDefined();
+  });
+
+  it('should return a 401 status code if the user is not authenticated', async () => {
+    const req = {} as Request;
+    const res = {
+      status: vi.fn().mockReturnThis(),
+      json: vi.fn(),
+    } as unknown as Response;
+    const next = vi.fn();
+
+    await groupController.addUserToGroup(req, res, next);
+
+    expect(next).toHaveBeenCalledWith(
+      expect.objectContaining({
+        status: 401,
+        message: 'Unauthorized',
+      }),
+    );
+  });
+
+  it('should return a 404 status code if the user is not found', async () => {
+    const req = {
+      user: {
+        id: testUser.id,
+        email: testUser.email,
+      },
+      params: {
+        groupId: testGroup.id,
+      },
+      body: {
+        email: `${randomizer.name()}@test.com`,
+      },
+    } as unknown as Request;
+    const res = {
+      status: vi.fn().mockReturnThis(),
+      json: vi.fn(),
+    } as unknown as Response;
+    const next = vi.fn();
+
+    await groupController.addUserToGroup(req, res, next);
+
+    expect(next).toHaveBeenCalledWith(
+      expect.objectContaining({
+        status: 404,
+        message: 'User not found',
+      }),
+    );
+  });
+
+  it('should return a 404 status code if the group is not found', async () => {
+    const req = {
+      user: {
+        id: testUser.id,
+        email: testUser.email,
+      },
+      params: {
+        groupId: testGroup.id + 9999999,
+      },
+      body: {
+        email: testUser.email,
+      },
+    } as unknown as Request;
+    const res = {
+      status: vi.fn().mockReturnThis(),
+      json: vi.fn(),
+    } as unknown as Response;
+    const next = vi.fn();
+
+    await groupController.addUserToGroup(req, res, next);
+
+    expect(next).toHaveBeenCalledWith(
+      expect.objectContaining({
+        status: 404,
+        message: 'Group not found',
+      }),
+    );
+  });
+
+  it('should return a 409 status code if the user is already in the group', async () => {
+    const req = {
+      user: {
+        id: testUser.id,
+        email: testUser.email,
+      },
+      params: {
+        groupId: testGroup.id,
+      },
+      body: {
+        email: testUser.email,
+      },
+    } as unknown as Request;
+    const res = {
+      status: vi.fn().mockReturnThis(),
+      json: vi.fn(),
+    } as unknown as Response;
+    const next = vi.fn();
+
+    await groupController.addUserToGroup(req, res, next);
+
+    expect(next).toHaveBeenCalledWith(
+      expect.objectContaining({
+        status: 409,
+        message: 'User is already in the group',
+      }),
+    );
+  });
+
+  it('should return a 403 status code if the current user is not in the group', async () => {
+    const req = {
+      user: {
+        id: secondTestUser.id,
+        email: secondTestUser.email,
+      },
+      params: {
+        groupId: testGroup.id,
+      },
+      body: {
+        email: secondTestUser.email,
+      },
+    } as unknown as Request;
+    const res = {
+      status: vi.fn().mockReturnThis(),
+      json: vi.fn(),
+    } as unknown as Response;
+    const next = vi.fn();
+
+    await groupController.addUserToGroup(req, res, next);
+
+    expect(next).toHaveBeenCalledWith(
+      expect.objectContaining({
+        status: 403,
+        message: 'Forbidden',
+      }),
+    );
+  });
+
+  it('should add a user to the group', async () => {
+    fourthTestGroup = await prisma.group.create({
+      data: {
+        name: randomizer.name(),
+        colorId: randomizer.id(),
+        users: {
+          connect: { email: testUser.email },
+        },
+        ownerId: testUser.id,
+      },
+    });
+    const req = {
+      user: {
+        id: testUser.id,
+        email: testUser.email,
+      },
+      params: {
+        groupId: fourthTestGroup.id,
+      },
+      body: {
+        email: secondTestUser.email,
+      },
+    } as unknown as Request;
+    const res = {
+      status: vi.fn().mockReturnThis(),
+      json: vi.fn(),
+    } as unknown as Response;
+    const next = vi.fn();
+
+    await groupController.addUserToGroup(req, res, next);
+
+    const updatedGroup = await prisma.group.findFirst({
+      where: {
+        id: fourthTestGroup.id,
+      },
+      include: {
+        users: true,
+      },
+    });
+
+    updatedGroup?.users.forEach((user) => {
+      user.password = '';
+    });
+
+    expect(next).not.toHaveBeenCalled();
+    expect(res.status).toHaveBeenCalledWith(200);
+    expect(res.json).toHaveBeenCalledWith(
+      expect.objectContaining({ ...updatedGroup }),
+    );
+    expect(updatedGroup?.users).toMatchObject([
+      expect.objectContaining({ id: testUser.id }),
+      expect.objectContaining({ id: secondTestUser.id }),
+    ]);
   });
 });

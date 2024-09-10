@@ -7,6 +7,7 @@ import { Group, User } from '@prisma/client';
 import { GroupInput, groupSchema } from '../utils/validations/groupSchema.js';
 import { GroupWithUsers, UserWithGroups } from '../../types/prisma-types.js';
 import randomizer from '../utils/randomizer.js';
+import { userSchema } from '../utils/validations/userSchema.js';
 
 const groupController = {
   getGroups: async (req: Request, res: Response, next: NextFunction) => {
@@ -312,6 +313,99 @@ const groupController = {
             },
           },
         },
+      });
+
+      return res.status(200).json(updatedGroup);
+    } catch (error: any) {
+      return next({
+        message: error.message,
+      });
+    }
+  },
+
+  addUserToGroup: async (req: Request, res: Response, next: NextFunction) => {
+    if (!req.user) {
+      return next({
+        status: 401,
+        message: 'Unauthorized',
+      });
+    }
+    const groupId = parseInt(req.params.groupId);
+    const emailSchema = userSchema.pick({ email: true });
+    const { success, data, error } = emailSchema.safeParse(req.body);
+
+    if (!success) {
+      return next({
+        status: 400,
+        message: error.errors.map((err) => err.message).join(', '),
+      });
+    }
+
+    try {
+      const userToAdd: User | null = await prisma.user.findUnique({
+        where: { email: data.email },
+      });
+
+      if (!userToAdd) {
+        return next({
+          status: 404,
+          message: 'User not found',
+        });
+      }
+
+      const group: GroupWithUsers | null = await prisma.group.findUnique({
+        where: { id: groupId },
+        include: {
+          users: true,
+        },
+      });
+
+      if (!group) {
+        return next({
+          status: 404,
+          message: 'Group not found',
+        });
+      }
+
+      const isCurrentUserIngroup = group.users.find(
+        (user) => user.id === req.user.id,
+      );
+      if (!isCurrentUserIngroup) {
+        return next({
+          status: 403,
+          message: 'Forbidden',
+        });
+      }
+
+      const isUserToAddInGroup = group.users.find(
+        (user) => user.id === userToAdd.id,
+      );
+      if (isUserToAddInGroup) {
+        return next({
+          status: 409,
+          message: 'User is already in the group',
+        });
+      }
+
+      const updatedGroup: GroupWithUsers = await prisma.group.update({
+        where: {
+          id: groupId,
+        },
+        data: {
+          users: {
+            connect: {
+              id: userToAdd.id,
+            },
+          },
+        },
+        include: {
+          users: true,
+        },
+      });
+
+      // Hide password for every user in the group
+      updatedGroup.users.forEach((user) => {
+        user.password = '';
       });
 
       return res.status(200).json(updatedGroup);
