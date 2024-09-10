@@ -22,7 +22,8 @@ export const userSchema = z.object({
     })
     .email({
       message: "The field 'email' must be a valid email address.",
-    }),
+    })
+    .toLowerCase(),
 
   password: z
     .string({
