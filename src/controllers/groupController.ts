@@ -376,7 +376,7 @@ const groupController = {
         });
       }
 
-      const updatedGroup: GroupWithUsers = await prisma.group.update({
+      let updatedGroup: GroupWithUsers = await prisma.group.update({
         where: {
           id: groupId,
         },
@@ -390,6 +390,11 @@ const groupController = {
         include: {
           users: true,
         },
+      });
+
+      // Hide passwords for every user in the group
+      updatedGroup.users.forEach((user) => {
+        user.password = '';
       });
 
       return res.status(200).json(updatedGroup);
