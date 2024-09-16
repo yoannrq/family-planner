@@ -67,6 +67,22 @@ declare global {
 
 		type ContactCreationData = Omit<Contact, 'id' | 'createdAt' | 'updatedAt'>;
 
+		interface CalendarEntry {
+			id: number;
+			title: string;
+			description?: string;
+			date: string;
+			startTime: string;
+			endTime?: string;
+			entireDay: boolean;
+			location?: string;
+			groupId: number;
+			colorId: number;
+			authorId: number;
+			createdAt: string;
+			updatedAt?: string;
+		}
+
 		interface Locals {
 			user: User | null;
 		}

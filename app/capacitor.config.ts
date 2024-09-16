@@ -11,6 +11,9 @@ const config: CapacitorConfig = {
 		},
 		Preferences: {
 			enabled: true
+		},
+		Calendar: {
+			enabled: true
 		}
 	}
 };
