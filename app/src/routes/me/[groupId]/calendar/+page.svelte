@@ -21,6 +21,7 @@
 	import { getHexCodeColor } from '$lib/stores/colorStore';
 	import {
 		calendarSelectedDateStore,
+		clearCalendarSelectedDateStore,
 		storeCalendarSelectedDateStore
 	} from '$lib/stores/calendarSelectedDateStore';
 
@@ -130,6 +131,7 @@
 
 	onMount(async () => {
 		await checkAndRequestPermissions();
+		clearCalendarSelectedDateStore();
 
 		if (calendarEl) {
 			const calendar = new Calendar(calendarEl, calendarOptions);

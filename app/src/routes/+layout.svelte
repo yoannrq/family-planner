@@ -15,6 +15,7 @@
 		--color-light-text: #666666;
 		--color-background: #fcf6f5;
 		--color-deep-background: #f5f5f5;
+		--color-user-color: #8aaae5;
 
 		font-family: Arial, sans-serif;
 		margin: 0;
