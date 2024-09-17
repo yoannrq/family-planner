@@ -11,6 +11,7 @@
 
 	// [ Local imports ]
 	import type { PageData } from './$types';
+	import { goto } from '$app/navigation';
 
 	// [ Component imports ]
 	import CategoryHeader from '$lib/components/CategoryHeader.svelte';
@@ -18,12 +19,16 @@
 
 	// [ Store imports ]
 	import { getHexCodeColor } from '$lib/stores/colorStore';
+	import {
+		calendarSelectedDateStore,
+		storeCalendarSelectedDateStore
+	} from '$lib/stores/calendarSelectedDateStore';
 
 	export let data: PageData;
 
 	let calendarEl: HTMLElement;
 
-	const testEvents: App.CalendarEntry[] = [
+	const eventsList: App.CalendarEntry[] = [
 		{
 			id: 1,
 			title: 'Rendez-vous chez le docteur',
@@ -83,10 +88,12 @@
 			}
 		},
 		editable: true,
-		selectable: true,
-		selectMirror: true,
 		dayMaxEvents: true,
-		events: testEvents.map(mapCalendarEntryToFullCalendar)
+		events: eventsList.map(mapCalendarEntryToFullCalendar),
+		dateClick: dateClickHandler,
+		eventClick: (info) => {
+			console.log(info);
+		}
 	};
 
 	async function checkAndRequestPermissions() {
@@ -106,6 +113,19 @@
 			location: entry.location,
 			color: getHexCodeColor(entry.colorId)
 		};
+	}
+
+	function dateClickHandler(info: App.FullCalendarInfo) {
+		// Double click on the same date
+		if ($calendarSelectedDateStore && $calendarSelectedDateStore.dateStr === info.dateStr) {
+			goto(`/me/${data.groupId}/calendar/add-calendar`);
+		} else {
+			if ($calendarSelectedDateStore) {
+				$calendarSelectedDateStore.dayEl.style.backgroundColor = 'transparent';
+			}
+			info.dayEl.style.backgroundColor = `${getHexCodeColor(data.user.settingColorId)}33`;
+			storeCalendarSelectedDateStore(info);
+		}
 	}
 
 	onMount(async () => {
@@ -152,5 +172,11 @@
 		bottom: 1.25rem;
 		left: 1.25rem;
 		z-index: 100;
+	}
+
+	:global(.fc-event) {
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
 	}
 </style>

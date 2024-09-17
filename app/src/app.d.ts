@@ -1,5 +1,7 @@
 /// <reference types="@sveltejs/kit" />
 
+import type { ViewApi } from '@fullcalendar/core';
+
 declare global {
 	namespace App {
 		interface User {
@@ -81,6 +83,15 @@ declare global {
 			authorId: number;
 			createdAt: string;
 			updatedAt?: string;
+		}
+
+		interface FullCalendarInfo {
+			date: Date;
+			dateStr: string;
+			allDay: boolean;
+			dayEl: HTMLElement;
+			jsEvent: TouchEvent | MouseEvent;
+			view: ViewApi;
 		}
 
 		interface Locals {

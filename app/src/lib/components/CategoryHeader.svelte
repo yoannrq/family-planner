@@ -18,7 +18,8 @@
 		| 'contact'
 		| 'addContact'
 		| 'editContact'
-		| 'calendar';
+		| 'calendar'
+		| 'addCalendar';
 
 	type ScopeTypes = 'display' | 'creation';
 	type HeaderParamType = {
@@ -53,12 +54,17 @@
 		},
 		editContact: {
 			categoryName: 'Modifier un contact',
-			scope: 'creation' as ScopeTypes,
+			scope: 'creation',
 			paramUrl: 'contact'
 		},
 		calendar: {
 			categoryName: 'Calendrier',
 			scope: 'display'
+		},
+		addCalendar: {
+			categoryName: 'Ajouter un événement',
+			scope: 'creation',
+			paramUrl: 'calendar'
 		}
 	};
 
