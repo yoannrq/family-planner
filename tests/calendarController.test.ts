@@ -158,9 +158,8 @@ describe('Calendar Controller Tests', () => {
       params: { groupId: testGroup?.id },
     } as unknown as Request;
     const res = {
-      status: vi.fn().mockReturnValue({
-        json: vi.fn(),
-      }),
+      status: vi.fn().mockReturnThis(),
+      json: vi.fn(),
     } as unknown as Response;
     const next = vi.fn();
 
@@ -168,5 +167,101 @@ describe('Calendar Controller Tests', () => {
 
     expect(res.status).toHaveBeenCalledWith(200);
     expect(res.status(200).json).toHaveBeenCalledWith([testCalendarEntry]);
+  });
+
+  it('should have a createCalendarEntry method', () => {
+    expect(calendarController.createCalendarEntry).toBeDefined();
+  });
+
+  it('should return 401 if user is not authenticated', async () => {
+    const req = {} as Request;
+    const res = {} as Response;
+    const next = vi.fn();
+
+    await calendarController.createCalendarEntry(req, res, next);
+
+    expect(next).toHaveBeenCalledWith({
+      status: 401,
+      message: 'Unauthorized',
+    });
+  });
+
+  it('should return 403 if user is not authorized', async () => {
+    const req = {
+      user: {
+        email: 'calendarcalendar@test.com',
+      },
+      params: { groupId: 1 },
+      body: {
+        title: randomizer.name(),
+        description: randomizer.name(),
+        startAt: new Date(Date.now()).toISOString(),
+        colorId: randomizer.id(),
+        authorId: testUser.id,
+      },
+    } as unknown as Request;
+    const res = {} as Response;
+    const next = vi.fn();
+
+    await calendarController.createCalendarEntry(req, res, next);
+
+    expect(next).toHaveBeenCalledWith({
+      status: 403,
+      message: 'Forbidden',
+    });
+  });
+
+  it('should return 400 if colorId doesnt exist in the database', async () => {
+    const req = {
+      user: testUser,
+      params: { groupId: testGroup?.id },
+      body: {
+        title: randomizer.name(),
+        description: randomizer.name(),
+        startAt: new Date(Date.now()).toISOString(),
+        authorId: testUser.id,
+        colorId: 999,
+      },
+    } as unknown as Request;
+    const res = {} as Response;
+    const next = vi.fn();
+
+    await calendarController.createCalendarEntry(req, res, next);
+
+    expect(next).toHaveBeenCalledWith({
+      status: 400,
+      message: 'Invalid colorId',
+    });
+  });
+
+  it('should create a calendar entry', async () => {
+    const req = {
+      user: testUser,
+      params: { groupId: testGroup?.id },
+      body: {
+        title: randomizer.name(),
+        description: randomizer.name(),
+        startAt: new Date(Date.now()).toISOString(),
+        colorId: randomizer.id(),
+        authorId: testUser.id,
+      },
+    } as unknown as Request;
+    const res = {
+      status: vi.fn().mockReturnThis(),
+      json: vi.fn(),
+    } as unknown as Response;
+    const next = vi.fn();
+
+    await calendarController.createCalendarEntry(req, res, next);
+
+    expect(res.status).toHaveBeenCalledWith(201);
+    expect(res.json).toHaveBeenCalledWith(
+      expect.objectContaining({
+        title: req.body.title,
+        description: req.body.description,
+        startAt: expect.any(Date),
+        colorId: req.body.colorId,
+      }),
+    );
   });
 });
