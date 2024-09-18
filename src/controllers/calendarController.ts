@@ -41,17 +41,18 @@ const calendarController = {
       if (lastUpdate) {
         const lastKnownUpdate = new Date(lastUpdate as string);
 
-        const updatedEntries = await prisma.calendarEntry.findMany({
-          where: {
-            groupId,
-            updatedAt: {
-              gt: lastKnownUpdate,
+        const updatedEntries: CalendarEntry[] =
+          await prisma.calendarEntry.findMany({
+            where: {
+              groupId,
+              updatedAt: {
+                gt: lastKnownUpdate,
+              },
             },
-          },
-          orderBy: {
-            updatedAt: 'asc',
-          },
-        });
+            orderBy: {
+              updatedAt: 'asc',
+            },
+          });
 
         const lastUpdateTimestamp =
           updatedEntries.length > 0

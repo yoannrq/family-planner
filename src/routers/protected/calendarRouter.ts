@@ -19,7 +19,8 @@ const router = express.Router({ mergeParams: true });
  * @param {Object} req.user - User object added by loginRequired middleware
  * @param {string} req.user.email - Email of authenticated user
  * @param {string} req.params.groupId - Group ID
- * @returns {Promise<CalendarEntry[]>} 200 - List of calendar entries
+ * @param {string} req.query.lastUpdate - Last update timestamp
+ * @returns {Promise<CalendarEntry[]> | Promise<Object{CalendarEntry[], Date}>} 200 - List of calendar entries or List of updated calendar entries with last update timestamp
  * @returns {Error}  401 - Unauthorized
  * @returns {Error}  403 - Forbidden
  */
