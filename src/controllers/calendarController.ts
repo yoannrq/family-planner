@@ -25,6 +25,7 @@ const calendarController = {
     }
     const userEmail = req.user.email;
     const groupId = parseInt(req.params.groupId);
+    const lastUpdate = req.query.lastUpdate;
 
     try {
       // Check if user can access the group
@@ -37,14 +38,40 @@ const calendarController = {
         });
       }
 
-      const calendarEntries: CalendarEntry[] =
-        await prisma.calendarEntry.findMany({
+      if (lastUpdate) {
+        const lastKnownUpdate = new Date(lastUpdate as string);
+
+        const updatedEntries = await prisma.calendarEntry.findMany({
           where: {
             groupId,
+            updatedAt: {
+              gt: lastKnownUpdate,
+            },
+          },
+          orderBy: {
+            updatedAt: 'asc',
           },
         });
 
-      return res.status(200).json(calendarEntries);
+        const lastUpdateTimestamp =
+          updatedEntries.length > 0
+            ? updatedEntries[updatedEntries.length - 1].updatedAt
+            : lastKnownUpdate;
+
+        return res.status(200).json({
+          entries: updatedEntries,
+          lastUpdateTimestamp,
+        });
+      } else {
+        const calendarEntries: CalendarEntry[] =
+          await prisma.calendarEntry.findMany({
+            where: {
+              groupId,
+            },
+          });
+
+        return res.status(200).json(calendarEntries);
+      }
     } catch (error: any) {
       return next({
         message: error.message,

@@ -12,63 +12,30 @@
 	// [ Local imports ]
 	import type { PageData } from './$types';
 	import { goto } from '$app/navigation';
+	import { getCalendarEntries } from '$lib/api/calendar';
 
 	// [ Component imports ]
 	import CategoryHeader from '$lib/components/CategoryHeader.svelte';
 	import FloatingCreationButton from '$lib/components/FloatingCreationButton.svelte';
+	import ErrorDisplay from '$lib/components/ErrorDisplay.svelte';
 
 	// [ Store imports ]
+	import { get } from 'svelte/store';
 	import { getHexCodeColor } from '$lib/stores/colorStore';
 	import {
 		calendarSelectedDateStore,
 		clearCalendarSelectedDateStore,
 		storeCalendarSelectedDateStore
 	} from '$lib/stores/calendarSelectedDateStore';
+	import { calendarEventsStore, initializeCalendarEvents, checkAndUpdateCalendarEvents } from '$lib/stores/calendarEventsStore';
+	import { loading } from '$lib/stores/loadingStatus';
+	import { errorStore } from '$lib/stores/errorStore';
 
 	export let data: PageData;
 
 	let calendarEl: HTMLElement;
-
-	const eventsList: App.CalendarEntry[] = [
-		{
-			id: 1,
-			title: 'Rendez-vous chez le docteur',
-			date: '2024-09-26',
-			startTime: '2024-09-26T10:00:00',
-			entireDay: true,
-			location: '123 rue du port',
-			groupId: 1,
-			authorId: 1,
-			colorId: 1,
-			createdAt: new Date().toString()
-		},
-		{
-			id: 2,
-			title: 'Evenement 222',
-			date: '2024-09-27',
-			startTime: '2024-09-27T10:00:00',
-			endTime: '2024-09-27T12:00:00',
-			entireDay: false,
-			location: 'Quelque part',
-			groupId: 1,
-			authorId: 1,
-			colorId: 3,
-			createdAt: new Date().toString()
-		},
-		{
-			id: 2,
-			title: 'Evenement 54545',
-			date: '2024-09-27',
-			startTime: '2024-09-27T12:30:00',
-			endTime: '2024-09-27T15:00:00',
-			entireDay: false,
-			location: 'Au rond point',
-			groupId: 1,
-			authorId: 2,
-			colorId: 3,
-			createdAt: new Date().toString()
-		}
-	];
+	let eventsList: App.CalendarEntry[] = [];
+	const groupId = data.groupId;
 
 	const calendarOptions: CalendarOptions = {
 		plugins: [dayGridPlugin, timeGridPlugin, interactionPlugin],
@@ -90,7 +57,6 @@
 		},
 		editable: true,
 		dayMaxEvents: true,
-		events: eventsList.map(mapCalendarEntryToFullCalendar),
 		dateClick: dateClickHandler,
 		eventClick: (info) => {
 			console.log(info);
@@ -108,9 +74,9 @@
 		return {
 			id: entry.id.toString(),
 			title: entry.title,
-			start: entry.entireDay ? entry.date : entry.startTime,
-			end: entry.endTime,
-			allDay: entry.entireDay,
+			start: entry.startAt,
+			end: entry.endAt,
+			allDay: entry.allDay,
 			location: entry.location,
 			color: getHexCodeColor(entry.colorId)
 		};
@@ -132,17 +98,40 @@
 	onMount(async () => {
 		await checkAndRequestPermissions();
 		clearCalendarSelectedDateStore();
+		loading.set(true);
+
+		eventsList =  get(calendarEventsStore);
+
+    if (!eventsList || eventsList.length === 0) {
+			eventsList = await getCalendarEntries(data.groupId);
+      initializeCalendarEvents(eventsList);
+    } else {
+			const isCalendarEventsUpdated = await checkAndUpdateCalendarEvents(groupId);
+			if (!isCalendarEventsUpdated) {
+				eventsList = await getCalendarEntries(data.groupId);
+				initializeCalendarEvents(eventsList);
+			}
+    	eventsList = get(calendarEventsStore);
+		}
 
 		if (calendarEl) {
 			const calendar = new Calendar(calendarEl, calendarOptions);
-
+			const mappedEvents = eventsList.map(mapCalendarEntryToFullCalendar);
+			calendar.addEventSource({ events: mappedEvents });
 			calendar.render();
 		}
+		loading.set(false);
 	});
 </script>
 
 <CategoryHeader user={data.user} groupId={data.groupId} currentPage="calendar" />
 
+{#if $errorStore.status > 0}
+	<ErrorDisplay message={$errorStore.message} severity="warning" />
+{/if}
+{#if $loading}
+	<p class="loading-bloc"></p>
+{/if}
 <main class="calendar-container">
 	<div bind:this={calendarEl} id="calendar"></div>
 </main>
@@ -180,5 +169,43 @@
 		white-space: nowrap;
 		overflow: hidden;
 		text-overflow: ellipsis;
+	}
+
+	@keyframes pulseColor {
+		0% {
+			color: var(--color-primary);
+		}
+		50% {
+			color: var(--color-secondary);
+		}
+		100% {
+			color: var(--color-primary);
+		}
+	}
+
+	@keyframes loadingDots {
+		0% {
+			content: 'Chargement des évènements';
+		}
+		25% {
+			content: 'Chargement des évènements.';
+		}
+		50% {
+			content: 'Chargement des évènements..';
+		}
+		75% {
+			content: 'Chargement des évènements...';
+		}
+	}
+
+	.loading-bloc {
+		font-size: 1.5rem; /* 16px */
+		width: 70%;
+		animation: pulseColor 2s infinite;
+	}
+
+	.loading-bloc::after {
+		content: '';
+		animation: loadingDots 1.5s steps(4, end) infinite;
 	}
 </style>

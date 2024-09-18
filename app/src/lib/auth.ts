@@ -21,7 +21,6 @@ export async function setPreferencesObject(key: string, value: object | object[]
 		key: key,
 		value: JSON.stringify(value)
 	});
-	console.info('Preferences set:', value);
 }
 
 /**
@@ -37,12 +36,9 @@ export async function getPreferencesObject<T>(key: string): Promise<T | null> {
 		const preferencesData = JSON.parse(ret.value) as T;
 
 		if (preferencesData) {
-			console.info('Preferences get:', preferencesData);
 			return preferencesData;
 		}
 	}
-
-	console.info('Preferences get: null');
 	return null;
 }
 
@@ -55,7 +51,6 @@ export async function clearPreferencesObjectAndSecureStorage(): Promise<void> {
 	await Preferences.clear();
 	await SecureStorage.removeItem('access');
 	await SecureStorage.removeItem('refresh');
-	console.info('Preferences clear');
 }
 
 /**
@@ -67,8 +62,6 @@ export async function clearPreferencesObjectAndSecureStorage(): Promise<void> {
  */
 export async function setToken(key: string, token: string): Promise<void> {
 	await SecureStorage.setItem(key, token);
-	console.info('Token set:', key);
-	console.info('Token set:', token);
 }
 
 /**
@@ -82,11 +75,8 @@ export async function getToken(key: 'refresh' | 'access'): Promise<string | null
 		const token = await SecureStorage.getItem(key);
 
 		if (token && typeof token === 'string') {
-			console.info('Token get:', key);
-			console.info('Token get:', token);
 			return token;
 		} else {
-			console.info('Token get: null');
 			return null;
 		}
 	} catch (error) {
@@ -103,7 +93,6 @@ export async function getToken(key: 'refresh' | 'access'): Promise<string | null
 export async function refreshAccessToken(): Promise<boolean> {
 	const refreshToken = await getToken('refresh');
 	const isRefreshTokenExpired = isTokenExpired(refreshToken);
-	console.log('refreshToken in refreshAccessToken method :', refreshToken);
 	if (refreshToken && !isRefreshTokenExpired) {
 		try {
 			const { data, status } = await CapacitorHttp.post({
@@ -111,15 +100,12 @@ export async function refreshAccessToken(): Promise<boolean> {
 				headers: { 'Content-Type': 'application/json' },
 				data: { refreshToken }
 			});
-			console.log('data: ', data);
 
 			if (status === 200 && data?.accessToken) {
 				await setToken('access', data.accessToken);
-				console.info('Token refreshed', data.accessToken);
 				return true;
 			}
 
-			console.error('Erreur lors du rafraîchissement du token:', status, data);
 			await clearPreferencesObjectAndSecureStorage();
 			return false;
 		} catch (error) {
@@ -148,7 +134,6 @@ export function isTokenExpired(token: string | null): boolean {
 			console.error('Token has no expiration date');
 			return true;
 		}
-		console.info('Token expiration date:', decodedToken.exp);
 		return decodedToken.exp < Date.now() / 1000;
 	} catch (error) {
 		console.error('Error during decoding process :', error);

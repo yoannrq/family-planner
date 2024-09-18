@@ -73,10 +73,9 @@ declare global {
 			id: number;
 			title: string;
 			description?: string;
-			date: string;
-			startTime: string;
-			endTime?: string;
-			entireDay: boolean;
+			startAt: string;
+			endAt: string;
+			allDay: boolean;
 			location?: string;
 			groupId: number;
 			colorId: number;
@@ -86,6 +85,11 @@ declare global {
 		}
 
 		type CalendarEntryCreationData = Omit<CalendarEntry, 'id' | 'createdAt' | 'updatedAt'>;
+
+		type CalendarEntriesUpdatedWithLastUpdateTimestamp = {
+			entries: CalendarEntry[];
+			lastUpdateTimestamp: string;
+		};
 
 		interface FullCalendarInfo {
 			date: Date;

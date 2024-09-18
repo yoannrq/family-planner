@@ -33,6 +33,36 @@ export async function getCalendarEntries(groupId: string): Promise<App.CalendarE
 }
 
 /**
+ * @function getCalendarEntriesUpdated
+ * @route GET /api/me/group/:groupId/calendar?lastUpdate=:lastUpdate
+ * @summary Get the calendar entries of the current group updated since lastUpdate
+ * @protected header {string} Authorization - Bearer token
+ * @param {number | string} groupId - Group ID
+ * @param {string} lastUpdate - Last update timestamp
+ * @returns {Promise<App.CalendarEntriesUpdatedWithLastUpdateTimestamp>} - List of updated calendar entries
+ */
+export async function getCalendarEntriesUpdated(
+	groupId: number | string,
+	lastUpdate: string
+): Promise<App.CalendarEntriesUpdatedWithLastUpdateTimestamp> {
+	const accessToken = await getValidAccessTokenOrGoToLogin();
+	const { data, status } = await CapacitorHttp.get({
+		url: `${PUBLIC_URL_API}/api/me/group/${groupId}/calendar?lastUpdate=${lastUpdate}`,
+		headers: {
+			'Content-Type': 'application/json',
+			Authorization: `Bearer ${accessToken}`
+		}
+	});
+	if (status === 200 && data) {
+		clearError();
+		return data;
+	} else {
+		storeError(status, data.err.message);
+		return { entries: [], lastUpdateTimestamp: lastUpdate };
+	}
+}
+
+/**
  * @function createCalendarEntry
  * @route POST /api/me/group/:groupId/calendar
  * @summary Create a calendar entry

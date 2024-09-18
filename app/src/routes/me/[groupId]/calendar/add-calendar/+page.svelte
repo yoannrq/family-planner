@@ -7,6 +7,8 @@
 	import type { PageData } from './$types';
 	import { getPreferencesObject, setPreferencesObject } from '$lib/auth';
 	import { getColors } from '$lib/api/color';
+	import { createCalendarEntry } from '$lib/api/calendar';
+	import { goto } from '$app/navigation';
 
 	// [ Component imports ]
 	import CategoryHeader from '$lib/components/CategoryHeader.svelte';
@@ -24,22 +26,51 @@
 	let colors: App.Color[] | null = [];
 	let title: App.CalendarEntry['title'];
 	let description: App.CalendarEntry['description'];
-	let date: App.CalendarEntry['date'];
-	let endDate: typeof date;
-	let startTime: App.CalendarEntry['startTime'] = dayjs().format('HH:mm');
-	let endTime: App.CalendarEntry['endTime'] = dayjs().add(1, 'hour').format('HH:mm');
-	let entireDay: App.CalendarEntry['entireDay'] = false;
+	let startDate: string;
+	let endDate: string;
+	let startTime: string = dayjs().format('HH:mm');
+	let endTime: string = dayjs().add(1, 'hour').format('HH:mm');
+	let allDay: App.CalendarEntry['allDay'] = false;
 	let location: App.CalendarEntry['location'];
 	let colorId: App.CalendarEntry['colorId'] = 1;
 
+	$: {
+		if (startDate > endDate) {
+			endDate = startDate;
+		}
+	}
 	const userColor = getHexCodeColor(data.user.settingColorId);
 
 	errorStore.subscribe((value) => {
 		error = value;
 	});
 
+	const formatISO = (date: string, time: string) => {
+    return `${date}T${time}:00.000Z`;
+  };
+
 	async function handleSubmit() {
 		clearError();
+
+		try {
+			const createdCalendarEntry: App.CalendarEntry | null = await createCalendarEntry({
+				title,
+				description,
+				startAt: formatISO(startDate, startTime),
+				endAt: formatISO(endDate, endTime),
+				allDay: allDay,
+				location,
+				colorId,
+				groupId: parseInt(data.groupId),
+				authorId: data.user.id
+			});
+
+			if (createdCalendarEntry) {
+				goto(`/me/${data.groupId}/calendar`);
+			}
+		} catch (error: any) {
+			errorStore.set({ status: error.status, message: error.message });
+		}
 	}
 
 	onMount(async () => {
@@ -55,11 +86,12 @@
 
 		// Get the selected date from the store
 		if ($calendarSelectedDateStore) {
-			date = dayjs($calendarSelectedDateStore.date).format('YYYY-MM-DD');
+			startDate = dayjs($calendarSelectedDateStore.date).format('YYYY-MM-DD');
 		} else {
-			date = dayjs().format('YYYY-MM-DD');
+			startDate = dayjs().format('YYYY-MM-DD');
 		}
-		endDate = date;
+		endDate = startDate;
+
 
 		// Set the user color to the css variable
 		const root = document.documentElement;
@@ -129,9 +161,9 @@
 		</div>
 		<div class="input-and-icon-block">
 			<div class="input-group">
-				<label for="entireDay" class="toggle-container">
+				<label for="allDay" class="toggle-container">
 					Journée entière
-					<input type="checkbox" id="entireDay" bind:value={entireDay} />
+					<input type="checkbox" id="allDay" bind:checked={allDay} />
 					<span class="toggle"></span>
 				</label>
 			</div>
@@ -150,7 +182,7 @@
 		<div class="input-and-icon-block">
 			<div class="input-group">
 				<div class="same-line-input">
-					<input type="date" bind:value={date} required />
+					<input type="date" bind:value={startDate} required />
 					<input type="time" bind:value={startTime} />
 				</div>
 				<div class="same-line-input">
@@ -243,7 +275,7 @@
 	}
 
 	/* Toggle Style */
-	#entireDay {
+	#allDay {
 		display: none;
 	}
 
@@ -275,11 +307,11 @@
 		margin-top: -10px;
 	}
 
-	#entireDay:checked + .toggle {
+	#allDay:checked + .toggle {
 		background: var(--color-user-color);
 	}
 
-	#entireDay:checked + .toggle:before {
+	#allDay:checked + .toggle:before {
 		transform: translateX(25px);
 	}
 </style>
