@@ -85,6 +85,8 @@ declare global {
 			updatedAt?: string;
 		}
 
+		type CalendarEntryCreationData = Omit<CalendarEntry, 'id' | 'createdAt' | 'updatedAt'>;
+
 		interface FullCalendarInfo {
 			date: Date;
 			dateStr: string;
