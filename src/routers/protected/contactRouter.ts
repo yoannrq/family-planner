@@ -35,7 +35,7 @@ router.get('/', contactController.getContacts);
  * @param {string} req.params.groupId - Group ID
  * @param {ContactInput} req.body - Contact object
  * @returns {Promise<Contact>} 201 - Created contact
- * @returns {Error}  400 - Bad request (validation error)
+ * @returns {Error}  400 - Bad request (validation error) || Invalid colorId
  * @returns {Error}  401 - Unauthorized
  * @returns {Error}  403 - Forbidden
  */
@@ -52,7 +52,7 @@ router.post('/', contactController.createContact);
  * @param {string} req.params.contactId - Contact ID
  * @param {ContactInput} req.body - Contact object
  * @returns {Promise<Contact>} 200 - Updated contact
- * @returns {Error}  400 - Bad request (validation error)
+ * @returns {Error}  400 - Bad request (validation error) || Invalid colorId
  * @returns {Error}  401 - Unauthorized
  * @returns {Error}  403 - Forbidden
  * @returns {Error}  404 - Not found

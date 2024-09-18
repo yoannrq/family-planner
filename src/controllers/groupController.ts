@@ -8,6 +8,7 @@ import { GroupInput, groupSchema } from '../utils/validations/groupSchema.js';
 import { GroupWithUsers, UserWithGroups } from '../../types/prisma-types.js';
 import randomizer from '../utils/randomizer.js';
 import { userSchema } from '../utils/validations/userSchema.js';
+import { isValidColorId } from '../utils/colors.js';
 
 const groupController = {
   getGroups: async (req: Request, res: Response, next: NextFunction) => {
@@ -110,6 +111,14 @@ const groupController = {
       return next({
         status: 400,
         message: error.errors.map((err) => err.message).join(', '),
+      });
+    }
+
+    const isColorIdValid = isValidColorId(data.colorId);
+    if (!isColorIdValid) {
+      return next({
+        status: 400,
+        message: 'Invalid colorId',
       });
     }
 

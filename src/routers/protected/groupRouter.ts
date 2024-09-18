@@ -55,7 +55,7 @@ router.get('/:groupId', groupController.getGroupByIdWithUsers);
  * @param {string} req.user.email - Email of authenticated user
  * @param {GroupInput} req.body - name, colorId and ownerId of the group
  * @returns {Promise<Group>} 201 - Created group
- * @returns {Error}  400 - Bad request
+ * @returns {Error}  400 - Bad request || Invalid colorId
  * @returns {Error}  401 - Unauthorized
  * @returns {Error}  404 - User not found
  */
