@@ -40,6 +40,7 @@
 		align-items: center;
 		border: none;
 		box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+		z-index: 100;
 	}
 
 	.plus-icon {

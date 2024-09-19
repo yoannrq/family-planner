@@ -5,6 +5,7 @@ import express from 'express';
 import groupController from '../../controllers/groupController.js';
 import contactRouter from './contactRouter.js';
 import userRouter from './userRouter.js';
+import calendarRouter from './calendarRouter.js';
 import { GroupInput } from '../../utils/validations/groupSchema.js';
 import { Group, User } from '@prisma/client';
 
@@ -13,6 +14,7 @@ const router = express.Router();
 // [ Sub-routers ]
 router.use('/:groupId/contact', contactRouter);
 router.use('/:groupId/user', userRouter);
+router.use('/:groupId/calendar', calendarRouter);
 
 // [ Routes ]
 
@@ -53,7 +55,7 @@ router.get('/:groupId', groupController.getGroupByIdWithUsers);
  * @param {string} req.user.email - Email of authenticated user
  * @param {GroupInput} req.body - name, colorId and ownerId of the group
  * @returns {Promise<Group>} 201 - Created group
- * @returns {Error}  400 - Bad request
+ * @returns {Error}  400 - Bad request || Invalid colorId
  * @returns {Error}  401 - Unauthorized
  * @returns {Error}  404 - User not found
  */

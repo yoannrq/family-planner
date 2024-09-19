@@ -16,5 +16,13 @@ export default defineConfig({
 				rewrite: (path) => path.replace(/^\/api/, '')
 			}
 		}
+	},
+	optimizeDeps: {
+		include: [
+			'@fullcalendar/core',
+			'@fullcalendar/daygrid',
+			'@fullcalendar/timegrid',
+			'@fullcalendar/interaction'
+		]
 	}
 });

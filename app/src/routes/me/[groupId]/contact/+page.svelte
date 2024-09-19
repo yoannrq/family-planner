@@ -44,8 +44,7 @@
 	{/if}
 
 	{#if $loading}
-		<!-- TODO COMPONENT LOADING SPINNER -->
-		<p>Chargement des contacts...</p>
+		<p class="loading-bloc"></p>
 	{:else if contacts.length > 0}
 		<ul>
 			{#each contacts as contact}
@@ -89,5 +88,43 @@
 
 	a {
 		text-decoration: none;
+	}
+
+	@keyframes pulseColor {
+		0% {
+			color: var(--color-primary);
+		}
+		50% {
+			color: var(--color-secondary);
+		}
+		100% {
+			color: var(--color-primary);
+		}
+	}
+
+	@keyframes loadingDots {
+		0% {
+			content: 'Chargement des contacts';
+		}
+		25% {
+			content: 'Chargement des contacts.';
+		}
+		50% {
+			content: 'Chargement des contacts..';
+		}
+		75% {
+			content: 'Chargement des contacts...';
+		}
+	}
+
+	.loading-bloc {
+		font-size: 1.5rem; /* 16px */
+		width: 70%;
+		animation: pulseColor 2s infinite;
+	}
+
+	.loading-bloc::after {
+		content: '';
+		animation: loadingDots 1.5s steps(4, end) infinite;
 	}
 </style>

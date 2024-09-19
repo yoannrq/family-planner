@@ -24,6 +24,7 @@ export async function getContacts(groupId: string): Promise<App.Contact[]> {
 	});
 
 	if (status === 200 && data) {
+		clearError();
 		return data;
 	} else {
 		storeError(status, data.err.message);

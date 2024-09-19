@@ -52,6 +52,12 @@
 		"@capacitor/core": "^6.1.0",
 		"@capacitor/ios": "^6.1.0",
 		"@capacitor/preferences": "^6.0.1",
+		"@ebarooni/capacitor-calendar": "^6.7.1",
+		"@fullcalendar/core": "^6.1.15",
+		"@fullcalendar/daygrid": "^6.1.15",
+		"@fullcalendar/interaction": "^6.1.15",
+		"@fullcalendar/timegrid": "^6.1.15",
+		"dayjs": "^1.11.13",
 		"jwt-decode": "^4.0.0"
 	}
 }

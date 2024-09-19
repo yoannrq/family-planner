@@ -104,18 +104,16 @@
   "calendarEntries": [
     {
       "title": "Rendez-vous chez le docteur",
-      "date": "2024-07-26",
-      "startTime": "2024-07-26T10:00:00",
-      "entireDay": true,
+      "startAt": "2024-07-26T10:00:00",
+      "allDay": true,
       "location": "123 rue du port",
       "groupId": 1,
       "authorEmail": "alice@smith.com"
     },
     {
       "title": "Anniversaire de Tintin",
-      "date": "2024-07-28",
-      "startTime": "2024-07-28T12:00:00",
-      "endTime": "2024-07-28T14:00:00",
+      "startAt": "2024-07-28T12:00:00",
+      "endAt": "2024-07-28T14:00:00",
       "location": "456 boulevard de Moulinsart",
       "groupId": 1,
       "colorName": "Lavande",
@@ -123,9 +121,8 @@
     },
     {
       "title": "Passage au supermarché",
-      "date": "2024-07-25",
-      "startTime": "2024-07-25T12:00:00",
-      "endTime": "2024-07-25T14:00:00",
+      "startAt": "2024-07-25T12:00:00",
+      "endAt": "2024-07-25T14:00:00",
       "groupId": 1,
       "colorName": "Cerise",
       "authorEmail": "bob@brown.com"
@@ -133,8 +130,8 @@
     {
       "title": "Rendez-vous chez le coiffeur",
       "date": "2024-07-26",
-      "startTime": "2024-07-26T16:00:00",
-      "entireDay": true,
+      "startAt": "2024-07-26T16:00:00",
+      "allDay": true,
       "colorName": "Sable",
       "groupId": 1,
       "authorEmail": "alice@smith.com"

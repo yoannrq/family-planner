@@ -1,13 +1,23 @@
 <script lang="ts">
 	// [ Package imports ]
 	import { page } from '$app/stores';
+	import { onMount } from 'svelte';
 
 	// [ Local imports ]
-	import DashboardBlock from '$lib/components/DashboardBlock.svelte';
 	import type { PageData } from './$types';
+	import { getCalendarEntries } from '$lib/api/calendar';
+
+	// [ Component imports ]
+	import DashboardBlock from '$lib/components/DashboardBlock.svelte';
+
+	// [ Store imports ]
 	import { getHexCodeColor } from '$lib/stores/colorStore';
+	import { initializeCalendarEvents, checkAndUpdateCalendarEvents, calendarEventsStore } from '$lib/stores/calendarEventsStore';
+	import { get } from 'svelte/store';
 
 	export let data: PageData;
+
+	let eventsList: App.CalendarEntry[] = [];
 
 	$: groupId = $page.params.groupId;
 	$: currentGroup = data.groups.find((group) => group.id.toString() === groupId);
@@ -57,6 +67,16 @@
 				'M230.4 219.19A8 8 0 0 1 224 232H32a8 8 0 0 1-6.4-12.8A67.9 67.9 0 0 1 53 197.51a40 40 0 1 1 53.93 0a67.4 67.4 0 0 1 21 14.29a67.4 67.4 0 0 1 21-14.29a40 40 0 1 1 53.93 0a67.85 67.85 0 0 1 27.54 21.68M27.2 126.4a8 8 0 0 0 11.2-1.6a52 52 0 0 1 83.2 0a8 8 0 0 0 12.8 0a52 52 0 0 1 83.2 0a8 8 0 0 0 12.8-9.61A67.85 67.85 0 0 0 203 93.51a40 40 0 1 0-53.93 0a67.4 67.4 0 0 0-21 14.29a67.4 67.4 0 0 0-21-14.29a40 40 0 1 0-53.93 0A67.9 67.9 0 0 0 25.6 115.2a8 8 0 0 0 1.6 11.2'
 		}
 	];
+
+	onMount(async () => {
+		// Preloading of calendar events to avoid waiting for the API call
+		eventsList =  get(calendarEventsStore);
+
+    if (!eventsList || eventsList.length === 0) {
+			eventsList = await getCalendarEntries(data.groupId);
+      initializeCalendarEvents(eventsList);
+    } 
+	});
 </script>
 
 <main>

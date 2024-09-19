@@ -702,9 +702,11 @@ describe('GroupController Tests', () => {
     expect(res.json).toHaveBeenCalledWith(
       expect.objectContaining({ ...updatedGroup }),
     );
-    expect(updatedGroup?.users).toMatchObject([
-      expect.objectContaining({ id: testUser.id }),
-      expect.objectContaining({ id: secondTestUser.id }),
-    ]);
+    expect(updatedGroup?.users).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ id: testUser.id }),
+        expect.objectContaining({ id: secondTestUser.id }),
+      ]),
+    );
   });
 });

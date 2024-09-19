@@ -9,6 +9,7 @@ import {
   ContactInput,
   contactSchema,
 } from '../utils/validations/contactSchema.js';
+import { isValidColorId } from '../utils/colors.js';
 
 const contactController = {
   getContacts: async (req: Request, res: Response, next: NextFunction) => {
@@ -88,6 +89,14 @@ const contactController = {
         });
       }
 
+      const isColorIdValid = isValidColorId(data.colorId);
+      if (!isColorIdValid) {
+        return next({
+          status: 400,
+          message: 'Invalid colorId',
+        });
+      }
+
       const newContact: Contact = await prisma.contact.create({
         data: {
           firstname: data.firstname,
@@ -157,6 +166,14 @@ const contactController = {
         return next({
           status: 403,
           message: 'Forbidden',
+        });
+      }
+
+      const isColorIdValid = data.colorId ? isValidColorId(data.colorId) : true;
+      if (!isColorIdValid) {
+        return next({
+          status: 400,
+          message: 'Invalid colorId',
         });
       }
 

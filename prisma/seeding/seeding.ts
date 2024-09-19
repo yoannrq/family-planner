@@ -100,11 +100,10 @@ async function main() {
     await prisma.calendarEntry.create({
       data: {
         title: entry.title,
-        date: new Date(entry.date),
-        startTime: new Date(entry.startTime),
-        endTime: entry.endTime ? new Date(entry.endTime) : null,
+        startAt: new Date(entry.startAt),
+        endAt: entry.endAt ? new Date(entry.endAt) : null,
         location: entry.location,
-        entireDay: entry.entireDay,
+        allDay: entry.allDay,
         colorId: color ? color.id : 1,
         groupId: entry.groupId,
         authorId: author ? author.id : 1,
