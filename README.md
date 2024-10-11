@@ -46,6 +46,21 @@ Le projet utilise les technologies suivantes :
 | TypeScript  | Amélioration de la qualité du code, facilitation de la maintenance et réduction des bugs potentiels             |
 | Vitest      | Rapidité et compatibilité avec l'écosystème Vite, assurant une suite de tests efficace                          |
 
+## Présentation de l'application
+
+<img src="public/fp-login.jpg" alt="Screenshot de l'application - Page de connexion" width="300">
+<img src="public/fp-inscription.jpg" alt="Screenshot de l'application - Page d'inscription" width="300">
+<img src="public/fp-dashboard.jpg" alt="Screenshot de l'application - Tableau de bord" width="300">
+<img src="public/fp-dashboard-groups.jpg" alt="Screenshot de l'application - Groupes du tableau de bord" width="300">
+<img src="public/fp-new-group.jpg" alt="Screenshot de l'application - Création d'un nouveau groupe" width="300">
+<img src="public/fp-profile.jpg" alt="Screenshot de l'application - Page de profil" width="300">
+<img src="public/fp-members.jpg" alt="Screenshot de l'application - Liste des membres" width="300">
+<img src="public/fp-add-member.jpg" alt="Screenshot de l'application - Ajout d'un membre" width="300">
+<img src="public/fp-contacts.jpg" alt="Screenshot de l'application - Liste des contacts" width="300">
+<img src="public/fp-add-contact.jpg" alt="Screenshot de l'application - Ajout d'un contact" width="300">
+<img src="public/fp-calendar.jpg" alt="Screenshot de l'application - Calendrier" width="300">
+<img src="public/fp-add-event.jpg" alt="Screenshot de l'application - Ajout d'un événement" width="300">
+
 ## 📥 Installation
 
 _Instructions d'installation à venir_

@@ -27,7 +27,11 @@
 		clearCalendarSelectedDateStore,
 		storeCalendarSelectedDateStore
 	} from '$lib/stores/calendarSelectedDateStore';
-	import { calendarEventsStore, initializeCalendarEvents, checkAndUpdateCalendarEvents } from '$lib/stores/calendarEventsStore';
+	import {
+		calendarEventsStore,
+		initializeCalendarEvents,
+		checkAndUpdateCalendarEvents
+	} from '$lib/stores/calendarEventsStore';
 	import { loading } from '$lib/stores/loadingStatus';
 	import { errorStore } from '$lib/stores/errorStore';
 
@@ -100,18 +104,18 @@
 		clearCalendarSelectedDateStore();
 		loading.set(true);
 
-		eventsList =  get(calendarEventsStore);
+		eventsList = get(calendarEventsStore);
 
-    if (!eventsList || eventsList.length === 0) {
+		if (!eventsList || eventsList.length === 0) {
 			eventsList = await getCalendarEntries(data.groupId);
-      initializeCalendarEvents(eventsList);
-    } else {
+			initializeCalendarEvents(eventsList);
+		} else {
 			const isCalendarEventsUpdated = await checkAndUpdateCalendarEvents(groupId);
 			if (!isCalendarEventsUpdated) {
 				eventsList = await getCalendarEntries(data.groupId);
 				initializeCalendarEvents(eventsList);
 			}
-    	eventsList = get(calendarEventsStore);
+			eventsList = get(calendarEventsStore);
 		}
 
 		if (calendarEl) {
